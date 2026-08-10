@@ -1,0 +1,319 @@
+<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>
+:root{--bg:#FAF6EF;--card:#FFFFFF;--ink:#2C2620;--muted:#7A6D5B;--accent:#B85C38;--good:#7BAF8E;--warn:#D9A05B;--line:#E5DCCC;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 420px at 10% -10%, rgba(184,92,56,.22), transparent 55%),radial-gradient(760px 420px at 95% 10%, rgba(123,175,142,.18), transparent 50%),linear-gradient(180deg,#FAF6EF,#F3EFE6);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.title{font-weight:950;font-size:20px;letter-spacing:.2px}
+.tag{font-size:11px;color:rgba(0,0,0,.62);border:1px solid var(--line);background:rgba(255,255,255,.65);border-radius:999px;padding:6px 10px;font-weight:900;white-space:nowrap}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:900px){.grid{grid-template-columns:1.02fr .98fr}}
+.card{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.cardInner{padding:14px}
+.sectionHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.sectionTitle{font-weight:950;font-size:14px;color:rgba(0,0,0,.72)}
+.sub{font-size:12px;color:var(--muted);line-height:1.45;max-width:62ch}
+.pill{font-size:11px;font-weight:950;border-radius:999px;padding:3px 9px;border:1px solid transparent;white-space:nowrap}
+.pill.good{color:#1f5d35;background:#E8F0E9;border-color:rgba(107,175,143,.45)}
+.pill.warn{color:#6d4d12;background:#F8EFE3;border-color:rgba(217,160,91,.45)}
+.pill.neutral{color:rgba(0,0,0,.65);background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.08)}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border-radius:14px;border:1px solid rgba(184,92,56,.35);background:rgba(184,92,56,.10);cursor:pointer;font-weight:950;padding:10px 12px;color:var(--ink);user-select:none}
+.select{border:1px solid var(--line);border-radius:14px;background:rgba(250,246,239,.9);padding:10px 12px;font-weight:900;color:var(--ink);outline:none}
+.list{display:flex;flex-direction:column;gap:8px}
+.subRow{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 10px;border:1px solid rgba(229,220,204,.9);border-radius:14px;background:rgba(250,246,239,.75)}
+.subLeft{display:flex;align-items:flex-start;gap:10px;min-width:0}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent)}
+.subMeta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.subTitle{font-weight:950;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
+.subSmall{font-size:11px;color:var(--muted);font-weight:900}
+.clientHeader{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.clientName{font-weight:950;font-size:16px}
+.meter{margin-top:8px;height:10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.65);overflow:hidden}
+.meter > div{height:100%;background:linear-gradient(90deg, rgba(184,92,56,.55), rgba(123,175,142,.75))}
+.checklist{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.checkItem{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 10px;border-radius:14px;border:1px solid rgba(229,220,204,.9);background:rgba(255,255,255,.55)}
+.checkLeft{min-width:0}
+.checkLabel{font-weight:950;font-size:13px;line-height:1.25}
+.checkDetail{font-size:11px;color:var(--muted);font-weight:900;margin-top:3px}
+.outreach{margin-top:12px;border:1px dashed rgba(184,92,56,.35);border-radius:16px;background:rgba(255,255,255,.45);padding:12px}
+.outTitle{font-weight:950;font-size:13px;margin-bottom:8px}
+.outList{display:flex;flex-direction:column;gap:6px}
+.outLine{font-size:12px;color:var(--ink);font-weight:900;display:flex;gap:8px;align-items:flex-start}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:5px;background:var(--accent)}
+.footerNote{margin-top:10px;font-size:11px;color:var(--muted);font-weight:900;line-height:1.45}
+</style></head><body><div class="wrap"><div class="top"><div><div class="title">TaxDoc Intake Agent</div><div class="footerNote">Sample-only demo: simulates email submissions → unified intake per client → checklist completeness → outreach list for genuinely missing docs.</div></div><div class="tag">single deadline: 2027-04-15</div></div>
+<div class="card" style="margin-bottom:12px"><div class="cardInner"><div class="sectionHead"><div><div class="sectionTitle">Deadline pressure</div><div class="sub">Toggle received attachments on the left; the checklist and outreach list update instantly.</div></div><div class="controls"><div class="pill neutral">248 days left</div><div class="pill warn">Flags missing docs</div></div></div></div></div>
+<div class="grid"><div class="card"><div class="cardInner"><div class="sectionHead"><div><div class="sectionTitle">Simulated incoming documents</div><div class="sub">This is what would normally be extracted from inbox/email attachments.</div></div><div class="controls"><button class="btn" id="resetBtn" type="button">Reset demo</button></div></div><div class="list" id="submissionList"></div><div class="footerNote">Unified intake is computed from received submissions (no spreadsheet chasing).</div></div></div>
+<div class="card"><div class="cardInner"><div class="sectionHead"><div><div class="sectionTitle">Per-client intake + outreach</div><div class="sub">Pick a client to see exactly what’s missing and what to ask for next.</div></div><div class="controls"><select class="select" id="clientSel"></select><button class="btn" id="copyBtn" type="button">Copy outreach list</button></div></div><div class="clientHeader" style="margin-top:4px"><div class="clientName" id="clientName">—</div><div id="clientPill" class="pill neutral">—</div></div><div class="meter"><div id="meterFill" style="width:0%"></div></div><div class="checklist" id="checklist"></div><div class="outreach"><div class="outTitle">Outreach list (only missing required docs)</div><div class="outList" id="outreach"></div><div class="footerNote" id="outreachNote"></div></div></div></div></div>
+<div class="footerNote">Real build-out: wire inbox capture + normalization, then persist intake records and drive outreach automatically from your firm workflow.</div>
+<script>
+  const deadlineISO = "2027-04-15";
+  const clients = [{"id":"c1","name":"Jordan Lee","flags":{"hasMortgage":true,"hasInvestments":true,"hasRetirement":false,"hasCharity":false,"selfEmployed":false,"hasHealth":true}},{"id":"c2","name":"Priya Patel","flags":{"hasMortgage":false,"hasInvestments":true,"hasRetirement":true,"hasCharity":true,"selfEmployed":true,"hasHealth":true}},{"id":"c3","name":"Carlos Rivera","flags":{"hasMortgage":false,"hasInvestments":false,"hasRetirement":false,"hasCharity":true,"selfEmployed":false,"hasHealth":false}}];
+  const checklist = [{"id":"w2","label":"W-2 (wages)","docType":"W-2","required":true},{"id":"1099-int","label":"1099-INT (bank interest)","docType":"1099-INT","required":true},{"id":"1099-div","label":"1099-DIV (dividends)","docType":"1099-DIV","required":true},{"id":"1098-mortgage","label":"1098 (mortgage interest)","docType":"1098","required":true},{"id":"1095-health","label":"1095 (health insurance)","docType":"1095","required":true},{"id":"charity","label":"Charity receipts (e.g., 1098-C / itemized)","docType":"Charity","required":true},{"id":"retirement","label":"Retirement statements (1099-R / contributions)","docType":"1099-R","required":true},{"id":"self-1040","label":"Self-employment income (1099-NEC / 1099-K)","docType":"Self-employment","required":true},{"id":"other","label":"Other income summary","docType":"Other income","required":false}];
+  const appliesMap = {
+    'w2': (c)=>true,
+    '1099-int': (c)=>!!c.flags.hasInvestments,
+    '1099-div': (c)=>!!c.flags.hasInvestments,
+    '1098-mortgage': (c)=>!!c.flags.hasMortgage,
+    '1095-health': (c)=>!!c.flags.hasHealth,
+    'charity': (c)=>!!c.flags.hasCharity,
+    'retirement': (c)=>!!c.flags.hasRetirement,
+    'self-1040': (c)=>!!c.flags.selfEmployed,
+    'other': (c)=>true,
+  };
+  const submissionsSeed = [{"id":"s1","clientId":"c1","title":"Email: W-2 PDF","docType":"W-2","received":true,"receivedAtISO":"2027-03-04"},{"id":"s2","clientId":"c1","title":"Bank: 1099-INT PDF","docType":"1099-INT","received":false,"receivedAtISO":"2027-03-10"},{"id":"s3","clientId":"c1","title":"Mortgage: 1098 PDF","docType":"1098","received":true,"receivedAtISO":"2027-03-12"},{"id":"s4","clientId":"c1","title":"Health portal: 1095 summary","docType":"1095","received":true,"receivedAtISO":"2027-03-18"},{"id":"s5","clientId":"c2","title":"Email: W-2 PDF","docType":"W-2","received":true,"receivedAtISO":"2027-02-27"},{"id":"s6","clientId":"c2","title":"Broker: 1099-DIV PDF","docType":"1099-DIV","received":true,"receivedAtISO":"2027-03-08"},{"id":"s7","clientId":"c2","title":"Broker: 1099-INT PDF","docType":"1099-INT","received":false,"receivedAtISO":"2027-03-09"},{"id":"s8","clientId":"c2","title":"Retirement: 1099-R PDF","docType":"1099-R","received":true,"receivedAtISO":"2027-03-15"},{"id":"s9","clientId":"c2","title":"Charity: receipts bundle","docType":"Charity","received":false,"receivedAtISO":"2027-03-16"},{"id":"s10","clientId":"c2","title":"Self-employed: 1099-NEC","docType":"Self-employment","received":true,"receivedAtISO":"2027-03-17"},{"id":"s11","clientId":"c2","title":"Health portal: 1095 summary","docType":"1095","received":true,"receivedAtISO":"2027-03-19"},{"id":"s12","clientId":"c3","title":"Email: W-2 PDF","docType":"W-2","received":false,"receivedAtISO":"2027-03-02"},{"id":"s13","clientId":"c3","title":"Charity: receipts bundle","docType":"Charity","received":true,"receivedAtISO":"2027-03-11"},{"id":"s14","clientId":"c3","title":"Other: income notes","docType":"Other income","received":true,"receivedAtISO":"2027-03-13"}];
+  const state = {
+    receivedBySubmissionId: Object.fromEntries(submissionsSeed.map(s=>[s.id, !!s.received])),
+    selectedClientId: clients[0] ? clients[0].id : null,
+  };
+
+  const $ = (id)=>document.getElementById(id);
+  const submissionList = $('submissionList');
+  const clientSel = $('clientSel');
+  const checklistEl = $('checklist');
+  const outreachEl = $('outreach');
+  const outreachNote = $('outreachNote');
+  const clientNameEl = $('clientName');
+  const clientPillEl = $('clientPill');
+  const meterFill = $('meterFill');
+  const resetBtn = $('resetBtn');
+  const copyBtn = $('copyBtn');
+
+  function pad2(n){ n = Number(n); return String(n).padStart(2,'0'); }
+  function formatISO(iso){
+    const d = new Date(iso + 'T00:00:00Z');
+    const yyyy = d.getUTCFullYear();
+    const mm = pad2(d.getUTCMonth()+1);
+    const dd = pad2(d.getUTCDate());
+    return yyyy + '-' + mm + '-' + dd;
+  }
+
+  function getReceivedDocTypesForClient(clientId){
+    const received = new Set();
+    for (const s of submissionsSeed){
+      if (s.clientId !== clientId) continue;
+      if (state.receivedBySubmissionId[s.id]) received.add(s.docType);
+    }
+    return received;
+  }
+
+  function computeClientChecklist(client){
+    const receivedDocTypes = getReceivedDocTypesForClient(client.id);
+    const items = [];
+    for (const item of checklist){
+      const appliesFn = appliesMap[item.id] || (()=>true);
+      if (!appliesFn(client)) continue;
+      const hasDoc = receivedDocTypes.has(item.docType);
+      items.push({ id: item.id, label: item.label, docType: item.docType, required: item.required, status: hasDoc ? 'received' : 'missing' });
+    }
+    const requiredItems = items.filter(i=>i.required);
+    const missingRequired = requiredItems.filter(i=>i.status==='missing');
+    const completeness = requiredItems.length === 0 ? 1 : (requiredItems.length - missingRequired.length) / requiredItems.length;
+    return { items, requiredItems, missingRequired, completeness };
+  }
+
+  function pillForCompleteness(completeness, missingCount){
+    if (missingCount === 0) return { cls:'good', text:'Complete' };
+    if (completeness >= 0.75) return { cls:'neutral', text:'Almost there' };
+    return { cls:'warn', text:'Missing items' };
+  }
+
+  function renderClient(){
+    const client = clients.find(c=>c.id===state.selectedClientId);
+    if (!client){
+      clientNameEl.textContent='—';
+      checklistEl.innerHTML='';
+      outreachEl.innerHTML='';
+      outreachNote.textContent='';
+      clientPillEl.textContent='—';
+      meterFill.style.width='0%';
+      return;
+    }
+
+    clientNameEl.textContent = client.name;
+    const result = computeClientChecklist(client);
+    const { items, missingRequired, completeness } = result;
+
+    const pct = Math.round(completeness * 100);
+    meterFill.style.width = pct + '%';
+
+    const pill = pillForCompleteness(completeness, missingRequired.length);
+    clientPillEl.className = 'pill ' + pill.cls;
+    clientPillEl.textContent = pill.text;
+
+    checklistEl.innerHTML='';
+    for (const it of items){
+      const row = document.createElement('div');
+      row.className = 'checkItem';
+
+      const left = document.createElement('div');
+      left.className = 'checkLeft';
+      const label = document.createElement('div');
+      label.className = 'checkLabel';
+      label.textContent = it.label;
+      const detail = document.createElement('div');
+      detail.className = 'checkDetail';
+      detail.textContent = it.required ? 'Required' : 'Optional';
+      left.appendChild(label);
+      left.appendChild(detail);
+
+      const right = document.createElement('div');
+      const cls = it.status === 'received' ? 'good' : 'warn';
+      const pillEl = document.createElement('div');
+      pillEl.className = 'pill ' + cls;
+      pillEl.textContent = it.status === 'received' ? 'Received' : 'Missing';
+      right.appendChild(pillEl);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      checklistEl.appendChild(row);
+    }
+
+    outreachEl.innerHTML='';
+    if (missingRequired.length === 0){
+      const ok = document.createElement('div');
+      ok.className = 'outLine';
+      ok.innerHTML = '<div class="dot" style="background:var(--good)"></div><div>Nothing to ask for right now.</div>';
+      outreachEl.appendChild(ok);
+      outreachNote.textContent = 'Checklist complete for required items.';
+      return;
+    }
+
+    for (const miss of missingRequired){
+      const line = document.createElement('div');
+      line.className = 'outLine';
+      const label = document.createElement('div');
+      label.textContent = miss.label;
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      line.appendChild(dot);
+      line.appendChild(label);
+      outreachEl.appendChild(line);
+    }
+    outreachNote.textContent = 'Outreach list includes only genuinely missing required docs.';
+  }
+
+  function renderSubmissions(){
+    submissionList.innerHTML='';
+    const byClient = Object.fromEntries(clients.map(c=>[c.id, []]));
+    for (const s of submissionsSeed){
+      byClient[s.clientId].push(s);
+    }
+
+    for (const c of clients){
+      const header = document.createElement('div');
+      header.style.marginTop = '12px';
+      header.style.marginBottom = '6px';
+      header.innerHTML = '<div class="sectionTitle" style="font-size:13px">' + c.name + '</div>';
+      submissionList.appendChild(header);
+
+      for (const s of byClient[c.id]){
+        const row = document.createElement('div');
+        row.className = 'subRow';
+
+        const left = document.createElement('div');
+        left.className = 'subLeft';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !!state.receivedBySubmissionId[s.id];
+        cb.addEventListener('change', ()=>{
+          state.receivedBySubmissionId[s.id] = cb.checked;
+          renderClient();
+          // Update pill immediately.
+          pillEl.className = 'pill ' + (cb.checked ? 'good' : 'warn');
+          pillEl.textContent = cb.checked ? 'Received' : 'Missing';
+        });
+
+        const meta = document.createElement('div');
+        meta.className = 'subMeta';
+
+        const t = document.createElement('div');
+        t.className = 'subTitle';
+        t.textContent = s.title;
+
+        const sm = document.createElement('div');
+        sm.className = 'subSmall';
+        sm.textContent = 'docType: ' + s.docType + ' • received ' + formatISO(s.receivedAtISO);
+
+        meta.appendChild(t);
+        meta.appendChild(sm);
+        left.appendChild(cb);
+        left.appendChild(meta);
+
+        const pillEl = document.createElement('div');
+        pillEl.className = 'pill ' + (cb.checked ? 'good' : 'warn');
+        pillEl.textContent = cb.checked ? 'Received' : 'Missing';
+
+        row.appendChild(left);
+        row.appendChild(pillEl);
+        submissionList.appendChild(row);
+      }
+    }
+  }
+
+  function renderClientSelect(){
+    clientSel.innerHTML='';
+    for (const c of clients){
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      clientSel.appendChild(opt);
+    }
+    clientSel.value = state.selectedClientId;
+    clientSel.addEventListener('change', ()=>{
+      state.selectedClientId = clientSel.value;
+      renderClient();
+    });
+  }
+
+  function resetDemo(){
+    for (const s of submissionsSeed){
+      state.receivedBySubmissionId[s.id] = !!s.received;
+    }
+    state.selectedClientId = clients[0] ? clients[0].id : null;
+    clientSel.value = state.selectedClientId;
+    renderSubmissions();
+    renderClient();
+    copyBtn.textContent = 'Copy outreach list';
+  }
+
+  async function copyOutreach(){
+    const client = clients.find(c=>c.id===state.selectedClientId);
+    if (!client) return;
+    const result = computeClientChecklist(client);
+    const { missingRequired } = result;
+
+    let text = 'Outreach for ' + client.name + ' (' + deadlineISO + ')\n';
+    if (missingRequired.length === 0){
+      text += '- Nothing missing.\n';
+    } else {
+      for (const m of missingRequired){
+        text += '- ' + m.label + '\n';
+      }
+    }
+
+    try{
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = 'Copied';
+      setTimeout(()=>{ copyBtn.textContent = 'Copy outreach list'; }, 900);
+    } catch (_e){
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      copyBtn.textContent = 'Copied';
+      setTimeout(()=>{ copyBtn.textContent = 'Copy outreach list'; }, 900);
+    }
+  }
+
+  resetBtn.addEventListener('click', resetDemo);
+  copyBtn.addEventListener('click', copyOutreach);
+
+  renderClientSelect();
+  renderSubmissions();
+  renderClient();
+</script></body></html><div id="gary-deploy-marker" style="display:none">TAXDOC-INTAKE-1786376240185</div>
