@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tax Document Control Agent — Live Demo</title>
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --ink:#2C2620;
+    --accent:#B85C38;
+    --sage:#7BAF8E;
+    --muted:#6f665b;
+    --card:#ffffffcc;
+    --cardSolid:#ffffff;
+    --border:rgba(44,38,32,.12);
+    --shadow: 0 10px 30px rgba(44,38,32,.08);
+    --radius:18px;
+    --radius2:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 500px at 18% 10%, rgba(184,92,56,.14), transparent 60%),
+      radial-gradient(700px 420px at 78% 14%, rgba(123,175,142,.18), transparent 60%),
+      linear-gradient(180deg, rgba(250,246,239,1), rgba(250,246,239,1));
+  }
+  a{color:inherit}
+  .wrap{max-width:1120px; margin:0 auto; padding:22px 16px 40px}
+  .top{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    margin-bottom:16px;
+  }
+  .brand{
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.55);
+    border-radius:999px;
+    backdrop-filter: blur(6px);
+    width:fit-content;
+  }
+  .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 6px rgba(184,92,56,.12);
+  }
+  .title{font-weight:850; letter-spacing:-.02em; font-size:22px}
+  .subtitle{color:var(--muted); font-size:13.5px; line-height:1.35}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:14px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .grid{grid-template-columns:1fr}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+  }
+  .cardHeader{
+    padding:14px 14px 10px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    border-bottom:1px solid rgba(44,38,32,.07);
+    background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.44));
+  }
+  .cardHeader h2{
+    margin:0;
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:rgba(44,38,32,.75);
+  }
+  .cardBody{padding:14px}
+
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 10px;
+    border-radius:999px;
+    border:1px solid rgba(44,38,32,.12);
+    background:rgba(255,255,255,.65);
+    color:rgba(44,38,32,.86);
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+
+  .clientList{display:flex; flex-direction:column; gap:10px;}
+  .clientBtn{
+    width:100%; text-align:left;
+    border:1px solid rgba(44,38,32,.12);
+    background:rgba(255,255,255,.66);
+    border-radius:16px;
+    padding:12px;
+    cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .clientBtn:hover{transform: translateY(-1px); box-shadow:0 10px 22px rgba(44,38,32,.08)}
+  .clientBtn[aria-selected="true"]{
+    border-color: rgba(184,92,56,.55);
+    background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.56));
+  }
+  .clientTopRow{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .clientName{font-weight:820; letter-spacing:-.01em; font-size:14.5px}
+  .clientMeta{color:var(--muted); font-size:12.8px; margin-top:2px}
+  .tag{
+    display:inline-flex; align-items:center;
+    border-radius:999px;
+    padding:7px 10px;
+    border:1px solid rgba(44,38,32,.12);
+    background:rgba(255,255,255,.7);
+    font-size:12px;
+  }
+  .tag.sage{border-color: rgba(123,175,142,.55); color: rgba(35,92,63,.95)}
+  .tag.accent{border-color: rgba(184,92,56,.55); color: rgba(108,52,28,.98)}
+
+  .twoCol{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:14px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .twoCol{grid-template-columns:1fr}
+  }
+
+  .sectionTitle{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:10px;
+  }
+  .sectionTitle h3{margin:0; font-size:15px}
+  .small{font-size:12.8px; color:var(--muted); line-height:1.35}
+
+  .checklist{display:flex; flex-direction:column; gap:10px;}
+  .item{
+    border:1px solid rgba(44,38,32,.10);
+    background:rgba(255,255,255,.65);
+    border-radius:16px;
+    padding:10px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  }
+  .itemLeft{display:flex; gap:10px; align-items:flex-start}
+  .statusDot{
+    width:12px; height:12px; border-radius:50%; margin-top:2px;
+    background:rgba(44,38,32,.22);
+  }
+  .statusDot.ok{background:var(--sage); box-shadow:0 0 0 6px rgba(123,175,142,.16)}
+  .statusDot.miss{background:var(--accent); box-shadow:0 0 0 6px rgba(184,92,56,.14)}
+  .itemName{font-weight:760; font-size:13.5px}
+  .itemHint{color:var(--muted); font-size:12.3px; margin-top:2px; line-height:1.3}
+  .itemRight{display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+  .when{
+    font-size:12px; color:var(--muted);
+  }
+  .miniBtn{
+    border:1px solid rgba(44,38,32,.14);
+    background:rgba(255,255,255,.75);
+    border-radius:12px;
+    padding:8px 10px;
+    cursor:pointer;
+    font-size:12.5px;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .miniBtn:hover{transform: translateY(-1px)}
+  .miniBtn.primary{
+    border-color: rgba(184,92,56,.55);
+    background: rgba(184,92,56,.10);
+    color: rgba(108,52,28,.98);
+    font-weight:750;
+  }
+  .miniBtn.ok{
+    border-color: rgba(123,175,142,.55);
+    background: rgba(123,175,142,.10);
+    color: rgba(35,92,63,.95);
+    font-weight:750;
+  }
+
+  .inbox{display:flex; flex-direction:column; gap:10px}
+  .mail{
+    border:1px solid rgba(44,38,32,.10);
+    background:rgba(255,255,255,.65);
+    border-radius:16px;
+    padding:12px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .mailTop{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .mailFrom{font-weight:760; font-size:13.5px}
+  .mailDate{color:var(--muted); font-size:12px}
+  .mailSubject{color:rgba(44,38,32,.86); font-size:13px; line-height:1.25}
+  .chipRow{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{
+    border:1px solid rgba(44,38,32,.12);
+    background:rgba(255,255,255,.75);
+    border-radius:999px;
+    padding:7px 10px;
+    font-size:12px;
+    color:rgba(44,38,32,.84);
+  }
+
+  .actionsRow{display:flex; gap:10px; flex-wrap:wrap;}
+  .cta{
+    border:1px solid rgba(44,38,32,.14);
+    background:rgba(255,255,255,.85);
+    border-radius:16px;
+    padding:12px;
+    min-width: 180px;
+  }
+  .cta strong{display:block; font-size:14px; letter-spacing:-.01em}
+  .cta span{display:block; margin-top:4px; color:var(--muted); font-size:12.5px; line-height:1.35}
+
+  .draftBox{
+    border:1px dashed rgba(44,38,32,.20);
+    border-radius:16px;
+    background:rgba(255,255,255,.6);
+    padding:12px;
+  }
+  textarea{
+    width:100%;
+    min-height:128px;
+    border:1px solid rgba(44,38,32,.12);
+    border-radius:14px;
+    padding:10px;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    font-size:13.5px;
+    background: rgba(255,255,255,.82);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .footerRow{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap}
+  .toast{
+    color: rgba(35,92,63,.98);
+    background: rgba(123,175,142,.12);
+    border:1px solid rgba(123,175,142,.45);
+    padding:8px 10px;
+    border-radius:12px;
+    font-size:12.5px;
+    display:none;
+  }
+
+  .reveal{
+    opacity:0;
+    transform: translateY(6px);
+    animation: rise .46s ease forwards;
+  }
+  @keyframes rise{
+    to{opacity:1; transform: translateY(0)}
+  }
+
+  .brandMark{
+    width:34px; height:34px; border-radius:12px;
+    background: linear-gradient(135deg, rgba(184,92,56,.9), rgba(123,175,142,.85));
+    box-shadow: 0 12px 22px rgba(184,92,56,.18);
+    border:1px solid rgba(255,255,255,.55);
+  }
+
+  .srOnly{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="badge">
+          <div class="dot" aria-hidden="true"></div>
+          <div>
+            <div class="title">Tax Document Control Agent</div>
+            <div class="subtitle">Live demo — sample data. The real build wires into your systems.</div>
+          </div>
+        </div>
+        <div class="small" style="margin-top:2px;">Goal: stop the “did we get it?” chase by reconciling what arrived, then generating a clean missing-items follow-up.</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:flex-start; justify-content:flex-end">
+        <div class="brandMark" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal" style="animation-delay:.05s;">
+        <div class="cardHeader">
+          <h2>Clients</h2>
+          <div class="pill" id="healthPill">—</div>
+        </div>
+        <div class="cardBody">
+          <div class="clientList" id="clientList"></div>
+        </div>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.10s;">
+        <div class="cardHeader">
+          <h2>Reconcile &amp; Chase</h2>
+          <div class="pill" id="summaryPill">—</div>
+        </div>
+        <div class="cardBody">
+          <div class="twoCol">
+            <div>
+              <div class="sectionTitle">
+                <h3 id="clientTitle">—</h3>
+                <div class="tag" id="clientTypeTag">—</div>
+              </div>
+
+              <div class="small" style="margin-bottom:10px;">Step 1: reconcile new intake (sample emails below). Step 2: the missing checklist updates instantly. Step 3: generate a follow-up draft.</div>
+
+              <div class="checklist" id="checklist"></div>
+            </div>
+
+            <div>
+              <div class="sectionTitle" style="margin-bottom:8px;">
+                <h3>Intake inbox</h3>
+                <div class="small" id="inboxHint">Click a message to reconcile attachments.</div>
+              </div>
+              <div class="inbox" id="inbox"></div>
+
+              <div style="height:12px"></div>
+
+              <div class="actionsRow">
+                <button class="miniBtn primary" id="makeChaseBtn" type="button">Generate chase list</button>
+                <button class="miniBtn" id="resetBtn" type="button">Reset demo</button>
+              </div>
+
+              <div style="height:12px"></div>
+
+              <div class="draftBox">
+                <div class="sectionTitle" style="margin-bottom:8px;">
+                  <h3 style="font-size:14px; margin:0;">Follow-up draft</h3>
+                  <div class="tag sage" id="draftTag">Ready</div>
+                </div>
+                <textarea id="draft" spellcheck="false"></textarea>
+                <div class="footerRow">
+                  <div class="small">Edit if needed, then copy.</div>
+                  <div>
+                    <button class="miniBtn ok" id="copyBtn" type="button">Copy</button>
+                  </div>
+                </div>
+                <div class="toast" id="toast">Copied.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+          <div class="cta">
+            <strong>What the real build does</strong>
+            <span>Watches incoming emails / intake files, maps attachments to your per-return checklist, reconciles received vs missing, and produces a daily chase list with due dates and clean messaging. No one manually maintains spreadsheets during the grind.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Demo state (sample data only). No external calls.
+  const money = (n)=> n.toLocaleString('en-US');
+
+  const docCatalog = {
+    indiv: [
+      { key:'w2', name:'W-2s (wages)', hint:'All W-2s and employer statements for the year' },
+      { key:'1099int', name:'1099-INT / interest', hint:'Bank / brokerage interest income' },
+      { key:'1099div', name:'1099-DIV / dividends', hint:'Dividend statements' },
+      { key:'1099nec', name:'1099-NEC / contractor income', hint:'If you did contract work' },
+      { key:'prior_return', name:'Prior-year return (PDF)', hint:'Used for carryovers & baseline checks' },
+      { key:'health_ins', name:'Health insurance (forms)', hint:'1095-A/1095-B/1095-C as applicable' },
+      { key:'mortgage', name:'Mortgage interest (1098)', hint:'If applicable' },
+      { key:'charity', name:'Charitable contributions', hint:'Receipts/donations (if any)' }
+    ],
+    bus: [
+      { key:'pl', name:'P&L / Profit summary', hint:'High-level profit/loss or bookkeeping summary' },
+      { key:'ar_ap', name:'A/R & A/P summary', hint:'Who owes you / who you owe (if tracked)' },
+      { key:'receipts', name:'Receipts & expenses', hint:'Statements + expense backup' },
+      { key:'payroll', name:'Payroll summary', hint:'If you have employees' },
+      { key:'owner_w2', name:'Owner W-2 (if applicable)', hint:'For S-corp owner payroll' },
+      { key:'1099nec', name:'1099-NEC (if applicable)', hint:'Contractor payments you made or received' },
+      { key:'prior_return', name:'Prior-year return (PDF)', hint:'Carryovers and consistency checks' }
+    ],
+    trust: [
+      { key:'trust_pdfs', name:'Trust statements (accounting)', hint:'Broker/bank statements used for the trust' },
+      { key:'k1s', name:'K-1s (beneficiary / entity)', hint:'Pass-through income documents' },
+      { key:'prior_return', name:'Prior-year return (PDF)', hint:'Carryovers & prior allocations' },
+      { key:'distributions', name:'Distribution records', hint:'Who received what' }
+    ]
+  };
+
+  const clientsSeed = [
+    {
+      id:'c_hernandez',
+      name:'Hernandez Family',
+      type:'Individual',
+      typeKey:'indiv',
+      email:'client@hernandezfamily.com',
+      received: new Set(['w2','1099int']),
+      intakeAgeDays: 3,
+      inbox: [
+        {
+          id:'m1',
+          from:'Hernandez',
+          subject:'Tax docs attached',
+          date:'Aug 1',
+          attachments:['W-2s (wages)','1099-INT / interest'],
+          maps:['w2','1099int'],
+          note:'They said they attached the W-2 and interest statements.'
+        },
+        {
+          id:'m2',
+          from:'Hernandez',
+          subject:'More docs coming',
+          date:'Aug 6',
+          attachments:['1099-DIV / dividends'],
+          maps:['1099div'],
+          note:'Partial set only.'
+        }
+      ]
+    },
+    {
+      id:'c_brookside',
+      name:'Brookside LLC',
+      type:'Business',
+      typeKey:'bus',
+      email:'books@brookside-llc.com',
+      received: new Set(['pl','receipts']),
+      intakeAgeDays: 7,
+      inbox: [
+        {
+          id:'m3',
+          from:'Brookside Books',
+          subject:'Profit summary + expense backup',
+          date:'Jul 30',
+          attachments:['P&L / Profit summary','Receipts & expenses'],
+          maps:['pl','receipts'],
+          note:'Good start—missing the rest.'
+        },
+        {
+          id:'m4',
+          from:'Brookside Books',
+          subject:'Payroll status',
+          date:'Aug 7',
+          attachments:['Payroll summary (none / N/A)'],
+          maps:[],
+          note:'No employees this year. No attachment mapped.'
+        }
+      ]
+    },
+    {
+      id:'c_kim',
+      name:'Kim Family Trust',
+      type:'Trust',
+      typeKey:'trust',
+      email:'admin@kimtrust.com',
+      received: new Set(['prior_return','k1s']),
+      intakeAgeDays: 2,
+      inbox: [
+        {
+          id:'m5',
+          from:'Kim Trust Admin',
+          subject:'K-1s and trust accounting',
+          date:'Aug 2',
+          attachments:['K-1s (beneficiary / entity)'],
+          maps:['k1s'],
+          note:'K-1s already included. (No new docs mapped.)'
+        },
+        {
+          id:'m6',
+          from:'Kim Trust Admin',
+          subject:'Distribution records',
+          date:'Aug 8',
+          attachments:['Distribution records'],
+          maps:['distributions'],
+          note:'Ready to reconcile.'
+        }
+      ]
+    }
+  ];
+
+  function cloneSeed(seed){
+    return seed.map(c=>({
+      ...c,
+      received: new Set(Array.from(c.received))
+    }));
+  }
+
+  let clients = cloneSeed(clientsSeed);
+  let activeClientId = clients[0].id;
+
+  function getClient(){
+    return clients.find(c=>c.id===activeClientId);
+  }
+
+  function clientDocList(client){
+    return docCatalog[client.typeKey] || [];
+  }
+
+  function missingDocs(client){
+    const list = clientDocList(client);
+    return list.filter(d=>!client.received.has(d.key));
+  }
+
+  function receivedCount(client){
+    const list = clientDocList(client);
+    let n=0;
+    for (const d of list){ if (client.received.has(d.key)) n++; }
+    return n;
+  }
+
+  function statusPillText(){
+    const c = getClient();
+    const list = clientDocList(c);
+    const got = receivedCount(c);
+    const miss = list.length - got;
+    const risk = c.intakeAgeDays >= 7 ? 'High' : (c.intakeAgeDays >= 4 ? 'Medium' : 'Low');
+    return { got, miss, risk, total:list.length };
+  }
+
+  function tagClassFromRisk(risk){
+    if (risk==='High') return 'accent';
+    if (risk==='Medium') return ''; // neutral
+    return 'sage';
+  }
+
+  function formatChaseDraftForOne(client){
+    const list = clientDocList(client);
+    const missing = missingDocs(client);
+    const risk = client.intakeAgeDays >= 7 ? 'high' : (client.intakeAgeDays >= 4 ? 'medium' : 'low');
+
+    const dueLine = risk==='high'
+      ? 'Can you send these as soon as you can this week?'
+      : (risk==='medium'
+          ? 'If you can, please send these by the next business day or two.'
+          : 'When convenient, please send the remaining items below.');
+
+    const items = missing.map(d => d.name).slice(0, 7);
+    const more = missing.length > items.length ? ` (+${missing.length - items.length} more item(s))` : '';
+
+    if (missing.length === 0){
+      return `Hi ${client.name},\n\nThanks — we have everything we need for your return. If anything else comes up, just reply here and we’ll take it from there.\n\nBest,\nYour tax team`;
+    }
+
+    return `Hi ${client.name},\n\nWe’re finalizing your return, and we still need: \n` +
+      items.map(x => `- ${x}`).join('\n') +
+      more + `\n\n${dueLine}\n\nOnce you reply with the remaining documents, we’ll update your checklist immediately.\n\nBest,\nYour tax team`;
+  }
+
+  function formatChaseSummary(){
+    let totalMissing = 0;
+    let totalReceived = 0;
+    let totalItems = 0;
+    for (const c of clients){
+      const list = clientDocList(c);
+      totalItems += list.length;
+      const got = receivedCount(c);
+      const miss = list.length - got;
+      totalReceived += got;
+      totalMissing += miss;
+    }
+    return { totalMissing, totalReceived, totalItems };
+  }
+
+  function makeHealthPill(){
+    const { totalMissing, totalReceived, totalItems } = formatChaseSummary();
+    const pct = totalItems ? Math.round((totalReceived/totalItems)*100) : 0;
+    const pill = document.getElementById('healthPill');
+    pill.textContent = `Across demo: ${pct}% received (${totalMissing} missing)`;
+  }
+
+  function renderClients(){
+    const list = document.getElementById('clientList');
+    list.innerHTML = '';
+
+    for (const c of clients){
+      const missing = missingDocs(c).length;
+      const got = receivedCount(c);
+      const total = clientDocList(c).length;
+      const risk = c.intakeAgeDays >= 7 ? 'High' : (c.intakeAgeDays >= 4 ? 'Medium' : 'Low');
+
+      const btn = document.createElement('button');
+      btn.className = 'clientBtn';
+      btn.type = 'button';
+      btn.setAttribute('aria-selected', c.id === activeClientId ? 'true' : 'false');
+      btn.addEventListener('click', ()=>{
+        activeClientId = c.id;
+        renderAll();
+      });
+
+      const cls = btn;
+      btn.innerHTML = `
+        <div class="clientTopRow">
+          <div>
+            <div class="clientName">${c.name}</div>
+            <div class="clientMeta">${c.type} • ${got}/${total} received</div>
+          </div>
+          <div class="tag ${tagClassFromRisk(risk)}">Risk: ${risk}</div>
+        </div>
+        <div class="small" style="margin-top:8px;">Missing: <strong>${missing}</strong></div>
+      `;
+
+      list.appendChild(btn);
+    }
+  }
+
+  function renderChecklist(){
+    const c = getClient();
+    const host = document.getElementById('checklist');
+    const list = clientDocList(c);
+    host.innerHTML = '';
+
+    for (const d of list){
+      const isGot = c.received.has(d.key);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'item';
+
+      const dotClass = isGot ? 'ok' : 'miss';
+      const whenText = isGot ? 'Marked received' : `Waiting (${c.intakeAgeDays}d intake age)`;
+
+      wrapper.innerHTML = `
+        <div class="itemLeft">
+          <div class="statusDot ${dotClass}" aria-hidden="true"></div>
+          <div>
+            <div class="itemName">${d.name}</div>
+            <div class="itemHint">${d.hint}</div>
+          </div>
+        </div>
+        <div class="itemRight">
+          <div class="when">${whenText}</div>
+          <div>
+            <button class="miniBtn ${isGot ? 'ok' : 'primary'}" type="button" data-dockey="${d.key}">${isGot ? 'Received' : 'Mark received'}</button>
+          </div>
+        </div>
+      `;
+
+      wrapper.querySelector('button[data-dockey]').addEventListener('click', (e)=>{
+        const key = e.currentTarget.getAttribute('data-dockey');
+        if (!c.received.has(key)) c.received.add(key);
+        renderAll();
+      });
+
+      host.appendChild(wrapper);
+    }
+  }
+
+  function renderInbox(){
+    const c = getClient();
+    const host = document.getElementById('inbox');
+    host.innerHTML = '';
+
+    for (const m of c.inbox){
+      const mail = document.createElement('div');
+      mail.className = 'mail';
+
+      const chips = m.attachments.map(a=>`<span class="chip">${a}</span>`).join('');
+
+      mail.innerHTML = `
+        <div class="mailTop">
+          <div>
+            <div class="mailFrom">${m.from}</div>
+            <div class="mailSubject">${m.subject}</div>
+          </div>
+          <div class="mailDate">${m.date}</div>
+        </div>
+        <div class="chipRow">${chips}</div>
+        <div class="small">${m.note}</div>
+        <div class="actionsRow">
+          <button class="miniBtn primary" type="button" data-mailid="${m.id}">Reconcile attachments</button>
+        </div>
+      `;
+
+      mail.querySelector('button[data-mailid]').addEventListener('click', ()=>{
+        // Map attachment labels -> doc keys (sample). Avoid duplicate markings.
+        for (const key of m.maps){
+          c.received.add(key);
+        }
+        // Nudge intake age down slightly after a reconcile (purely demo effect).
+        c.intakeAgeDays = Math.max(1, c.intakeAgeDays - (m.maps.length ? 2 : 1));
+        renderAll();
+      });
+
+      host.appendChild(mail);
+    }
+  }
+
+  function renderDraftTagAndPills(){
+    const c = getClient();
+    const missing = missingDocs(c).length;
+    const tag = document.getElementById('draftTag');
+    tag.textContent = missing === 0 ? 'All set' : (missing <= 2 ? 'Almost' : 'Needs items');
+
+    const pill = document.getElementById('summaryPill');
+    const list = clientDocList(c);
+    const got = receivedCount(c);
+    const pct = list.length ? Math.round((got/list.length)*100) : 0;
+    pill.textContent = `This client: ${pct}% received • ${missing} missing`;
+
+    const h = statusPillText();
+    const health = document.getElementById('healthPill');
+  }
+
+  function renderClientTitle(){
+    const c = getClient();
+    document.getElementById('clientTitle').textContent = c.name;
+    const tag = document.getElementById('clientTypeTag');
+    const cls = c.type === 'Business' ? 'accent' : (c.type === 'Trust' ? 'sage' : '');
+    tag.className = 'tag ' + cls;
+    tag.textContent = c.type;
+  }
+
+  function renderDraft(){
+    const c = getClient();
+    const draft = document.getElementById('draft');
+    draft.value = formatChaseDraftForOne(c);
+
+    const missing = missingDocs(c).length;
+    const tag = document.getElementById('draftTag');
+    if (missing === 0){
+      tag.textContent = 'All set';
+      tag.className = 'tag sage';
+    } else if (missing <= 2){
+      tag.textContent = 'Almost';
+      tag.className = 'tag sage';
+    } else {
+      tag.textContent = 'Needs items';
+      tag.className = 'tag accent';
+    }
+  }
+
+  function renderAll(){
+    makeHealthPill();
+    renderClients();
+    renderClientTitle();
+    renderChecklist();
+    renderInbox();
+    renderDraft();
+    renderDraftTagAndPills();
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(()=> t.style.display = 'none', 1400);
+  }
+
+  document.getElementById('makeChaseBtn').addEventListener('click', ()=>{
+    // In the real build, this would generate a multi-client daily chase list.
+    // In this demo, we generate the follow-up for the active client.
+    renderDraft();
+    showToast('Chase draft generated.');
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    clients = cloneSeed(clientsSeed);
+    activeClientId = clients[0].id;
+    renderAll();
+    showToast('Demo reset.');
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', async ()=>{
+    const draft = document.getElementById('draft').value || '';
+    try{
+      await navigator.clipboard.writeText(draft);
+      showToast('Copied.');
+    } catch (e){
+      // Fallback: select text
+      const ta = document.getElementById('draft');
+      ta.focus();
+      ta.select();
+      showToast('Select + copy manually.');
+    }
+  });
+
+  // Initial render.
+  renderAll();
+
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-acctdocdemo_ep5_1786388053-0</div>
