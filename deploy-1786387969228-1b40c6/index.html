@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Tax Intake Document Reconciliation (Live Demo - Sample Data)</title>
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --ink:#2C2620;
+    --muted:#6C6458;
+    --card:#FFFDF8;
+    --line:rgba(44,38,32,.12);
+    --accent:#B85C38;
+    --sage:#7BAF8E;
+    --warn:#D98C3A;
+    --danger:#C24A3A;
+    --shadow: 0 10px 28px rgba(44,38,32,.08);
+    --radius:18px;
+    --radius2:14px;
+    --focus: 0 0 0 4px rgba(184,92,56,.18);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background: radial-gradient(1200px 700px at 15% 0%, rgba(184,92,56,.10), transparent 55%),
+                radial-gradient(900px 600px at 90% 15%, rgba(123,175,142,.12), transparent 55%),
+                var(--bg);
+    color:var(--ink);
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:22px 18px 44px;}
+  .top{
+    display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:10px 12px; border:1px solid var(--line); background:rgba(255,255,255,.55);
+    border-radius:999px; width:fit-content;
+    box-shadow: 0 6px 18px rgba(44,38,32,.05);
+  }
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px rgba(184,92,56,.12)}
+  h1{
+    margin:0; font-size:22px; letter-spacing:-.02em;
+  }
+  .sub{color:var(--muted); margin:0; line-height:1.35; font-size:14px;}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:14px;
+    margin-top:16px;
+  }
+  @media (max-width: 980px){
+    .grid{grid-template-columns: 1fr;}
+  }
+
+  .card{
+    background: rgba(255,255,255,.72);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .card .hd{
+    padding:14px 14px 12px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .card .hd h2{margin:0; font-size:15px; letter-spacing:-.01em}
+  .card .bd{padding:14px;}
+
+  .tabs{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .tab{
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.65);
+    padding:10px 12px; border-radius:999px;
+    font-size:13px; cursor:pointer; user-select:none;
+    transition: transform .08s ease, background .12s ease, border-color .12s ease;
+  }
+  .tab:hover{transform: translateY(-1px)}
+  .tab[aria-selected="true"]{
+    background: rgba(184,92,56,.12);
+    border-color: rgba(184,92,56,.35);
+    box-shadow: 0 8px 20px rgba(184,92,56,.10);
+  }
+
+  .search{
+    display:flex; gap:10px; align-items:center;
+  }
+  input[type="text"], select, textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255,255,255,.75);
+    padding:10px 11px;
+    color:var(--ink);
+    outline:none;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus{box-shadow: var(--focus)}
+
+  .leftList{display:flex; flex-direction:column; gap:10px;}
+  .clientRow{
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.70);
+    border-radius: 16px;
+    padding:12px;
+    cursor:pointer;
+    transition: transform .10s ease, border-color .12s ease;
+  }
+  .clientRow:hover{transform: translateY(-1px);}
+  .clientRow[aria-current="true"]{
+    border-color: rgba(184,92,56,.45);
+    box-shadow: 0 10px 24px rgba(184,92,56,.10);
+  }
+  .clientTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+  .clientName{font-weight:750; letter-spacing:-.01em; font-size:14px;}
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:7px 10px; border-radius:999px; font-size:12px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.6);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .badge b{color:var(--ink)}
+  .statusBar{display:flex; gap:8px; margin-top:10px;}
+  .mini{
+    flex:1;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.55);
+    padding:9px;
+  }
+  .mini .k{font-size:12px; color:var(--muted)}
+  .mini .v{font-size:13px; font-weight:720; margin-top:2px;}
+
+  .split{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:14px;
+  }
+
+  .row2{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width: 980px){ .row2{grid-template-columns: 1fr;} }
+
+  .sectionTitle{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .hint{color:var(--muted); font-size:13px; line-height:1.4;}
+
+  .docGrid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:10px;
+    margin-top:10px;
+  }
+  @media (max-width: 980px){ .docGrid{grid-template-columns: 1fr;} }
+
+  .doc{
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.70);
+    border-radius: 16px;
+    padding:12px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .check{
+    width:20px; height:20px; border-radius:6px;
+    border:1.5px solid var(--line);
+    display:grid; place-items:center;
+    margin-top:1px;
+    flex:0 0 auto;
+    background: rgba(255,255,255,.55);
+  }
+  .doc[data-has="true"] .check{
+    background: rgba(123,175,142,.16);
+    border-color: rgba(123,175,142,.55);
+  }
+  .doc[data-has="true"] .check svg{opacity:1}
+  .check svg{opacity:0; transition:opacity .1s ease}
+
+  .docMeta{display:flex; flex-direction:column; gap:6px; min-width:0;}
+  .docName{font-weight:720; letter-spacing:-.01em; font-size:13px;}
+  .docTag{font-size:12px; color:var(--muted)}
+  .docSub{
+    font-size:12px; color:var(--muted); line-height:1.35;
+    margin-top:2px;
+  }
+
+  .btnRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  .btn{
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.70);
+    color:var(--ink);
+    padding:10px 12px;
+    border-radius: 14px;
+    cursor:pointer;
+    font-weight:650;
+    font-size:13px;
+    transition: transform .10s ease, border-color .12s ease, background .12s ease;
+    user-select:none;
+  }
+  .btn:hover{transform: translateY(-1px)}
+  .btn:focus{outline:none; box-shadow: var(--focus)}
+  .btn.primary{
+    background: rgba(184,92,56,.12);
+    border-color: rgba(184,92,56,.40);
+  }
+  .btn.good{
+    background: rgba(123,175,142,.14);
+    border-color: rgba(123,175,142,.45);
+  }
+  .btn.danger{
+    background: rgba(194,74,58,.10);
+    border-color: rgba(194,74,58,.35);
+  }
+
+  .divider{height:1px; background:var(--line); margin:12px 0;}
+
+  .tableWrap{overflow:auto; border-radius: 16px; border:1px solid var(--line)}
+  table{border-collapse:collapse; width:100%; min-width:740px; background: rgba(255,255,255,.65)}
+  th, td{padding:12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+  th{font-size:12px; color:var(--muted); font-weight:750; letter-spacing:.02em; text-transform:uppercase; background:rgba(255,255,255,.35)}
+  td{font-size:13px;}
+  .tdRight{ text-align:right; white-space:nowrap }
+  .clientTiny{font-weight:760;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
+  .chip{
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.60);
+    border-radius: 999px;
+    padding:6px 9px;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .draft{
+    background: rgba(255,255,255,.72);
+    border:1px solid var(--line);
+    border-radius: 16px;
+    padding:12px;
+  }
+  .draft h3{margin:0 0 10px; font-size:14px}
+  .draft .lab{font-size:12px; color:var(--muted); margin-top:10px; font-weight:700;}
+  .draft textarea{height:180px; resize:vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12.5px; line-height:1.45}
+
+  .footNote{
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  .toast{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    background: rgba(44,38,32,.92);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 999px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.22);
+    font-size: 13px;
+    opacity: 0;
+    pointer-events:none;
+    transition: opacity .18s ease;
+  }
+  .toast.show{opacity:1}
+
+  .srOnly{
+    position:absolute;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0);
+    white-space:nowrap; border:0;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="pill"><span class="dot"></span><span style="font-weight:750;">Live demo — sample data</span><span style="color:var(--muted);font-size:13px;">The real build wires into your systems.</span></div>
+        <h1>Tax Document Reconciliation & Smart Chase List</h1>
+        <p class="sub">Track what you received vs what’s still needed. Then generate polite, item-specific reminders without the messy spreadsheet chase.</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <div class="badge" title="This is only sample data">Mode: <b>Sample</b></div>
+        <div class="badge" title="No external calls; everything runs in the page">Offline demo: <b>On</b></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left column -->
+      <div class="card">
+        <div class="hd">
+          <h2>Clients</h2>
+          <div class="search" style="width:100%; max-width:210px;">
+            <span class="srOnly">Search</span>
+            <input id="q" type="text" placeholder="Search clients…"/>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="leftList" id="clientList"></div>
+          <div class="divider"></div>
+          <div>
+            <div class="sectionTitle">
+              <div>
+                <div style="font-weight:800; font-size:13px;">Log a received doc</div>
+                <div class="hint">Simulate what your team marks when docs arrive.</div>
+              </div>
+            </div>
+            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr; gap:10px;">
+              <label style="font-size:12px; color:var(--muted); font-weight:750;">Client</label>
+              <select id="logClient"></select>
+              <label style="font-size:12px; color:var(--muted); font-weight:750;">Document</label>
+              <select id="logDoc"></select>
+              <label style="font-size:12px; color:var(--muted); font-weight:750;">Notes (optional)</label>
+              <input id="logNotes" type="text" placeholder="e.g., email attachment on 8/7"/>
+              <button class="btn good" id="markBtn">Mark as received</button>
+              <button class="btn" id="resetBtn" title="Resets demo progress back to original sample data">Reset demo</button>
+            </div>
+          </div>
+          <p class="footNote">Tip: click a client to see what’s missing. Then switch to “Chase List” to generate reminders.</p>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="card">
+        <div class="hd">
+          <h2 id="rightTitle">Client details</h2>
+          <div class="tabs" role="tablist" aria-label="Sections">
+            <div class="tab" role="tab" tabindex="0" aria-selected="true" id="tab_docs">Docs</div>
+            <div class="tab" role="tab" tabindex="0" aria-selected="false" id="tab_chase">Chase List</div>
+            <div class="tab" role="tab" tabindex="0" aria-selected="false" id="tab_notes">Activity</div>
+          </div>
+        </div>
+
+        <div class="bd">
+          <!-- Docs view -->
+          <div id="view_docs" class="split">
+            <div class="row2">
+              <div class="draft">
+                <h3 style="margin-bottom:6px;">What we have</h3>
+                <div class="hint">Clear “received vs still needed” so your team stops re-chasing.</div>
+                <div class="divider"></div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <div class="mini" style="min-width:160px;">
+                    <div class="k">Received</div>
+                    <div class="v" id="k_received">—</div>
+                  </div>
+                  <div class="mini" style="min-width:160px;">
+                    <div class="k">Still need</div>
+                    <div class="v" id="k_missing">—</div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="hint" id="deadlineHint"></div>
+              </div>
+
+              <div class="draft">
+                <h3 style="margin-bottom:6px;">Quick actions</h3>
+                <div class="hint">Simulate reconciliation happening as docs arrive.</div>
+                <div class="divider"></div>
+                <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                  <div>
+                    <div style="font-size:12px; color:var(--muted); font-weight:750; margin-bottom:6px;">Mark missing docs as received</div>
+                    <div class="hint">Choose one missing item and log it received.</div>
+                  </div>
+                  <select id="quickMissing"></select>
+                  <button class="btn primary" id="quickBtn">Log selected doc</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div>
+              <div class="sectionTitle">
+                <div>
+                  <div style="font-weight:900; font-size:14px; letter-spacing:-.01em;">Documents checklist</div>
+                  <div class="hint">Each doc shows received state + latest note.</div>
+                </div>
+                <div class="badge" id="docCategoryBadge">Category</div>
+              </div>
+
+              <div class="docGrid" id="docGrid"></div>
+            </div>
+          </div>
+
+          <!-- Chase list view -->
+          <div id="view_chase" class="split" style="display:none;">
+            <div class="row2">
+              <div class="draft">
+                <h3 style="margin-bottom:6px;">Chase list</h3>
+                <div class="hint">Only clients with missing docs. Sorted by urgency.</div>
+                <div class="divider"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                  <div>
+                    <div style="font-size:12px; color:var(--muted); font-weight:750; margin-bottom:6px;">Reminder tone</div>
+                    <select id="tone">
+                      <option value="gentle">Gentle</option>
+                      <option value="firm">Firm</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style="font-size:12px; color:var(--muted); font-weight:750; margin-bottom:6px;">Due date style</div>
+                    <select id="dueStyle">
+                      <option value="explicit">Explicit date</option>
+                      <option value="relative">Relative (“this week”)</option>
+                    </select>
+                  </div>
+                </div>
+                <p class="footNote">In the real build, this uses your intake schedule, deadlines, and prior correspondence.</p>
+              </div>
+
+              <div class="draft">
+                <h3 style="margin-bottom:6px;">Email draft generator</h3>
+                <div class="hint">Click a client row to populate a client-ready reminder.</div>
+                <div class="divider"></div>
+                <label class="lab">Draft</label>
+                <textarea id="emailDraft" readonly></textarea>
+                <div class="btnRow">
+                  <button class="btn primary" id="copyDraft">Copy draft</button>
+                  <button class="btn" id="sendSim" title="Simulates logging that you sent the reminder (sample only).">Mark as sent (demo)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div>
+              <div class="sectionTitle">
+                <div>
+                  <div style="font-weight:900; font-size:14px; letter-spacing:-.01em;">Clients needing documents</div>
+                  <div class="hint">Click to generate an item-specific reminder.</div>
+                </div>
+                <div class="badge" id="chaseCount">—</div>
+              </div>
+              <div class="tableWrap" style="margin-top:10px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:240px;">Client</th>
+                      <th>Missing documents</th>
+                      <th class="tdRight" style="width:140px;">Urgency</th>
+                    </tr>
+                  </thead>
+                  <tbody id="chaseBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity view -->
+          <div id="view_notes" class="split" style="display:none;">
+            <div class="draft">
+              <h3 style="margin-bottom:6px;">Activity timeline</h3>
+              <div class="hint">Shows reconciliation events so you never lose the audit trail during tax season.</div>
+              <div class="divider"></div>
+              <div id="timeline"></div>
+            </div>
+          </div>
+
+          <div class="footNote" style="margin-top:14px;">
+            Live demo — sample data only. Wiring this into your firm means connecting your intake sources (email/portal) and your existing checklists.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Copied.</div>
+
+<script>
+(function(){
+  const now = new Date();
+  const pad = (n)=> String(n).padStart(2,'0');
+  const fmt = (d)=>{
+    const dt = new Date(d);
+    return dt.getFullYear()+"-"+pad(dt.getMonth()+1)+"-"+pad(dt.getDate())+" "+pad(dt.getHours())+":"+pad(dt.getMinutes());
+  };
+
+  const initial = {
+    clients: [
+      {
+        id: "cl_owen",
+        name: "Owen & Marie (Individual)",
+        type: "Individual",
+        due: "2026-04-05",
+        docs: [
+          {key:"w2", name:"W-2(s)", tag:"Payroll"},
+          {key:"1099_int", name:"1099-INT", tag:"Interest"},
+          {key:"1099_div", name:"1099-DIV", tag:"Dividends"},
+          {key:"1095a", name:"1095-A", tag:"Health"},
+          {key:"prior", name:"Prior-year return", tag:"Reference"},
+          {key:"prior_notes", name:"Prior-year notes (if any)", tag:"Optional"}
+        ],
+        received: {
+          w2: {has:true, when:"2026-03-02 10:12", note:"Email attachment"},
+          1099_int: {has:false},
+          1099_div: {has:true, when:"2026-03-03 14:27", note:"Mailbox upload"},
+          1095a: {has:false},
+          prior: {has:true, when:"2026-02-21 09:03", note:"Client forwarded"},
+          prior_notes: {has:false}
+        }
+      },
+      {
+        id: "cl_patel",
+        name: "Sana Patel (Small Business)",
+        type: "Business",
+        due: "2026-03-25",
+        docs: [
+          {key:"w2", name:"W-2(s)", tag:"Payroll"},
+          {key:"1099_div", name:"1099-DIV (if any)", tag:"Investments"},
+          {key:"k1", name:"K-1(s) (if applicable)", tag:"Partnership"},
+          {key:"bus_receipts", name:"Business receipts / bookkeeping", tag:"Records"},
+          {key:"bank_stmt", name:"Bank statements (YTD)", tag:"Reconciliation"},
+          {key:"prior", name:"Prior-year return", tag:"Reference"}
+        ],
+        received: {
+          w2: {has:true, when:"2026-03-01 08:41", note:"Portal upload"},
+          1099_div: {has:false},
+          k1: {has:false},
+          bus_receipts: {has:true, when:"2026-03-04 17:10", note:"Uploaded PDF bundle"},
+          bank_stmt: {has:false},
+          prior: {has:true, when:"2026-02-27 12:05", note:"Last year’s package"}
+        }
+      },
+      {
+        id: "cl_rodriguez",
+        name: "Daniel R. (Individual)",
+        type: "Individual",
+        due: "2026-04-20",
+        docs: [
+          {key:"w2", name:"W-2(s)", tag:"Payroll"},
+          {key:"1099_b", name:"1099-B", tag:"Broker"},
+          {key:"1098", name:"1098 (mortgage/education)", tag:"Deductions"},
+          {key:"1095a", name:"1095-A", tag:"Health"},
+          {key:"prior", name:"Prior-year return", tag:"Reference"}
+        ],
+        received: {
+          w2: {has:false},
+          1099_b: {has:true, when:"2026-03-06 10:56", note:"Email screenshot"},
+          1098: {has:false},
+          1095a: {has:true, when:"2026-03-08 09:19", note:"Portal PDF"},
+          prior: {has:false}
+        }
+      },
+      {
+        id: "cl_chen",
+        name: "Jun Chen (Individual)",
+        type: "Individual",
+        due: "2026-03-18",
+        docs: [
+          {key:"w2", name:"W-2(s)", tag:"Payroll"},
+          {key:"1099_int", name:"1099-INT", tag:"Interest"},
+          {key:"1098", name:"1098 (mortgage/education)", tag:"Deductions"},
+          {key:"prior", name:"Prior-year return", tag:"Reference"}
+        ],
+        received: {
+          w2: {has:true, when:"2026-02-28 16:40", note:"Uploaded"},
+          1099_int: {has:true, when:"2026-03-02 11:12", note:"Forwarded"},
+          1098: {has:false},
+          prior: {has:false}
+        }
+      },
+      {
+        id: "cl_brooks",
+        name: "Brooks Family (Business + Individual)",
+        type: "Business",
+        due: "2026-04-01",
+        docs: [
+          {key:"w2", name:"W-2(s)", tag:"Payroll"},
+          {key:"bus_receipts", name:"Business receipts / bookkeeping", tag:"Records"},
+          {key:"bank_stmt", name:"Bank statements (YTD)", tag:"Reconciliation"},
+          {key:"k1", name:"K-1(s) (if applicable)", tag:"Partnership"},
+          {key:"1095a", name:"1095-A", tag:"Health"}
+        ],
+        received: {
+          w2: {has:false},
+          bus_receipts: {has:false},
+          bank_stmt: {has:true, when:"2026-03-03 13:00", note:"PDF set"},
+          k1: {has:false},
+          1095a: {has:true, when:"2026-03-07 12:35", note:"Uploaded"}
+        }
+      }
+    ],
+    notes: [
+      {when:"2026-03-02 10:12", clientId:"cl_owen", action:"Received", detail:"W-2(s)"},
+      {when:"2026-03-03 14:27", clientId:"cl_owen", action:"Received", detail:"1099-DIV"},
+      {when:"2026-03-04 17:10", clientId:"cl_patel", action:"Received", detail:"Business receipts / bookkeeping"},
+      {when:"2026-03-08 09:19", clientId:"cl_rodriguez", action:"Received", detail:"1095-A"},
+      {when:"2026-03-03 13:00", clientId:"cl_brooks", action:"Received", detail:"Bank statements (YTD)"},
+      {when:"2026-03-06 10:56", clientId:"cl_rodriguez", action:"Received", detail:"1099-B"},
+      {when:"2026-03-01 08:41", clientId:"cl_patel", action:"Received", detail:"W-2(s)"},
+      {when:"2026-02-28 16:40", clientId:"cl_chen", action:"Received", detail:"W-2(s)"},
+      {when:"2026-03-02 11:12", clientId:"cl_chen", action:"Received", detail:"1099-INT"},
+      {when:"2026-02-21 09:03", clientId:"cl_owen", action:"Received", detail:"Prior-year return"},
+      {when:"2026-02-27 12:05", clientId:"cl_patel", action:"Received", detail:"Prior-year return"},
+      {when:"2026-03-07 12:35", clientId:"cl_brooks", action:"Received", detail:"1095-A"}
+    ]
+  };
+
+  // Deep clone initial
+  const state = JSON.parse(JSON.stringify(initial));
+
+  const clientListEl = document.getElementById('clientList');
+  const rightTitle = document.getElementById('rightTitle');
+  const docGrid = document.getElementById('docGrid');
+  const k_received = document.getElementById('k_received');
+  const k_missing = document.getElementById('k_missing');
+  const deadlineHint = document.getElementById('deadlineHint');
+  const quickMissing = document.getElementById('quickMissing');
+  const docCategoryBadge = document.getElementById('docCategoryBadge');
+
+  const tabDocs = document.getElementById('tab_docs');
+  const tabChase = document.getElementById('tab_chase');
+  const tabNotes = document.getElementById('tab_notes');
+
+  const viewDocs = document.getElementById('view_docs');
+  const viewChase = document.getElementById('view_chase');
+  const viewNotes = document.getElementById('view_notes');
+
+  const chaseBody = document.getElementById('chaseBody');
+  const chaseCount = document.getElementById('chaseCount');
+  const emailDraft = document.getElementById('emailDraft');
+
+  const tone = document.getElementById('tone');
+  const dueStyle = document.getElementById('dueStyle');
+
+  const logClient = document.getElementById('logClient');
+  const logDoc = document.getElementById('logDoc');
+  const logNotes = document.getElementById('logNotes');
+  const markBtn = document.getElementById('markBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const quickBtn = document.getElementById('quickBtn');
+
+  const timeline = document.getElementById('timeline');
+  const q = document.getElementById('q');
+
+  const copyDraft = document.getElementById('copyDraft');
+  const sendSim = document.getElementById('sendSim');
+
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+
+  let selectedClientId = state.clients[0].id;
+  let draftClientId = null;
+
+  function toastShow(msg){
+    toast.textContent = msg || 'Copied.';
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 1200);
+  }
+
+  function urgencyScore(client){
+    // Lower is more urgent.
+    const due = new Date(client.due+'T00:00:00');
+    const t = due.getTime() - Date.now();
+    const days = Math.floor(t / (1000*60*60*24));
+    if (days <= 10) return 1;
+    if (days <= 20) return 2;
+    return 3;
+  }
+
+  function getClient(clientId){
+    return state.clients.find(c=>c.id===clientId);
+  }
+
+  function setTab(which){
+    const isDocs = which==='docs';
+    const isChase = which==='chase';
+    const isNotes = which==='notes';
+    tabDocs.setAttribute('aria-selected', String(isDocs));
+    tabChase.setAttribute('aria-selected', String(isChase));
+    tabNotes.setAttribute('aria-selected', String(isNotes));
+    viewDocs.style.display = isDocs ? 'block' : 'none';
+    viewChase.style.display = isChase ? 'block' : 'none';
+    viewNotes.style.display = isNotes ? 'block' : 'none';
+  }
+
+  function computeCounts(client){
+    const receivedKeys = client.docs.filter(d=>client.received[d.key] && client.received[d.key].has);
+    const missingKeys = client.docs.filter(d=>!(client.received[d.key] && client.received[d.key].has));
+    return {received: receivedKeys.length, missing: missingKeys.length, missingDocObjs: missingKeys};
+  }
+
+  function renderClients(){
+    const query = (q.value||'').trim().toLowerCase();
+    const filtered = state.clients.filter(c=> c.name.toLowerCase().includes(query));
+    clientListEl.innerHTML = '';
+    filtered
+      .sort((a,b)=>{
+        // sort by urgency then missing count
+        const ua = urgencyScore(a), ub = urgencyScore(b);
+        if (ua!==ub) return ua-ub;
+        return computeCounts(b).missing - computeCounts(a).missing;
+      })
+      .forEach(c=>{
+        const counts = computeCounts(c);
+        const row = document.createElement('div');
+        row.className = 'clientRow';
+        row.setAttribute('aria-current', String(c.id===selectedClientId));
+        row.tabIndex = 0;
+        row.innerHTML = `
+          <div class="clientTop">
+            <div class="clientName">${escapeHtml(c.name)}</div>
+            <div class="badge">Missing <b>${counts.missing}</b></div>
+          </div>
+          <div class="statusBar">
+            <div class="mini">
+              <div class="k">Received</div>
+              <div class="v">${counts.received}</div>
+            </div>
+            <div class="mini">
+              <div class="k">Due</div>
+              <div class="v">${escapeHtml(c.due)}</div>
+            </div>
+          </div>
+        `;
+        row.addEventListener('click', ()=>{
+          selectedClientId = c.id;
+          renderClients();
+          renderDocs();
+          renderTimeline();
+        });
+        row.addEventListener('keydown', (e)=>{
+          if(e.key==='Enter' || e.key===' ') row.click();
+        });
+        clientListEl.appendChild(row);
+      });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+  }
+
+  function renderDocs(){
+    const client = getClient(selectedClientId);
+    rightTitle.textContent = client.name;
+    const counts = computeCounts(client);
+    k_received.textContent = counts.received;
+    k_missing.textContent = counts.missing;
+
+    const due = new Date(client.due+'T00:00:00');
+    const days = Math.max(0, Math.ceil((due.getTime()-Date.now())/(1000*60*60*24)));
+    const toneLine = days <= 10 ? 'High priority: due soon.' : days <= 20 ? 'On deck: still need a push.' : 'Steady pace: keep momentum.';
+    deadlineHint.textContent = `Deadline: ${client.due}. ${toneLine}`;
+
+    // Badge shows client type
+    docCategoryBadge.textContent = client.type;
+
+    docGrid.innerHTML='';
+    // Keep checkboxes visible and clickable (demo).
+    client.docs.forEach(doc=>{
+      const rec = client.received[doc.key] && client.received[doc.key].has;
+      const note = client.received[doc.key] && client.received[doc.key].note ? client.received[doc.key].note : '';
+      const when = client.received[doc.key] && client.received[doc.key].when ? client.received[doc.key].when : '';
+      const hasStr = rec ? 'true' : 'false';
+      const el = document.createElement('div');
+      el.className = 'doc';
+      el.setAttribute('data-has', hasStr);
+      el.tabIndex=0;
+      el.setAttribute('role','button');
+      el.setAttribute('aria-label', rec ? `Received ${doc.name}` : `Missing ${doc.name}`);
+      el.innerHTML = `
+        <div class="check" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.6 6.6 8.3 14.9 3.4 10" stroke="#2C2620" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="docMeta">
+          <div class="docName">${escapeHtml(doc.name)}</div>
+          <div class="docTag">${escapeHtml(doc.tag)}</div>
+          <div class="docSub">${rec ? `Received${when ? ' on ' + escapeHtml(when) : ''}${note ? ' — ' + escapeHtml(note) : ''}` : 'Not received yet.'}</div>
+        </div>
+      `;
+      el.addEventListener('click', ()=>{
+        // Toggle to received for demo simplicity.
+        if(!rec){
+          selectedClientId = client.id;
+          quickMissing.value = doc.key;
+          markReceived(client.id, doc.key, 'Logged from checklist (demo)');
+        }
+      });
+      el.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter' || e.key===' '){
+          e.preventDefault();
+          el.click();
+        }
+      });
+      docGrid.appendChild(el);
+    });
+
+    renderQuickMissing();
+    renderTimeline();
+    renderChaseList();
+  }
+
+  function renderQuickMissing(){
+    const client = getClient(selectedClientId);
+    const counts = computeCounts(client);
+    const missing = counts.missingDocObjs;
+    quickMissing.innerHTML = '';
+    if(missing.length===0){
+      const opt = document.createElement('option');
+      opt.value='';
+      opt.textContent='No missing documents';
+      quickMissing.appendChild(opt);
+      quickBtn.disabled = true;
+      quickBtn.style.opacity = .6;
+      return;
+    }
+    quickBtn.disabled = false;
+    quickBtn.style.opacity = 1;
+    missing.forEach((doc, idx)=>{
+      const opt = document.createElement('option');
+      opt.value = doc.key;
+      opt.textContent = doc.name;
+      quickMissing.appendChild(opt);
+      if(idx===0) quickMissing.value = doc.key;
+    });
+  }
+
+  function updateLogDocOptions(){
+    const clientId = logClient.value;
+    const client = getClient(clientId);
+    logDoc.innerHTML='';
+    client.docs.forEach(doc=>{
+      const has = client.received[doc.key] && client.received[doc.key].has;
+      const opt = document.createElement('option');
+      opt.value = doc.key;
+      opt.textContent = has ? `${doc.name} (already received)` : doc.name;
+      logDoc.appendChild(opt);
+    });
+    // Default to first missing
+    const missing = client.docs.find(d=>!(client.received[d.key] && client.received[d.key].has));
+    if(missing) logDoc.value = missing.key;
+    else logDoc.value = client.docs[0]?.key || '';
+  }
+
+  function markReceived(clientId, docKey, note){
+    const client = getClient(clientId);
+    const docObj = client.docs.find(d=>d.key===docKey);
+    if(!docObj) return;
+
+    const stamp = new Date();
+    const when = fmt(stamp);
+
+    client.received[docKey] = {
+      has: true,
+      when: when.replace('T',' ').slice(0,16),
+      note: note || ''
+    };
+
+    state.notes.unshift({
+      when: when.replace('T',' ').slice(0,16),
+      clientId,
+      action: 'Received',
+      detail: docObj.name
+    });
+
+    toastShow('Marked received');
+    // Keep selection stable
+    selectedClientId = clientId;
+    draftClientId = null;
+
+    renderDocs();
+    updateEmailDraftIfNeeded();
+    renderClients();
+    renderTimeline();
+  }
+
+  function renderTimeline(){
+    const client = getClient(selectedClientId);
+    const items = state.notes.filter(n=>n.clientId===client.id).slice(0,12);
+    timeline.innerHTML='';
+    if(items.length===0){
+      timeline.innerHTML = '<div class="hint">No activity yet for this client.</div>';
+      return;
+    }
+    items.forEach(n=>{
+      const el = document.createElement('div');
+      el.style.padding='10px 0';
+      el.style.borderBottom='1px solid var(--line)';
+      el.innerHTML = `
+        <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
+          <div style="font-weight:800; font-size:13px;">${escapeHtml(n.action)}: ${escapeHtml(n.detail)}</div>
+          <div style="color:var(--muted); font-size:12px; white-space:nowrap;">${escapeHtml(n.when)}</div>
+        </div>
+        ${n.note && n.note!=='' ? `<div class="hint" style="margin-top:6px;">${escapeHtml(n.note)}</div>` : ''}
+      `;
+      timeline.appendChild(el);
+    });
+  }
+
+  function missingDocNames(client){
+    return client.docs.filter(d=>!(client.received[d.key] && client.received[d.key].has)).map(d=>d.name);
+  }
+
+  function urgencyLabel(client){
+    const sc = urgencyScore(client);
+    const missing = computeCounts(client).missing;
+    if(sc===1) return {label:`Due soon (${missing} missing)`, style:'rgba(194,74,58,.12); border:1px solid rgba(194,74,58,.35); color:#9F3B2F;'};
+    if(sc===2) return {label:`This month (${missing} missing)`, style:'rgba(217,140,58,.14); border:1px solid rgba(217,140,58,.40); color:#8A5521;'};
+    return {label:`Steady (${missing} missing)`, style:'rgba(123,175,142,.14); border:1px solid rgba(123,175,142,.40); color:#2F5D45;'};
+  }
+
+  function renderChaseList(){
+    const missingClients = state.clients
+      .map(c=>({c, missing: missingDocNames(c)}))
+      .filter(x=>x.missing.length>0)
+      .sort((a,b)=>{
+        const ua = urgencyScore(a.c), ub = urgencyScore(b.c);
+        if(ua!==ub) return ua-ub;
+        return a.missing.length - b.missing.length;
+      });
+
+    chaseBody.innerHTML='';
+    chaseCount.textContent = `${missingClients.length} client(s) need documents`;
+
+    if(missingClients.length===0){
+      chaseBody.innerHTML = `<tr><td colspan="3"><div class="hint">No clients missing documents right now. Nice.</div></td></tr>`;
+      return;
+    }
+
+    missingClients.forEach(({c, missing})=>{
+      const tr = document.createElement('tr');
+      tr.style.cursor='pointer';
+      const u = urgencyLabel(c);
+      tr.innerHTML = `
+        <td>
+          <div class="clientTiny">${escapeHtml(c.name)}</div>
+          <div class="hint">Type: ${escapeHtml(c.type)} • Due ${escapeHtml(c.due)}</div>
+          <div class="chips">${missing.slice(0,4).map(x=>`<span class="chip">${escapeHtml(x)}</span>`).join('')}${missing.length>4?'<span class="chip">+'+(missing.length-4)+' more</span>':''}</div>
+        </td>
+        <td>
+          <div class="hint">${escapeHtml(missing.join(', '))}</div>
+        </td>
+        <td class="tdRight">
+          <span class="badge" style="${u.style}">${escapeHtml(u.label)}</span>
+        </td>
+      `;
+      tr.addEventListener('click', ()=>{
+        draftClientId = c.id;
+        selectedClientId = c.id;
+        renderClients();
+        generateDraftForClient(c.id);
+        setTab('chase');
+      });
+      chaseBody.appendChild(tr);
+    });
+
+    // Auto-generate draft for selected client if it’s missing something
+    if(!draftClientId || !getClient(draftClientId) || missingDocNames(getClient(draftClientId)).length===0){
+      const first = missingClients[0];
+      if(first) generateDraftForClient(first.c.id);
+    }
+  }
+
+  function draftDueText(client){
+    const due = new Date(client.due+'T00:00:00');
+    const days = Math.ceil((due.getTime()-Date.now())/(1000*60*60*24));
+    const style = dueStyle.value;
+    if(style==='explicit') return `by ${client.due}`;
+    if(days<=0) return 'as soon as possible';
+    if(days===1) return 'tomorrow';
+    if(days<=7) return `this week (${client.due})`;
+    return `soon (${client.due})`;
+  }
+
+  function generateDraftForClient(clientId){
+    const client = getClient(clientId);
+    const missing = missingDocNames(client);
+    const toneVal = tone.value;
+
+    const opener = toneVal==='gentle'
+      ? `Hi ${client.name.split(' ')[0]},\n\n` +
+        `We’re getting ready to finalize your tax work. To keep everything moving, could you send the documents below ${draftDueText(client)}?\n\n`
+      : `Hi ${client.name.split(' ')[0]},\n\n` +
+        `Quick follow-up: we’re missing a few items needed to finish your tax work. Please send the documents below ${draftDueText(client)}.\n\n`;
+
+    const list = missing.map((m)=>`- ${m}`).join('\n');
+
+    const closer = toneVal==='gentle'
+      ? `\nIf you already sent any of these, just reply with a date or attachment name and we’ll match it up.\n\nThanks!\n` +
+        `Your accounting team`
+      : `\nReply with what you can provide and the expected send date.\n\nThanks,\nYour accounting team`;
+
+    const subject = missing.length===1
+      ? `Action needed: ${missing[0]}`
+      : `Action needed: ${missing.length} tax documents`;
+
+    const body = `Subject: ${subject}\n\n${opener}${list}${closer}`;
+
+    emailDraft.value = body;
+    return body;
+  }
+
+  function updateEmailDraftIfNeeded(){
+    if(viewChase.style.display!=='none' && draftClientId){
+      const missing = missingDocNames(getClient(draftClientId));
+      if(missing.length>0) generateDraftForClient(draftClientId);
+    }
+  }
+
+  function renderNotesSendIndicator(){
+    // No-op for demo; kept as a hook if you want visual status later.
+  }
+
+  function buildTimelineForNotesTab(){
+    renderTimeline();
+  }
+
+  // Wire up tabs
+  tabDocs.addEventListener('click', ()=> setTab('docs'));
+  tabChase.addEventListener('click', ()=> setTab('chase'));
+  tabNotes.addEventListener('click', ()=> setTab('notes'));
+
+  // Search
+  q.addEventListener('input', ()=>renderClients());
+
+  // Quick log selected missing doc
+  quickBtn.addEventListener('click', ()=>{
+    const key = quickMissing.value;
+    if(!key) return;
+    const client = getClient(selectedClientId);
+    markReceived(client.id, key, 'Logged from quick action (demo)');
+  });
+
+  // Left logger
+  logClient.addEventListener('change', ()=> updateLogDocOptions());
+
+  markBtn.addEventListener('click', ()=>{
+    const clientId = logClient.value;
+    const docKey = logDoc.value;
+    if(!clientId || !docKey) return;
+    const client = getClient(clientId);
+    const has = client.received[docKey] && client.received[docKey].has;
+    if(has){
+      toastShow('Already marked received');
+      return;
+    }
+    markReceived(clientId, docKey, (logNotes.value||'').trim() || 'Logged from intake (demo)');
+    logNotes.value='';
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    // Hard reset state back to initial
+    const fresh = JSON.parse(JSON.stringify(initial));
+    state.clients = fresh.clients;
+    state.notes = fresh.notes;
+    selectedClientId = state.clients[0].id;
+    draftClientId = null;
+    q.value='';
+    tone.value='gentle';
+    dueStyle.value='explicit';
+    // Re-render everything
+    renderClients();
+    renderDocs();
+    renderTimeline();
+    renderChaseList();
+    emailDraft.value='';
+    setTab('docs');
+    toastShow('Demo reset');
+    updateLogClientOptions();
+    updateLogDocOptions();
+  });
+
+  function updateLogClientOptions(){
+    const curr = logClient.value;
+    logClient.innerHTML='';
+    state.clients.forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value=c.id;
+      opt.textContent=c.name;
+      logClient.appendChild(opt);
+    });
+    // Prefer selected client if present
+    if(curr && state.clients.some(c=>c.id===curr)) logClient.value = curr;
+    else logClient.value = selectedClientId;
+  }
+
+  // Draft controls
+  tone.addEventListener('change', ()=>{
+    if(draftClientId) generateDraftForClient(draftClientId);
+  });
+  dueStyle.addEventListener('change', ()=>{
+    if(draftClientId) generateDraftForClient(draftClientId);
+  });
+
+  // Copy / send simulation
+  copyDraft.addEventListener('click', async ()=>{
+    const val = emailDraft.value || '';
+    if(!val.trim()){ toastShow('No draft to copy'); return; }
+    try{
+      await navigator.clipboard.writeText(val);
+      toastShow('Draft copied');
+    }catch(e){
+      // Fallback
+      emailDraft.select();
+      document.execCommand('copy');
+      toastShow('Draft copied');
+    }
+  });
+
+  sendSim.addEventListener('click', ()=>{
+    if(!draftClientId) return;
+    const client = getClient(draftClientId);
+    if(!client) return;
+    const missing = missingDocNames(client);
+    if(missing.length===0){
+      toastShow('No missing items');
+      return;
+    }
+    state.notes.unshift({
+      when: fmt(new Date()).replace('T',' ').slice(0,16),
+      clientId: client.id,
+      action: 'Reminder sent (demo)',
+      detail: `For ${missing.length} item(s)`
+    });
+    renderTimeline();
+    toastShow('Sent logged (demo)');
+    renderChaseList();
+  });
+
+  // Initial render
+  function init(){
+    updateLogClientOptions();
+    updateLogDocOptions();
+    renderClients();
+    renderDocs();
+    renderTimeline();
+    renderChaseList();
+    setTab('docs');
+  }
+
+  // Ensure draft always updates when opening chase tab
+  function ensureDraft(){
+    if(!draftClientId){
+      const missingClients = state.clients.filter(c=>missingDocNames(c).length>0);
+      if(missingClients[0]) generateDraftForClient(missingClients[0].id);
+    } else {
+      generateDraftForClient(draftClientId);
+    }
+  }
+
+  tabChase.addEventListener('click', ensureDraft);
+
+  init();
+
+})();
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-acctdocdemo_ep4_1786387872-0</div>
