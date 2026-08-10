@@ -1,0 +1,551 @@
+<!doctype html>
+<meta charset='utf-8'>
+<meta http-equiv='Content-Security-Policy' content="">
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<style>
+:root{--bg:#FAF6EF;--ink:#2C2620;--accent:#B85C38;--sage:#7BAF8E;--warn:#D9A05B;--line:#E5DCCC;--card:rgba(255,255,255,.75)}
+html,body{height:100%}
+body{margin:0;background:
+radial-gradient(900px 420px at 10% -10%, rgba(184,92,56,.22), transparent 55%),
+radial-gradient(760px 420px at 95% 10%, rgba(123,175,142,.18), transparent 50%),
+linear-gradient(180deg,var(--bg),#F3EFE6);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+.wrap{max-width:1060px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+.title{font-weight:950;font-size:22px;letter-spacing:.2px}
+.subtitle{font-weight:900;color:rgba(44,38,32,.65);font-size:12px;line-height:1.35;margin-top:6px;max-width:70ch}
+.tag{font-size:11px;font-weight:950;border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.65);border:1px solid var(--line);white-space:nowrap}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:980px){.grid{grid-template-columns:360px 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+.cardInner{padding:14px}
+.sectionHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.sectionTitle{font-weight:950;font-size:14px;color:rgba(0,0,0,.72)}
+.small{font-size:12px;color:rgba(44,38,32,.62);font-weight:900;line-height:1.45}
+.label{display:block;font-size:12px;color:rgba(44,38,32,.62);font-weight:950;margin-bottom:6px}
+input,textarea,select{width:100%;border-radius:12px;border:1px solid var(--line);background:rgba(250,246,239,.88);padding:10px 12px;outline:none;color:var(--ink);font-weight:900;font-size:13px}
+textarea{min-height:120px;resize:vertical}
+.btn{border-radius:14px;border:1px solid rgba(184,92,56,.35);background:rgba(184,92,56,.12);cursor:pointer;font-weight:950;padding:10px 14px;color:var(--ink);user-select:none}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:950;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.6);white-space:nowrap}
+.pill.good{color:#1f5d35;background:#E8F0E9;border-color:rgba(123,175,142,.6)}
+.pill.warn{color:#6d4d12;background:#F8EFE3;border-color:rgba(217,160,91,.6)}
+.pill.neutral{color:rgba(44,38,32,.72)}
+.list{display:flex;flex-direction:column;gap:8px}
+.clientItem{padding:10px 12px;border:1px solid rgba(0,0,0,.08);border-radius:14px;background:rgba(255,255,255,.72);cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.clientItem:hover{transform:translateY(-1px);transition:transform .12s ease}
+.clientItem.selected{outline:2px solid rgba(184,92,56,.35)}
+.clientName{font-weight:950;font-size:13px}
+.clientMeta{font-weight:900;font-size:11px;color:rgba(44,38,32,.62);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.kpi{padding:10px 12px;border-radius:14px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.72)}
+.kpiNum{font-weight:1000;font-size:16px}
+.kpiLab{font-size:11px;font-weight:950;color:rgba(44,38,32,.62);margin-top:2px}
+.tableLike{display:flex;flex-direction:column;gap:8px}
+.docRow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border:1px solid rgba(0,0,0,.08);border-radius:14px;background:rgba(255,255,255,.70)}
+.docLeft{display:flex;flex-direction:column;gap:3px;min-width:260px}
+.docName{font-weight:950;font-size:13px}
+.docHint{font-size:11px;color:rgba(44,38,32,.62);font-weight:900;line-height:1.25}
+.docRight{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.trace{font-size:11px;color:rgba(44,38,32,.62);font-weight:900;max-height:190px;overflow:auto;padding-right:6px}
+.traceItem{padding:8px 10px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.65);margin-bottom:8px}
+hr.sep{border:0;border-top:1px solid rgba(0,0,0,.08);margin:12px 0}
+.emailItem{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.72)}
+.emailItem .box{width:22px;flex:0 0 auto;margin-top:2px}
+.emailTitle{font-weight:950;font-size:13px}
+.emailSub{font-size:11px;font-weight:900;color:rgba(44,38,32,.62);margin-top:3px;line-height:1.35}
+.codeBox{border-radius:14px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.72);padding:10px 12px}
+.reqTitle{font-weight:1000;font-size:13px;margin-bottom:6px}
+.missingBadge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:950;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.62)}
+</style>
+<div class='wrap'>
+  <div class='top'>
+    <div>
+      <div class='title'>Tax Doc Reconciliation Agent</div>
+      <div class='subtitle'>Live demo — sample data. It reads what you received from emails + a sheet, then generates a per-client “still need” request list so nothing gets missed.</div>
+    </div>
+    <div class='tag'>reconcile • track • request</div>
+  </div>
+
+  <div class='grid'>
+    <div class='card'>
+      <div class='cardInner'>
+        <div class='sectionHead'>
+          <div class='sectionTitle'>Clients</div>
+          <div class='pill neutral' id='clientsStatus'>loading</div>
+        </div>
+        <div class='list' id='clientList'></div>
+        <div class='kpis'>
+          <div class='kpi'><div class='kpiNum' id='kpiReceived'>—</div><div class='kpiLab'>received docs</div></div>
+          <div class='kpi'><div class='kpiNum' id='kpiMissing'>—</div><div class='kpiLab'>missing docs</div></div>
+          <div class='kpi'><div class='kpiNum' id='kpiRequests'>—</div><div class='kpiLab'>request items</div></div>
+        </div>
+
+        <hr class='sep'/>
+
+        <div class='sectionHead'>
+          <div class='sectionTitle'>Source emails (simulated)</div>
+          <div class='pill neutral' id='emailsSelectedPill'>0 selected</div>
+        </div>
+        <div class='list' id='emailList'></div>
+
+        <hr class='sep'/>
+
+        <div class='sectionHead'>
+          <div class='sectionTitle'>Process a new email</div>
+          <div class='pill neutral'>manual paste</div>
+        </div>
+        <label class='label' for='newEmailText'>Paste email text (subject + attachments is enough)</label>
+        <textarea id='newEmailText' class='mini' placeholder='Example: Attached W-2 and 1099-INT. Also included my 8879.'></textarea>
+        <div class='row' style='margin-top:10px'>
+          <button class='btn' id='addEmailBtn' type='button'>Process email</button>
+          <button class='btn' id='runBtn' type='button'>Run reconciliation</button>
+        </div>
+        <div class='small' id='runNote' style='margin-top:8px'>The reconcile step updates the ledger instantly on the page. No real emails are touched.</div>
+      </div>
+    </div>
+
+    <div class='card'>
+      <div class='cardInner'>
+        <div class='sectionHead'>
+          <div class='sectionTitle' id='docSectionTitle'>Ledger</div>
+          <div class='pill neutral' id='missingPill'>—</div>
+        </div>
+
+        <div class='row' style='margin-top:2px'>
+          <div style='flex:1;min-width:280px'>
+            <div class='label'>Received vs still needed (selected client)</div>
+            <div class='tableLike' id='docRows'></div>
+          </div>
+          <div style='flex:1;min-width:280px'>
+            <div class='label'>What the agent inferred (audit trail)</div>
+            <div class='trace' id='auditTrail'></div>
+          </div>
+        </div>
+
+        <hr class='sep'/>
+
+        <div class='row'>
+          <div style='flex:1;min-width:320px'>
+            <div class='sectionHead' style='margin-bottom:8px'>
+              <div class='sectionTitle'>Next action request list</div>
+              <div class='missingBadge' id='requestBadge'>0 missing</div>
+            </div>
+            <div class='codeBox'>
+              <div class='reqTitle' id='requestTitle'>—</div>
+              <div id='requestText' class='small' style='white-space:pre-wrap'></div>
+            </div>
+          </div>
+          <div style='flex:1;min-width:280px'>
+            <div class='sectionHead' style='margin-bottom:8px'>
+              <div class='sectionTitle'>Spreadsheet import (simulated)</div>
+              <div class='pill neutral'>check rows</div>
+            </div>
+            <div class='list' id='sheetList'></div>
+            <div class='row' style='margin-top:10px'>
+              <button class='btn' id='sheetRunBtn' type='button'>Apply sheet + emails</button>
+            </div>
+            <div class='small' style='margin-top:8px'>In production: we’d reconcile rows from your sheet export the same way, then flag anything missing.</div>
+          </div>
+        </div>
+
+        <div class='small' style='margin-top:12px;font-weight:950'>Tip: click multiple emails, then paste a new one and hit Process email. You’ll see the ledger + request list update immediately.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const DOCS = [
+    {key:'w2', name:'W-2 Wage Statement(s)', hint:'For each job/employer. Often labeled “W-2”.'},
+    {key:'1099_int', name:'Form 1099-INT', hint:'Interest income. Often labeled “1099-INT”.'},
+    {key:'1099_div', name:'Form 1099-DIV', hint:'Dividend income. Often labeled “1099-DIV”.'},
+    {key:'1099_b', name:'Form 1099-B / brokerage statements', hint:'Stock/crypto sales summary. PDF brokerage statements count too.'},
+    {key:'1098', name:'Form 1098 (Mortgage interest)', hint:'Mortgage interest statement (or similar lender package).'},
+    {key:'1095_a', name:'Form 1095-A (Marketplace health)', hint:'ACA/Marketplace health coverage. Usually includes “1095-A”.'},
+    {key:'id', name:'Photo ID + basic verification', hint:'Driver’s license/passport + matching verification.'},
+    {key:'8879', name:'Signed Form 8879 (e-file authorization)', hint:'Signed tax authorization for e-file.'},
+    {key:'prev_return', name:'Prior year return (copy)', hint:'Last year’s filed return for carryovers.'},
+    {key:'retirement_1099_r', name:'Form 1099-R (Retirement distributions)', hint:'Pension/IRA/401(k) distributions.'}
+  ];
+
+  const DOC_LOOKUP = {
+    w2: [/\\bw[- ]?2\\b/i, /\\bw2\\b/i, /\\bWages\\b/i],
+    '1099_int': [/\\b1099[- ]?int\\b/i, /\\b1099\\s*int\\b/i, /\\bInterest\\b/i],
+    '1099_div': [/\\b1099[- ]?div\\b/i, /\\b1099\\s*div\\b/i, /\\bDividends\\b/i],
+    '1099_b': [/\\b1099[- ]?b\\b/i, /\\bbrokerage\\b/i, /\\b1099\\s*b\\b/i, /\\bstock sales\\b/i],
+    '1098': [/\\b1098\\b/i, /mortgage\\s+interest/i, /\\b1098[- ]?e\\b/i],
+    '1095_a': [/\\b1095[- ]?a\\b/i, /marketplace\\b/i, /\\bACA\\b/i],
+    id: [/photo\\s+id/i, /driver\\'?s\\s+license/i, /passport/i, /identification/i],
+    '8879': [/8879/i, /e-file\\s+authorization/i, /authorization\\s+form/i],
+    prev_return: [/prior\\s+year/i, /last\\s+year\\s+return/i, /previous\\s+return/i, /carryover/i],
+    retirement_1099_r: [/\\b1099[- ]?r\\b/i, /\\b1099\\s*r\\b/i, /retirement\\s+distribution/i]
+  };
+
+  function uniq(arr){ return Array.from(new Set(arr)); }
+
+  function inferDocsFromText(text){
+    const t = String(text||'');
+    const found = [];
+    for(const d of DOCS){
+      const patterns = DOC_LOOKUP[d.key] || [];
+      let ok = false;
+      for(const re of patterns){
+        if(re && re.test(t)){ ok = true; break; }
+      }
+      if(ok) found.push(d.key);
+    }
+    return uniq(found);
+  }
+
+  function labelForDocKey(key){
+    const d = DOCS.find(x => x.key === key);
+    return d ? d.name : key;
+  }
+
+  const SEED = {
+    clients: [
+      {id:'c1', name:'Avery Johnson', meta:'Individual • Tax year 2026', needed:['w2','1099_int','1098','id','8879','prev_return']},
+      {id:'c2', name:'Maya Patel', meta:'Individual • Tax year 2026', needed:['w2','1095_a','id','8879','retirement_1099_r','prev_return']},
+      {id:'c3', name:'Summit Realty LLC', meta:'Business • Tax year 2026', needed:['1099_b','1099_div','1098','id','prev_return','8879']}
+    ],
+    emails: [
+      {id:'e1', from:'Client: Avery', when:'2026-01-12', subject:'W-2 + interest attached', text:'Hi! Attached are my W-2 and the 1099-INT statement. Also included my prior year return copy for context.'},
+      {id:'e2', from:'Client: Avery', when:'2026-01-15', subject:'Mortgage statement (1098)', text:'Please find my 1098 mortgage interest statement. Let me know if you still need anything signed.'},
+      {id:'e3', from:'Client: Maya', when:'2026-01-14', subject:'Marketplace health + retirement', text:'Attached: Form 1095-A and my 1099-R for retirement distributions. I can send my photo ID next.'},
+      {id:'e4', from:'Client: Summit Realty', when:'2026-01-10', subject:'Brokerage package', text:'Enclosed are the brokerage PDF statements: 1099-B plus 1099-DIV. Also included a lender summary that should match 1098.'}
+    ],
+    sheetRows: [
+      {id:'s1', label:'Avery Johnson — ID provided (sheet row)', applied:[{clientId:'c1', docKey:'id', source:'sheet'}]},
+      {id:'s2', label:'Maya Patel — 8879 signed (sheet row)', applied:[{clientId:'c2', docKey:'8879', source:'sheet'}]},
+      {id:'s3', label:'Summit Realty LLC — prior return imported (sheet row)', applied:[{clientId:'c3', docKey:'prev_return', source:'sheet'}]}
+    ],
+    defaultSelectedEmails: ['e1','e3','e4']
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const clientList = $('clientList');
+  const emailList = $('emailList');
+  const sheetList = $('sheetList');
+  const docRows = $('docRows');
+  const auditTrail = $('auditTrail');
+  const missingPill = $('missingPill');
+  const docSectionTitle = $('docSectionTitle');
+  const clientsStatus = $('clientsStatus');
+  const newEmailText = $('newEmailText');
+  const addEmailBtn = $('addEmailBtn');
+  const runBtn = $('runBtn');
+  const sheetRunBtn = $('sheetRunBtn');
+  const emailsSelectedPill = $('emailsSelectedPill');
+  const runNote = $('runNote');
+  const kpiReceived = $('kpiReceived');
+  const kpiMissing = $('kpiMissing');
+  const kpiRequests = $('kpiRequests');
+  const requestBadge = $('requestBadge');
+  const requestTitle = $('requestTitle');
+  const requestText = $('requestText');
+
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>\"']/g, function(c){
+      switch(c){
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '\"': return '&quot;';
+        case "'": return '&#39;';
+        default: return c;
+      }
+    });
+  }
+
+  const sheetState = { selected: new Set(SEED.sheetRows.map(r => r.id)) };
+  const emailState = { selected: new Set(SEED.defaultSelectedEmails), dynamic: [] };
+
+  let state = { selectedClientId: SEED.clients[0].id, receivedByClient: {}, audit: [] };
+
+  function addAudit(clientId, docKey, source, detail){
+    const client = SEED.clients.find(c => c.id === clientId);
+    state.audit.unshift({ clientId, clientName: client ? client.name : clientId, docKey, docName: labelForDocKey(docKey), source, detail: detail || '' });
+  }
+
+  function clearAudit(){ state.audit = []; }
+
+  function inferTargetClientId(from, subject){
+    const f = (String(from||'') + ' ' + String(subject||'')).toLowerCase();
+    if(f.indexOf('avery') >= 0) return 'c1';
+    if(f.indexOf('maya') >= 0) return 'c2';
+    if(f.indexOf('summit') >= 0 || f.indexOf('realty') >= 0) return 'c3';
+    return state.selectedClientId;
+  }
+
+  function computeReceivedFromSheet(){
+    const receivedByClient = {};
+    for(const row of SEED.sheetRows){
+      if(!sheetState.selected.has(row.id)) continue;
+      for(const ap of row.applied){
+        if(!receivedByClient[ap.clientId]) receivedByClient[ap.clientId] = new Set();
+        receivedByClient[ap.clientId].add(ap.docKey);
+        addAudit(ap.clientId, ap.docKey, ap.source, row.label);
+      }
+    }
+    return receivedByClient;
+  }
+
+  function computeReceivedFromEmails(){
+    const receivedByClient = {};
+    const selectedEmailIds = new Set(Array.from(emailState.selected));
+    const all = SEED.emails.concat(emailState.dynamic);
+    for(const em of all){
+      if(!selectedEmailIds.has(em.id)) continue;
+      const inferred = inferDocsFromText((em.text||'') + ' ' + (em.subject||''));
+      const target = inferTargetClientId(em.from, em.subject);
+      for(const docKey of inferred){
+        if(!receivedByClient[target]) receivedByClient[target] = new Set();
+        receivedByClient[target].add(docKey);
+        addAudit(target, docKey, 'email', (em.subject||'') + (em.when ? ' • ' + em.when : ''));
+      }
+    }
+    return receivedByClient;
+  }
+
+  function computeAllReceived(){
+    clearAudit();
+    const fromSheet = computeReceivedFromSheet();
+    const fromEmails = computeReceivedFromEmails();
+    const merged = fromSheet;
+    for(const clientId of Object.keys(fromEmails)){
+      if(!merged[clientId]) merged[clientId] = new Set();
+      for(const k of fromEmails[clientId]) merged[clientId].add(k);
+    }
+    return merged;
+  }
+
+  function statusForClient(clientId){
+    const client = SEED.clients.find(c => c.id === clientId);
+    const needed = client ? client.needed : [];
+    const received = state.receivedByClient[clientId] ? Array.from(state.receivedByClient[clientId]) : [];
+    const missing = needed.filter(k => received.indexOf(k) === -1);
+    return { needed, received, missing };
+  }
+
+  function updateKpis(){
+    let totalReceived = 0;
+    let totalMissing = 0;
+    let totalRequests = 0;
+    for(const c of SEED.clients){
+      const st = statusForClient(c.id);
+      totalReceived += st.received.length;
+      totalMissing += st.missing.length;
+      totalRequests += st.missing.length;
+    }
+    kpiReceived.textContent = String(totalReceived);
+    kpiMissing.textContent = String(totalMissing);
+    kpiRequests.textContent = String(totalRequests);
+    const miss = statusForClient(state.selectedClientId).missing.length;
+    requestBadge.textContent = String(miss) + ' missing';
+  }
+
+  function renderClients(){
+    clientsStatus.textContent = SEED.clients.length + ' clients';
+    clientList.innerHTML = '';
+    for(const c of SEED.clients){
+      const st = statusForClient(c.id);
+      const missing = st.missing.length;
+      const item = document.createElement('div');
+      item.className = 'clientItem' + (c.id === state.selectedClientId ? ' selected' : '');
+      item.setAttribute('role','button');
+      item.setAttribute('tabindex','0');
+      item.innerHTML = '' +
+        "<div style='min-width:0'>" +
+          "<div class='clientName'>" + escapeHtml(c.name) + "</div>" +
+          "<div class='clientMeta'>" + escapeHtml(c.meta) + "</div>" +
+        "</div>" +
+        "<div style='text-align:right'>" +
+          (missing === 0 ? "<span class='pill good'>✓ complete</span>" : "<span class='pill warn'>" + missing + " missing</span>") +
+        "</div>";
+      item.addEventListener('click', () => { state.selectedClientId = c.id; renderAll(); });
+      item.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); } });
+      clientList.appendChild(item);
+    }
+  }
+
+  function renderDocsForSelectedClient(){
+    const client = SEED.clients.find(c => c.id === state.selectedClientId);
+    docSectionTitle.textContent = client ? ('Ledger: ' + client.name) : 'Ledger';
+    const st = statusForClient(state.selectedClientId);
+    const needed = st.needed;
+    const receivedSet = state.receivedByClient[state.selectedClientId] || new Set();
+    const missing = st.missing;
+
+    missingPill.textContent = (missing.length === 0) ? '0 missing' : (missing.length + ' missing');
+    missingPill.className = 'pill ' + (missing.length === 0 ? 'good' : 'warn');
+
+    docRows.innerHTML = '';
+    for(const key of needed){
+      const isReceived = receivedSet.has(key);
+      const d = DOCS.find(x => x.key === key);
+      const hint = (d && d.hint) ? d.hint : '';
+      const row = document.createElement('div');
+      row.className = 'docRow';
+      row.innerHTML = '' +
+        "<div class='docLeft'>" +
+          "<div class='docName'>" + escapeHtml(labelForDocKey(key)) + "</div>" +
+          (hint ? "<div class='docHint'>" + escapeHtml(hint) + "</div>" : '') +
+        "</div>" +
+        "<div class='docRight'>" +
+          (isReceived ? "<span class='pill good'>received</span>" : "<span class='pill warn'>still needed</span>") +
+        "</div>";
+      docRows.appendChild(row);
+    }
+  }
+
+  function renderAudit(){
+    const clientId = state.selectedClientId;
+    const items = state.audit.filter(x => x.clientId === clientId).slice(0, 22);
+    if(items.length === 0){
+      auditTrail.innerHTML = "<div class='small'>No inferred receipts yet for this client. Select emails or apply sheet rows, then run reconciliation.</div>";
+      return;
+    }
+    auditTrail.innerHTML = '';
+    for(const it of items){
+      const el = document.createElement('div');
+      el.className = 'traceItem';
+      el.innerHTML = '' +
+        "<div style='font-weight:1000'>" + escapeHtml(it.docName) + "</div>" +
+        "<div class='small' style='margin-top:4px'>Source: " + escapeHtml(it.source) + (it.detail ? (' • ' + escapeHtml(it.detail)) : '') + "</div>";
+      auditTrail.appendChild(el);
+    }
+  }
+
+  function buildRequestTextForClient(clientId){
+    const st = statusForClient(clientId);
+    const client = SEED.clients.find(c => c.id === clientId);
+    const missing = st.missing;
+    if(missing.length === 0){
+      return { title: client ? (client.name + ' — no requests') : 'No requests', text: 'Everything needed is marked received. Next step would be preparing the return draft.' };
+    }
+    const lines = [];
+    lines.push('Missing documents for ' + (client ? client.name : 'this client') + ':');
+    lines.push('');
+    for(const key of missing){ lines.push('• ' + labelForDocKey(key)); }
+    lines.push('');
+    lines.push('Request email (ready-to-copy, simulated):');
+    lines.push('');
+    lines.push('Subject: Please send the remaining tax documents');
+    lines.push('');
+    lines.push('Hi there,');
+    lines.push('');
+    lines.push('To finish your return, please send:');
+    for(const key of missing){ lines.push('  - ' + labelForDocKey(key)); }
+    lines.push('');
+    lines.push('Once received, we’ll update your file and proceed. Thanks!');
+    return { title: 'Request list generated', text: lines.join('\n') };
+  }
+
+  function renderRequests(){
+    const out = buildRequestTextForClient(state.selectedClientId);
+    requestTitle.textContent = out.title;
+    requestText.textContent = out.text;
+  }
+
+  function renderEmails(){
+    emailList.innerHTML = '';
+    for(const em of SEED.emails){
+      const include = emailState.selected.has(em.id);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'emailItem';
+      wrapper.innerHTML = '' +
+        "<div class='box'><input type='checkbox' " + (include ? 'checked' : '') + "></div>" +
+        "<div class='col'>" +
+          "<div class='emailTitle'>" + escapeHtml(em.subject) + "</div>" +
+          "<div class='emailSub'>" + escapeHtml(em.from) + " • " + escapeHtml(em.when) + "</div>" +
+          "<div class='emailSub' style='margin-top:6px'>" + escapeHtml(em.text).slice(0,160) + (em.text.length>160 ? '…' : '') + "</div>" +
+        "</div>";
+      const cb = wrapper.querySelector('input');
+      cb.addEventListener('change', () => {
+        if(cb.checked) emailState.selected.add(em.id);
+        else emailState.selected.delete(em.id);
+        emailsSelectedPill.textContent = emailState.selected.size + ' selected';
+      });
+      emailList.appendChild(wrapper);
+    }
+    emailsSelectedPill.textContent = emailState.selected.size + ' selected';
+  }
+
+  function renderSheet(){
+    sheetList.innerHTML = '';
+    for(const row of SEED.sheetRows){
+      const include = sheetState.selected.has(row.id);
+      const wrap = document.createElement('div');
+      wrap.className = 'emailItem';
+      wrap.innerHTML = '' +
+        "<div class='box'><input type='checkbox' " + (include ? 'checked' : '') + "></div>" +
+        "<div class='col'>" +
+          "<div class='emailTitle'>" + escapeHtml(row.label) + "</div>" +
+          "<div class='emailSub'>Applies pre-mapped received docs to the ledger.</div>" +
+        "</div>";
+      const cb = wrap.querySelector('input');
+      cb.addEventListener('change', () => {
+        if(cb.checked) sheetState.selected.add(row.id);
+        else sheetState.selected.delete(row.id);
+      });
+      sheetList.appendChild(wrap);
+    }
+  }
+
+  function renderAll(){
+    state.receivedByClient = computeAllReceived();
+    renderClients();
+    renderDocsForSelectedClient();
+    renderAudit();
+    renderRequests();
+    updateKpis();
+  }
+
+  function inferFromNewEmail(){
+    const text = String(newEmailText.value||'').trim();
+    if(!text){
+      runNote.textContent = 'Paste an email text first.';
+      runNote.style.color = '#6d4d12';
+      return;
+    }
+    const extracted = inferDocsFromText(text);
+    const id = 'dyn_' + Math.random().toString(16).slice(2);
+    emailState.dynamic.push({ id, from:'New email', when:'now', subject:'New email', text });
+    emailState.selected.add(id);
+    emailsSelectedPill.textContent = emailState.selected.size + ' selected';
+    newEmailText.value = '';
+    if(extracted.length === 0){
+      runNote.textContent = "Processed, but I didn't detect any known tax document keywords. Try W-2, 1099-INT, etc.";
+    } else {
+      runNote.textContent = 'Processed: inferred ' + extracted.length + ' doc type(s). Hit Run reconciliation to update the ledger.';
+    }
+    runNote.style.color = 'rgba(44,38,32,.62)';
+  }
+
+  function wire(){
+    addEmailBtn.addEventListener('click', inferFromNewEmail);
+    runBtn.addEventListener('click', () => {
+      renderAll();
+      runNote.textContent = 'Reconciliation complete. Ledger + request list updated.';
+      runNote.style.color = 'rgba(44,38,32,.62)';
+    });
+    sheetRunBtn.addEventListener('click', () => {
+      renderAll();
+      runNote.textContent = 'Applied sheet import + selected emails. Ledger + request list updated.';
+      runNote.style.color = 'rgba(44,38,32,.62)';
+    });
+  }
+
+  function init(){
+    state.selectedClientId = SEED.clients[0].id;
+    renderEmails();
+    renderSheet();
+    renderAll();
+    wire();
+  }
+
+  init();
+})();
+</script><div id="gary-deploy-marker" style="display:none">DEPLOY-x3-0</div>
