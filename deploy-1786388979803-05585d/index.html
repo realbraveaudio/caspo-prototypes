@@ -1,0 +1,491 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Document Chase Agent — Live Demo</title><style>
+:root{
+  --bg:#FAF6EF; --ink:#2C2620; --muted:#6B6258; --accent:#B85C38; --sage:#7BAF8E;
+  --card:#FFFFFF; --line:rgba(44,38,32,.12);
+  --shadow: 0 14px 30px rgba(44,38,32,.08);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji"; background: radial-gradient(1200px 600px at 20% -10%, rgba(184,92,56,.14), transparent 55%), radial-gradient(800px 500px at 90% 10%, rgba(123,175,142,.18), transparent 52%), var(--bg); color:var(--ink)}
+.container{max-width:1120px;margin:0 auto;padding:22px 16px 40px}
+.hero{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg, rgba(184,92,56,.95), rgba(184,92,56,.25)); box-shadow: 0 10px 20px rgba(184,92,56,.18); display:grid;place-items:center; color:#fff; font-weight:800; letter-spacing:-.02em}
+.hgroup h1{margin:0;font-size:18px;letter-spacing:-.02em}
+.hgroup p{margin:6px 0 0; color:var(--muted); font-size:13px; max-width:680px}
+.pill{border:1px solid var(--line); background: rgba(255,255,255,.7); padding:9px 12px; border-radius:999px; font-size:12.5px; color:var(--muted); white-space:nowrap}
+.grid{display:grid;grid-template-columns: 1.05fr .95fr; gap:14px; align-items:start}
+@media (max-width: 980px){.grid{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.82); border:1px solid var(--line); border-radius:var(--radius); box-shadow: var(--shadow); overflow:hidden}
+.card .head{padding:14px 14px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px}
+.card .head h2{margin:0; font-size:14px; letter-spacing:.02em; text-transform:uppercase; color:rgba(44,38,32,.85)}
+.card .body{padding:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.label{font-size:12px; color:var(--muted); margin-bottom:6px}
+select, button, textarea, input[type="text"]{font:inherit}
+select{appearance:none; background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; min-width:240px}
+@media (max-width: 520px){select{min-width:100%}}
+.btn{cursor:pointer; border:1px solid var(--line); background:#fff; border-radius:14px; padding:10px 12px; font-weight:650; color:var(--ink); transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease}
+.btn:hover{transform: translateY(-1px); box-shadow: 0 10px 18px rgba(44,38,32,.08); border-color: rgba(44,38,32,.22)}
+.btn:active{transform: translateY(0)}
+.btnPrimary{background:linear-gradient(135deg, rgba(184,92,56,.95), rgba(184,92,56,.78)); color:#fff; border-color: rgba(184,92,56,.35)}
+.btnPrimary:hover{border-color: rgba(184,92,56,.6); box-shadow: 0 14px 26px rgba(184,92,56,.22)}
+.btnSage{background:linear-gradient(135deg, rgba(123,175,142,.98), rgba(123,175,142,.78)); color:#fff; border-color: rgba(123,175,142,.35)}
+.mini{font-size:12.5px; color:var(--muted)}
+.hr{height:1px; background:var(--line); margin:12px 0}
+
+.list{display:flex;flex-direction:column; gap:10px}
+.item{border:1px solid var(--line); background:#fff; border-radius:16px; padding:12px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+.item .left{min-width:0}
+.item .title{font-weight:800; letter-spacing:-.01em; font-size:13.5px; margin:0 0 6px}
+.item .meta{color:var(--muted); font-size:12.5px; margin:0}
+.badge{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; padding:7px 10px; border-radius:999px; border:1px solid var(--line); background: rgba(250,246,239,.8); color: rgba(44,38,32,.9)}
+.dot{width:9px;height:9px;border-radius:50%}
+.dot.ok{background:var(--sage)}
+.dot.miss{background:var(--accent)}
+.dot.req{background:rgba(44,38,32,.25)}
+
+.checks{display:flex;flex-direction:column; gap:10px}
+.checkRow{display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; padding:12px; border:1px solid var(--line); background:#fff; border-radius:16px; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease}
+.checkRow.flash{animation: flash 1.1s ease}
+@keyframes flash{0%{box-shadow:0 0 0 rgba(184,92,56,0)} 20%{box-shadow:0 0 0 6px rgba(184,92,56,.18)} 55%{box-shadow:0 0 0 2px rgba(184,92,56,.12)} 100%{box-shadow:0 0 0 rgba(184,92,56,0)}}
+.checkMain{min-width:0}
+.checkName{font-weight:850; font-size:13.5px; margin:0 0 5px; letter-spacing:-.01em}
+.checkSub{margin:0; color:var(--muted); font-size:12.5px}
+
+.tagRow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+.tag{font-size:12px; padding:6px 9px; border-radius:999px; border:1px solid var(--line); background: rgba(250,246,239,.8); color: rgba(44,38,32,.9)}
+.tag.ok{border-color: rgba(123,175,142,.35); background: rgba(123,175,142,.12)}
+.tag.miss{border-color: rgba(184,92,56,.35); background: rgba(184,92,56,.12)}
+.tag.req{border-color: rgba(44,38,32,.18); background: rgba(44,38,32,.06)}
+
+textarea{width:100%; min-height:160px; border-radius:16px; border:1px solid var(--line); padding:12px; background:#fff; resize:vertical}
+.smallGrid{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+@media (max-width: 980px){.smallGrid{grid-template-columns:1fr}}
+
+.footerNote{margin-top:12px; color:var(--muted); font-size:12.5px}
+.linkish{color: rgba(184,92,56,.95); text-decoration: none; font-weight:750}
+</style></head><body>
+<div class="container">
+  <div class="hero">
+    <div class="brand">
+      <div class="logo">DS</div>
+      <div class="hgroup">
+        <h1>Document Chase Agent</h1>
+        <p>Live demo — sample data. The real build wires into your systems. Click an “incoming email attachment” to mark it received, then generate the “still needed” request email.</p>
+      </div>
+    </div>
+    <div class="pill">No logins. No real client data. Sample-only demo.</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="head">
+        <h2>1) Intake: what just arrived</h2>
+        <div class="mini" id="clock">—</div>
+      </div>
+      <div class="body">
+        <div class="smallGrid">
+          <div>
+            <div class="label">Client</div>
+            <select id="clientSelect" aria-label="Select client"></select>
+          </div>
+          <div>
+            <div class="label">Tax year / packet</div>
+            <select id="yearSelect" aria-label="Select tax year"></select>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="label">Incoming email (sample)</div>
+        <div class="list" id="inboxList"></div>
+
+        <div class="footerNote">Tip: this is where the real agent would read your inbox/spreadsheet activity, extract document types, and route them to the right client checklist item.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <h2>2) Checklist: received vs still needed</h2>
+        <div class="badge" title="Counts update automatically">
+          <span class="dot ok" aria-hidden="true"></span><span id="countsOk">0 received</span>
+          <span style="opacity:.35">|</span>
+          <span class="dot miss" aria-hidden="true"></span><span id="countsMiss">0 missing</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="checks" id="checks"></div>
+
+        <div class="hr"></div>
+        <div class="label">3) Request email (auto-drafted)</div>
+        <button class="btn btnSage" id="genEmail" style="width:100%; margin-bottom:10px">Generate “Still Needed” Email</button>
+        <textarea id="emailDraft" readonly></textarea>
+
+        <div class="row" style="margin-top:10px; justify-content:space-between">
+          <div class="mini" id="draftMeta">Uses whatever is currently marked missing (sample-only).</div>
+          <button class="btn" id="markRequested">Mark missing as “Requested”</button>
+        </div>
+
+        <div class="hr"></div>
+        <div class="label">Audit trail (sample)</div>
+        <div class="list" id="audit"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = (id)=>document.getElementById(id);
+
+  const initial = {
+    clients:[
+      {
+        id:"bennett",
+        name:"Bennett Family",
+        packets:{
+          "2025":{
+            checklist:[
+              {key:"w2", name:"W-2 Wage Statement", note:"All employees"},
+              {key:"1099-int", name:"1099-INT (Interest)", note:"Bank interest"},
+              {key:"1099-div", name:"1099-DIV (Dividends)", note:"Broker dividends"},
+              {key:"k-1", name:"K-1 Schedules", note:"Partnerships/LLCs"},
+              {key:"mortgage", name:"Mortgage Interest (Form 1098)", note:"Home loan statement"},
+              {key:"charity", name:"Charitable Contributions", note:"Receipts/donations"}
+            ],
+            received:{"w2":true,"mortgage":true},
+            requested:{},
+            audit:[]
+          }
+        }
+      },
+      {
+        id:"lopez",
+        name:"Lopez Consulting",
+        packets:{
+          "2025":{
+            checklist:[
+              {key:"w2", name:"W-2 Wage Statement", note:"Owner employees"},
+              {key:"1099-misc", name:"1099-MISC / 1099-NEC", note:"Client/vendor totals"},
+              {key:"biz-exp", name:"Business Expenses Log", note:"Receipts summary"},
+              {key:"mileage", name:"Mileage Summary", note:"Car/ride records"},
+              {key:"health-1095", name:"Health Coverage (1095-A/1095-B/C)", note:"Insurance forms"}
+            ],
+            received:{"biz-exp":true},
+            requested:{"mileage":true},
+            audit:[]
+          }
+        }
+      }
+    ],
+    inbox:[
+      {id:"m1", clientId:"bennett", year:"2025", subject:"Bennett: Attached 1099-INT", docKey:"1099-int", filename:"1099-INT_Bank_A.pdf"},
+      {id:"m2", clientId:"bennett", year:"2025", subject:"Bennett: Mortgage statement for taxes", docKey:"mortgage", filename:"Form_1098_Mortgage_2025.pdf"},
+      {id:"m3", clientId:"bennett", year:"2025", subject:"Bennett: Donations receipts", docKey:"charity", filename:"Charity_Receipts_2025.zip"},
+      {id:"m4", clientId:"lopez", year:"2025", subject:"Lopez: 1099-NEC received", docKey:"1099-misc", filename:"1099-NEC_ClientTotals.xlsx"},
+      {id:"m5", clientId:"lopez", year:"2025", subject:"Lopez: Health insurance forms", docKey:"health-1095", filename:"1095_forms_combined.pdf"},
+      {id:"m6", clientId:"lopez", year:"2025", subject:"Lopez: Mileage summary draft", docKey:"mileage", filename:"Mileage_Summary_2025.docx"}
+    ]
+  };
+
+  const state = structuredClone(initial);
+
+  const allClients = state.clients;
+  const years = (client)=>Object.keys(client.packets);
+
+  function setClock(){
+    const d = new Date();
+    const s = d.toLocaleString([], {year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    $("clock").textContent = s;
+  }
+  setClock();
+  setInterval(setClock, 15000);
+
+  function getPacket(clientId, year){
+    const c = allClients.find(x=>x.id===clientId);
+    return c.packets[year];
+  }
+  function getChecklistItem(packet, key){
+    return packet.checklist.find(x=>x.key===key);
+  }
+
+  function fillClientAndYear(){
+    const clientSelect = $("clientSelect");
+    clientSelect.innerHTML='';
+    for(const c of allClients){
+      const opt=document.createElement('option');
+      opt.value=c.id; opt.textContent=c.name;
+      clientSelect.appendChild(opt);
+    }
+
+    const firstClientId = allClients[0].id;
+    clientSelect.value = firstClientId;
+
+    fillYears();
+  }
+
+  function fillYears(){
+    const clientId = $("clientSelect").value;
+    const c = allClients.find(x=>x.id===clientId);
+    const yearSelect = $("yearSelect");
+    yearSelect.innerHTML='';
+    const y = years(c);
+    for(const yr of y){
+      const opt=document.createElement('option');
+      opt.value=yr; opt.textContent=yr;
+      yearSelect.appendChild(opt);
+    }
+    yearSelect.value = y[0];
+  }
+
+  function badgeForStatus(packet, key){
+    const isRec = !!packet.received[key];
+    const isReq = !!packet.requested[key];
+    if(isRec) return {cls:"ok", label:"Received"};
+    if(isReq) return {cls:"req", label:"Requested"};
+    return {cls:"miss", label:"Missing"};
+  }
+
+  function renderInbox(){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const inbox = state.inbox.filter(m=>m.clientId===clientId && m.year===year);
+    const wrap = $("inboxList");
+    wrap.innerHTML='';
+
+    if(inbox.length===0){
+      wrap.innerHTML = '<div class="mini">No sample incoming messages for this selection.</div>';
+      return;
+    }
+
+    for(const m of inbox){
+      const packet = getPacket(clientId, year);
+      const item = getChecklistItem(packet, m.docKey);
+      const status = badgeForStatus(packet, m.docKey);
+
+      const div = document.createElement('div');
+      div.className='item';
+      div.innerHTML = `
+        <div class="left">
+          <p class="title">${escapeHtml(item?.name || m.docKey)}</p>
+          <p class="meta">${escapeHtml(m.subject)}<br/><span style="opacity:.9">${escapeHtml(m.filename)}</span></p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          <div class="badge" style="padding:7px 10px; background:rgba(250,246,239,.9)">
+            <span class="dot ${status.cls==='ok'?'ok':(status.cls==='miss'?'miss':'req')}"></span>
+            <span>${escapeHtml(status.label)}</span>
+          </div>
+          <button class="btn btnPrimary" data-msgid="${m.id}">Add to checklist</button>
+        </div>
+      `;
+      wrap.appendChild(div);
+    }
+
+    wrap.querySelectorAll('button[data-msgid]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const msgId = btn.getAttribute('data-msgid');
+        applyIncoming(msgId);
+      });
+    });
+  }
+
+  function renderChecks(){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const packet = getPacket(clientId, year);
+
+    const wrap = $("checks");
+    wrap.innerHTML='';
+
+    let receivedCount = 0;
+    let missingCount = 0;
+
+    for(const item of packet.checklist){
+      const key=item.key;
+      const isRec = !!packet.received[key];
+      const isReq = !!packet.requested[key];
+
+      if(isRec) receivedCount++;
+      if(!isRec && !isReq) missingCount++;
+
+      const status = badgeForStatus(packet, key);
+      const row = document.createElement('div');
+      row.className='checkRow';
+      row.id = 'check-'+key;
+
+      row.innerHTML = `
+        <div class="checkMain">
+          <p class="checkName">${escapeHtml(item.name)}</p>
+          <p class="checkSub">${escapeHtml(item.note)}</p>
+        </div>
+        <div class="tagRow">
+          <span class="tag ${status.cls}">${escapeHtml(status.label)}</span>
+        </div>
+      `;
+      wrap.appendChild(row);
+    }
+
+    $("countsOk").textContent = receivedCount + " received";
+    $("countsMiss").textContent = missingCount + " missing";
+  }
+
+  function addAudit(entry){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const packet = getPacket(clientId, year);
+    packet.audit.unshift(entry);
+    packet.audit = packet.audit.slice(0,6);
+    renderAudit();
+  }
+
+  function renderAudit(){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const packet = getPacket(clientId, year);
+    const wrap = $("audit");
+    wrap.innerHTML='';
+    if(packet.audit.length===0){
+      wrap.innerHTML = '<div class="mini">No changes yet. Add an incoming message to see audit entries.</div>';
+      return;
+    }
+    for(const a of packet.audit){
+      const div=document.createElement('div');
+      div.className='item';
+      div.innerHTML = `
+        <div class="left">
+          <p class="title">${escapeHtml(a.title)}</p>
+          <p class="meta">${escapeHtml(a.detail)}<br/><span style="opacity:.9">${escapeHtml(a.when)}</span></p>
+        </div>
+        <div class="badge"><span class="dot ok"></span><span>Logged</span></div>
+      `;
+      wrap.appendChild(div);
+    }
+  }
+
+  function applyIncoming(msgId){
+    const msg = state.inbox.find(x=>x.id===msgId);
+    if(!msg) return;
+
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    if(msg.clientId!==clientId || msg.year!==year){
+      // Shouldn't happen in this demo UI.
+      return;
+    }
+
+    const packet = getPacket(clientId, year);
+
+    // Mark as received; receiving implies it is no longer "missing".
+    packet.received[msg.docKey] = true;
+    delete packet.requested[msg.docKey];
+
+    const item = getChecklistItem(packet, msg.docKey);
+    const title = item?.name || msg.docKey;
+    const when = new Date().toLocaleString([], {hour:'2-digit',minute:'2-digit',month:'short',day:'2-digit'});
+
+    addAudit({
+      title: "Received: " + title,
+      detail: msg.filename,
+      when: when
+    });
+
+    // Flash the affected checklist row for clarity.
+    const row = document.getElementById('check-'+msg.docKey);
+    if(row){ row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }
+
+    renderChecks();
+    renderInbox();
+
+    // If email draft already exists, keep it: user can regenerate.
+  }
+
+  function missingListText(){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const packet = getPacket(clientId, year);
+
+    const missing = packet.checklist.filter(it=>{
+      const rec = !!packet.received[it.key];
+      const req = !!packet.requested[it.key];
+      return !rec && !req;
+    });
+
+    return missing;
+  }
+
+  function generateDraft(){
+    const clientId = $("clientSelect").value;
+    const c = allClients.find(x=>x.id===clientId);
+    const year = $("yearSelect").value;
+    const missing = missingListText();
+
+    const to = c.name + " (tax packet " + year + ")";
+    const bullets = missing.map(m=>`- ${m.name}`).join("\n");
+
+    const greeting = "Hi " + c.name.split(' ')[0] + ",";
+
+    const body = missing.length
+      ? `${greeting}\n\nThanks — we’ve got the documents you sent. To finish your ${year} return, we still need: \n${bullets}\n\nIf any of these are already on the way, just reply with what’s in that email/zip and we’ll line everything up.\n\nAppreciate you,\nYour tax team`
+      : `${greeting}\n\nGreat news — we don’t currently show anything missing for your ${year} packet.\n\nIf you have any updated docs (or something you sent earlier that wasn’t tracked), feel free to reply and we’ll add them.\n\nThank you,\nYour tax team`;
+
+    $("emailDraft").value = body;
+    $("draftMeta").textContent = missing.length ? "Draft includes the currently missing items." : "Draft shows: nothing missing right now.";
+  }
+
+  function markRequested(){
+    const clientId = $("clientSelect").value;
+    const year = $("yearSelect").value;
+    const packet = getPacket(clientId, year);
+    const missing = packet.checklist.filter(it=>{
+      const rec = !!packet.received[it.key];
+      const req = !!packet.requested[it.key];
+      return !rec && !req;
+    });
+
+    if(missing.length===0){
+      addAudit({title:"Nothing to request", detail:"No missing items at this moment.", when:new Date().toLocaleString([], {hour:'2-digit',minute:'2-digit',month:'short',day:'2-digit'})});
+      renderChecks();
+      renderInbox();
+      generateDraft();
+      return;
+    }
+
+    for(const m of missing){ packet.requested[m.key] = true; }
+
+    addAudit({
+      title:"Marked as requested",
+      detail: "Requested: " + missing.map(x=>x.name).join('; '),
+      when: new Date().toLocaleString([], {hour:'2-digit',minute:'2-digit',month:'short',day:'2-digit'})
+    });
+
+    renderChecks();
+    renderInbox();
+    generateDraft();
+  }
+
+  function escapeHtml(s){
+    return String(s ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  }
+
+  function rerenderAll(){
+    renderInbox();
+    renderChecks();
+    renderAudit();
+    // Don't overwrite the draft unless user regenerates.
+    if($("emailDraft").value.trim()==='') generateDraft();
+  }
+
+  // Events
+  $("clientSelect").addEventListener('change', ()=>{
+    fillYears();
+    rerenderAll();
+  });
+  $("yearSelect").addEventListener('change', ()=> rerenderAll());
+  $("genEmail").addEventListener('click', ()=> generateDraft());
+  $("markRequested").addEventListener('click', ()=> markRequested());
+
+  // Init
+  fillClientAndYear();
+  rerenderAll();
+})();
+</script></body></html><div id="gary-deploy-marker" style="display:none">DEPLOY-x2-0</div>
