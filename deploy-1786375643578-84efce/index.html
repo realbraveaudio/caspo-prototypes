@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HVAC intake -> checklist -> blocked scheduling (demo)</title>
+    <style>
+      :root{
+        --bg:#FAF6EF; --card:#FFFFFF; --ink:#2C2620; --muted:#7A6D5B; --accent:#B85C38; --good:#7BAF8E; --warn:#D9A05B; --line:#E5DCCC;
+      }
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        background:
+          radial-gradient(900px 420px at 10% -10%, rgba(184,92,56,.20), transparent 55%),
+          radial-gradient(760px 420px at 95% 10%, rgba(123,175,142,.18), transparent 50%),
+          linear-gradient(180deg,#FAF6EF,#F3EFE6);
+        color:var(--ink);
+        font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      }
+      .wrap{ max-width:980px; margin:0 auto; padding:16px; }
+      .top{
+        display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:12px;
+      }
+      .title{ font-weight:950; font-size:20px; letter-spacing:.2px; }
+      .tag{
+        font-size:11px; color:rgba(0,0,0,.62);
+        border:1px solid var(--line); background:rgba(255,255,255,.65);
+        border-radius:999px; padding:6px 10px; font-weight:900; white-space:nowrap;
+      }
+      .grid{ display:grid; grid-template-columns:1.25fr .75fr; gap:12px; }
+      @media(max-width:900px){ .grid{ grid-template-columns:1fr; } }
+
+      .card{
+        background:rgba(255,255,255,.70);
+        border:1px solid var(--line);
+        border-radius:18px;
+        box-shadow:0 1px 3px rgba(0,0,0,.06);
+        overflow:hidden;
+      }
+      .cardInner{ padding:14px; }
+
+      label{ display:block; font-size:12px; color:var(--muted); font-weight:900; letter-spacing:.2px; margin-bottom:6px; }
+      input,select,textarea{
+        width:100%; border-radius:12px; border:1px solid rgba(0,0,0,.08);
+        background:rgba(250,246,239,.85); padding:10px 12px; outline:none;
+        font-weight:900; color:var(--ink); font-size:13px;
+      }
+      textarea{ min-height:92px; resize:vertical; }
+
+      .pill{
+        font-size:11px; font-weight:950; border-radius:999px; padding:3px 9px; border:1px solid transparent; white-space:nowrap;
+      }
+      .pill.good{ color:#1f5d35; background:#E8F0E9; border-color:rgba(107,175,143,.45); }
+      .pill.warn{ color:#6d4d12; background:#F8EFE3; border-color:rgba(217,160,91,.45); }
+      .pill.neutral{ color:var(--muted); background:rgba(255,255,255,.55); border-color:rgba(0,0,0,.08); }
+
+      .btn{
+        border-radius:14px;
+        border:1px solid rgba(184,92,56,.35);
+        background:rgba(184,92,56,.12);
+        cursor:pointer;
+        font-weight:950;
+        padding:10px 14px;
+        color:var(--ink);
+        user-select:none;
+      }
+      .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+      .sectionHead{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+      .sectionTitle{ font-weight:950; font-size:14px; color:rgba(0,0,0,.72); }
+
+      .list{ display:flex; flex-direction:column; gap:8px; }
+      .li{
+        display:flex; justify-content:space-between; gap:12px; align-items:center;
+        padding:10px 12px;
+        border-radius:14px;
+        border:1px solid rgba(0,0,0,.08);
+        background:rgba(255,255,255,.70);
+      }
+      .li .left{ font-weight:900; font-size:13px; color:rgba(0,0,0,.75); }
+      .li .right{ font-weight:950; font-size:12px; color:rgba(0,0,0,.62); }
+
+      .errorBox{
+        margin-top:10px;
+        border-radius:14px;
+        padding:10px 12px;
+        border:1px solid rgba(217,160,91,.45);
+        background:rgba(217,160,91,.14);
+        font-weight:950;
+        color:#6d4d12;
+        font-size:12px;
+        line-height:1.4;
+      }
+      .hr{ height:1px; background:rgba(0,0,0,.08); margin:12px 0; }
+
+      .row{ display:flex; gap:10px; flex-wrap:wrap; }
+      .row > div{ flex:1; min-width:220px; }
+
+      .slots{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+        margin-top:10px;
+      }
+      @media(max-width:650px){ .slots{ grid-template-columns:1fr; } }
+
+      .slot{
+        border-radius:14px;
+        padding:10px;
+        border:1px solid rgba(0,0,0,.08);
+        background:rgba(255,255,255,.72);
+        cursor:pointer;
+        outline:none;
+        min-height:54px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap:6px;
+      }
+      .slot[aria-disabled="true"]{ opacity:.60; cursor:not-allowed; background:rgba(255,255,255,.55); }
+      .slot.selected{ outline:2px solid rgba(184,92,56,.35); }
+      .slotTime{ font-weight:950; font-size:13px; }
+      .slotMeta{ font-size:11px; color:var(--muted); font-weight:900; }
+
+      .muted{ color:var(--muted); font-size:12px; line-height:1.45; font-weight:900; }
+      .side{ display:flex; flex-direction:column; gap:12px; }
+      .sideCard{
+        background:rgba(255,255,255,.70);
+        border:1px solid var(--line);
+        border-radius:18px;
+        box-shadow:0 1px 3px rgba(0,0,0,.06);
+      }
+      .sideInner{ padding:14px; }
+      .small{ font-size:11px; color:var(--muted); font-weight:900; line-height:1.45; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <div class="title">HVAC intake -> required checklist -> blocked scheduling</div>
+          <div class="muted" style="margin-top:6px;max-width:64ch">
+            Capture intake once -> generate the correct required-field checklist per job type -> keep scheduling blocked until all required fields are complete; manager override unlocks only with an approval note.
+          </div>
+        </div>
+        <div class="tag">live demo page • sample data • manager override</div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="cardInner">
+            <div class="sectionHead">
+              <div class="sectionTitle">1) Intake (Google Form -> mapped via spreadsheet)</div>
+              <span class="pill neutral" id="readinessPill">waiting</span>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Job type</label>
+                <select id="jobSel"></select>
+              </div>
+              <div>
+                <label>Install window</label>
+                <select id="installWindowSel"></select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Client name</label>
+                <input id="clientNameIn" type="text" placeholder="e.g. Jordan Smith" />
+              </div>
+              <div>
+                <label>Email</label>
+                <input id="emailIn" type="email" placeholder="e.g. jordan@example.com" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Service address</label>
+                <input id="addrIn" type="text" placeholder="e.g. 12 Oak Street, Springfield" />
+              </div>
+              <div>
+                <label>Home size (sq ft)</label>
+                <input id="homeSizeIn" type="number" inputmode="numeric" placeholder="e.g. 2400" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>System type</label>
+                <select id="systemTypeSel">
+                  <option value="">Select</option>
+                  <option value="central_ac">Central AC</option>
+                  <option value="heat_pump">Heat pump</option>
+                  <option value="furnace">Furnace</option>
+                  <option value="ductless">Ductless mini-split</option>
+                </select>
+              </div>
+              <div>
+                <label>Measurements captured?</label>
+                <select id="measurementsSel">
+                  <option value="">Select</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No / missing</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Access / electrical notes (required by some job types)</label>
+                <textarea id="accessNotesIn" placeholder="Gate, pets, electrical access, etc."></textarea>
+              </div>
+              <div>
+                <label>Existing unit age (years, required by furnace)</label>
+                <input id="existingAgeIn" type="number" inputmode="numeric" placeholder="e.g. 14" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Room count (required by ductless)</label>
+                <input id="roomCountIn" type="number" inputmode="numeric" placeholder="e.g. 3" />
+              </div>
+              <div>
+                <label>Budget band (optional for scheduling demo)</label>
+                <select id="budgetSel">
+                  <option value="">Select</option>
+                  <option value="$2k-$5k">$2k-$5k</option>
+                  <option value="$5k-$12k">$5k-$12k</option>
+                  <option value="$12k+">$12k+</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <button class="btn" id="genBtn" type="button">Capture intake + generate checklist</button>
+              <button class="btn" id="resetBtn" type="button">Reset demo</button>
+              <span class="pill neutral" id="missingPill">—</span>
+            </div>
+
+            <div class="errorBox" id="missingBox" style="display:none"></div>
+            <div class="hr"></div>
+
+            <div class="sectionHead" style="margin-bottom:8px">
+              <div class="sectionTitle">2) Required-field checklist gate</div>
+              <span class="pill neutral" id="checklistPill">—</span>
+            </div>
+
+            <div class="list" id="checklistList"></div>
+
+            <div class="hr"></div>
+
+            <div class="sectionHead" style="margin-bottom:8px">
+              <div class="sectionTitle">3) Scheduling (Calendly)</div>
+              <span class="pill neutral" id="schedulePill">locked</span>
+            </div>
+
+            <div class="row">
+              <div>
+                <button class="btn" id="findSlotsBtn" type="button" disabled>Find available slots</button>
+              </div>
+              <div>
+                <button class="btn" id="scheduleBtn" type="button" disabled>Schedule (simulated)</button>
+              </div>
+            </div>
+
+            <div class="errorBox" id="scheduleMsg" style="display:none"></div>
+            <div class="slots" id="slotGrid"></div>
+            <div class="muted" id="scheduleNote" style="margin-top:10px">
+              Scheduling is blocked until all required checklist fields are complete.
+            </div>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="sideCard">
+            <div class="sideInner">
+              <div class="sectionHead" style="margin-bottom:10px">
+                <div class="sectionTitle">Manager override</div>
+                <span class="pill neutral" id="managerPill">customer</span>
+              </div>
+
+              <div class="small">
+                In production: an internal Google Form would collect/store the approval note, then the backend unlocks the Calendly link.
+              </div>
+
+              <div style="margin-top:10px">
+                <label style="margin-bottom:6px">Mode</label>
+                <select id="roleSel">
+                  <option value="customer">Customer</option>
+                  <option value="manager">Manager override</option>
+                </select>
+              </div>
+
+              <div id="overrideBox" style="display:none;margin-top:10px">
+                <label>Approval note (required)</label>
+                <textarea id="approvalNoteIn" placeholder="Short approval note: why this can be scheduled despite missing fields."></textarea>
+                <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+                  <button class="btn" id="requestOverrideBtn" type="button" disabled>Submit override + unlock</button>
+                </div>
+                <div class="small" style="margin-top:10px" id="overrideHelp">Scheduling remains locked until you submit this note.</div>
+              </div>
+
+              <div id="overrideSummary" style="display:none;margin-top:12px" class="small"></div>
+            </div>
+          </div>
+
+          <div class="sideCard">
+            <div class="sideInner">
+              <div class="sectionTitle">Required-field mapping (from spreadsheet)</div>
+              <div class="small" style="margin-top:6px" id="mappingNote"></div>
+              <div class="list" id="requiredList" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        function pad2(n) { return String(n).padStart(2, '0'); }
+        function toISODate(d) {
+          var dt = new Date(d);
+          return dt.getFullYear() + '-' + pad2(dt.getMonth() + 1) + '-' + pad2(dt.getDate());
+        }
+        function addDays(date, days) { return new Date(date.getTime() + Number(days) * 86400000); }
+        function overlaps(aStart, aEnd, bStart, bEnd) { return aStart < bEnd && bStart < aEnd; }
+        function formatTime(minFromMidnight) {
+          var h = Math.floor(minFromMidnight / 60);
+          var m = minFromMidnight % 60;
+          var hh12 = ((h + 11) % 12) + 1;
+          var ampm = h < 12 ? 'AM' : 'PM';
+          return hh12 + ':' + pad2(m) + ' ' + ampm;
+        }
+
+        // Job types: assumed from your spec (4 total).
+        var business = {
+          name: 'HVAC Installations',
+          jobTypes: [
+            {
+              id: 'ac_changeout',
+              label: 'AC changeout',
+              calendlyEventLabel: 'AC Changeout - intake to install',
+              requiredFields: ['client_name', 'email', 'service_address', 'system_type', 'home_size', 'measurements_captured', 'install_window'],
+              checklist: [
+                { id: 'contact', label: 'Confirm contact details' },
+                { id: 'address', label: 'Confirm service address + access notes' },
+                { id: 'equipment', label: 'Capture system type + home size' },
+                { id: 'measurements', label: 'Measurements captured (required for sizing/permit)' },
+                { id: 'timing', label: 'Install window captured so scheduling is real' }
+              ]
+            },
+            {
+              id: 'heat_pump',
+              label: 'Heat pump',
+              calendlyEventLabel: 'Heat Pump - intake to install',
+              requiredFields: ['client_name', 'email', 'service_address', 'system_type', 'home_size', 'measurements_captured', 'access_notes', 'install_window'],
+              checklist: [
+                { id: 'contact', label: 'Confirm contact details' },
+                { id: 'address', label: 'Confirm service address + electrical access notes' },
+                { id: 'equipment', label: 'Capture system type + home size' },
+                { id: 'measurements', label: 'Measurements captured (required for equipment sizing)' },
+                { id: 'timing', label: 'Install window captured' }
+              ]
+            },
+            {
+              id: 'furnace',
+              label: 'Furnace replacement',
+              calendlyEventLabel: 'Furnace Replacement - intake to install',
+              requiredFields: ['client_name', 'email', 'service_address', 'system_type', 'home_size', 'measurements_captured', 'existing_unit_age', 'install_window'],
+              checklist: [
+                { id: 'contact', label: 'Confirm contact details' },
+                { id: 'address', label: 'Confirm service address + access notes' },
+                { id: 'equipment', label: 'Capture system type + home size' },
+                { id: 'measurements', label: 'Measurements captured (clearances / duct sizing)' },
+                { id: 'timing', label: 'Install window captured' },
+                { id: 'existing', label: 'Existing unit age captured (affects parts/permit path)' }
+              ]
+            },
+            {
+              id: 'ductless',
+              label: 'Ductless mini-split',
+              calendlyEventLabel: 'Ductless Mini-split - intake to install',
+              requiredFields: ['client_name', 'email', 'service_address', 'system_type', 'home_size', 'measurements_captured', 'room_count', 'install_window'],
+              checklist: [
+                { id: 'contact', label: 'Confirm contact details' },
+                { id: 'address', label: 'Confirm service address + access notes' },
+                { id: 'equipment', label: 'Capture system type + home size' },
+                { id: 'measurements', label: 'Measurements captured (required for layout)' },
+                { id: 'layout', label: 'Room count captured' },
+                { id: 'timing', label: 'Install window captured' }
+              ]
+            }
+          ],
+          scheduling: {
+            workingHours: { startMin: 9 * 60, endMin: 17 * 60 },
+            slotMinutes: 60,
+            slotStepMinutes: 30
+          }
+        };
+
+        // Sample busy blocks (Calendly already has appointments).
+        var seedDates = (function () {
+          var today = new Date();
+          var todayISO = toISODate(today);
+          var base = new Date(todayISO + 'T00:00:00');
+          var out = [];
+          for (var i = 0; i < 10; i++) out.push(toISODate(addDays(base, i)));
+          return out;
+        })();
+
+        var busyBlocks = [];
+        var busyTimesMin = [10 * 60, 11 * 60 + 30, 14 * 60, 15 * 60 + 30];
+        for (var di = 1; di <= 5; di++) {
+          var dateISO = seedDates[di];
+          for (var j = 0; j < Math.min(3, busyTimesMin.length); j++) {
+            busyBlocks.push({
+              startISO: dateISO + 'T' + pad2(Math.floor(busyTimesMin[j] / 60)) + ':' + pad2(busyTimesMin[j] % 60) + ':00',
+              durationMin: 60
+            });
+          }
+        }
+
+        // DOM.
+        function $(id) { return document.getElementById(id); }
+        var jobSel = $('jobSel');
+        var installWindowSel = $('installWindowSel');
+        var clientNameIn = $('clientNameIn');
+        var emailIn = $('emailIn');
+        var addrIn = $('addrIn');
+        var homeSizeIn = $('homeSizeIn');
+        var systemTypeSel = $('systemTypeSel');
+        var measurementsSel = $('measurementsSel');
+        var accessNotesIn = $('accessNotesIn');
+        var existingAgeIn = $('existingAgeIn');
+        var roomCountIn = $('roomCountIn');
+        var budgetSel = $('budgetSel');
+
+        var readinessPill = $('readinessPill');
+        var missingPill = $('missingPill');
+        var missingBox = $('missingBox');
+
+        var checklistList = $('checklistList');
+        var checklistPill = $('checklistPill');
+        var schedulePill = $('schedulePill');
+        var findSlotsBtn = $('findSlotsBtn');
+        var scheduleBtn = $('scheduleBtn');
+        var scheduleMsg = $('scheduleMsg');
+        var slotGrid = $('slotGrid');
+        var scheduleNote = $('scheduleNote');
+
+        var roleSel = $('roleSel');
+        var managerPill = $('managerPill');
+        var overrideBox = $('overrideBox');
+        var approvalNoteIn = $('approvalNoteIn');
+        var requestOverrideBtn = $('requestOverrideBtn');
+        var overrideSummary = $('overrideSummary');
+
+        var mappingNote = $('mappingNote');
+        var requiredList = $('requiredList');
+
+        // State: collect intake once; schedule gating updates only after "Capture intake".
+        var state = {
+          jobTypeId: '',
+          capturedValues: null,
+          missing: [],
+          ready: false,
+          overrideGranted: false,
+          approvalNote: '',
+          selectedSlot: null
+        };
+
+        function setPill(el, text, cls) {
+          el.textContent = text;
+          el.className = 'pill ' + (cls || 'neutral');
+        }
+
+        function setScheduleLocked(locked, msg) {
+          if (locked) {
+            setPill(schedulePill, 'locked', 'neutral');
+            findSlotsBtn.disabled = true;
+            scheduleBtn.disabled = true;
+            slotGrid.innerHTML = '';
+            scheduleMsg.style.display = 'none';
+            scheduleMsg.textContent = '';
+            scheduleNote.textContent = msg || 'Scheduling is blocked until all required checklist fields are complete.';
+          } else {
+            setPill(schedulePill, 'unlocked', 'good');
+            findSlotsBtn.disabled = false;
+            scheduleNote.textContent = 'Select a slot below and click Schedule (simulated).';
+          }
+        }
+
+        function humanizeField(fid) {
+          var map = {
+            client_name: 'Client name',
+            email: 'Email',
+            service_address: 'Service address',
+            system_type: 'System type',
+            home_size: 'Home size',
+            measurements_captured: 'Measurements captured',
+            install_window: 'Install window',
+            access_notes: 'Access / electrical notes',
+            existing_unit_age: 'Existing unit age (years)',
+            room_count: 'Room count',
+            budget_band: 'Budget band'
+          };
+          return map[fid] || fid;
+        }
+
+        function getValueFromInputs(fid) {
+          switch (fid) {
+            case 'client_name': return String(clientNameIn.value || '').trim();
+            case 'email': return String(emailIn.value || '').trim();
+            case 'service_address': return String(addrIn.value || '').trim();
+            case 'system_type': return String(systemTypeSel.value || '').trim();
+            case 'home_size': return String(homeSizeIn.value || '').trim();
+            case 'measurements_captured':
+              // Treat "No / missing" as incomplete (only "yes" unlocks scheduling).
+              return measurementsSel.value === 'yes' ? 'yes' : '';
+            case 'install_window': return String(installWindowSel.value || '').trim();
+            case 'access_notes': return String(accessNotesIn.value || '').trim();
+            case 'existing_unit_age': return String(existingAgeIn.value || '').trim();
+            case 'room_count': return String(roomCountIn.value || '').trim();
+            case 'budget_band': return String(budgetSel.value || '').trim();
+            default: return '';
+          }
+        }
+
+        function getJobType() {
+          return business.jobTypes.find(function (j) { return j.id === state.jobTypeId; }) || business.jobTypes[0] || null;
+        }
+
+        function computeMissing(jobType, capturedValues) {
+          var missing = [];
+          var req = Array.isArray(jobType && jobType.requiredFields) ? jobType.requiredFields : [];
+          for (var i = 0; i < req.length; i++) {
+            var fid = req[i];
+            var val = capturedValues ? capturedValues[fid] : '';
+            if (!val) missing.push(fid);
+          }
+          return missing;
+        }
+
+        function renderChecklist() {
+          var jt = getJobType();
+          checklistList.innerHTML = '';
+          var checklist = Array.isArray(jt && jt.checklist) ? jt.checklist : [];
+          var unlocked = state.ready || state.overrideGranted;
+
+          for (var i = 0; i < checklist.length; i++) {
+            var item = checklist[i];
+            var row = document.createElement('div');
+            row.className = 'li';
+            var left = document.createElement('div');
+            left.className = 'left';
+            left.textContent = item.label;
+            var right = document.createElement('div');
+            right.className = 'right';
+            right.textContent = unlocked ? 'pending' : 'blocked';
+            row.appendChild(left);
+            row.appendChild(right);
+            checklistList.appendChild(row);
+          }
+
+          checklistPill.textContent = unlocked ? 'ready' : 'needs info';
+          checklistPill.className = 'pill ' + (unlocked ? 'good' : 'warn');
+        }
+
+        function renderMapping() {
+          var jt = getJobType();
+          if (!jt) {
+            mappingNote.textContent = '';
+            requiredList.innerHTML = '';
+            return;
+          }
+          mappingNote.textContent = 'This is the required-field list for: ' + jt.label;
+          requiredList.innerHTML = '';
+          var capturedValues = state.capturedValues || {};
+          var req = Array.isArray(jt.requiredFields) ? jt.requiredFields : [];
+
+          for (var i = 0; i < req.length; i++) {
+            var fid = req[i];
+            var v = capturedValues[fid];
+            var row = document.createElement('div');
+            row.className = 'li';
+
+            var left = document.createElement('div');
+            left.className = 'left';
+            left.textContent = humanizeField(fid);
+
+            var right = document.createElement('div');
+            right.className = 'right';
+            var captured = !!v;
+            right.textContent = captured ? 'captured' : 'missing';
+            right.style.color = captured ? '#1f5d35' : '#6d4d12';
+
+            row.appendChild(left);
+            row.appendChild(right);
+            requiredList.appendChild(row);
+          }
+        }
+
+        function overlapsBusy(desiredStartMs, desiredEndMs) {
+          return busyBlocks.some(function (b) {
+            var s = new Date(b.startISO).getTime();
+            var e = s + Number(b.durationMin || 60) * 60_000;
+            return overlaps(desiredStartMs, desiredEndMs, s, e);
+          });
+        }
+
+        function computeSlots(earliestIdx, latestIdx, durationMin, stepMin) {
+          var slots = [];
+          var wh = business.scheduling.workingHours || { startMin: 540, endMin: 1020 };
+          var startMin = Number(wh.startMin || 540);
+          var endMin = Number(wh.endMin || 1020);
+
+          for (var di = Number(earliestIdx); di <= Number(latestIdx); di++) {
+            var dateISO = seedDates[di];
+            if (!dateISO) continue;
+            for (var t = startMin; t + durationMin <= endMin; t += stepMin) {
+              var desiredStartMs = new Date(
+                dateISO + 'T' + pad2(Math.floor(t / 60)) + ':' + pad2(t % 60) + ':00'
+              ).getTime();
+              var desiredEndMs = desiredStartMs + Number(durationMin) * 60_000;
+              if (!overlapsBusy(desiredStartMs, desiredEndMs)) {
+                slots.push({ dateISO: dateISO, startMin: t, durationMin: durationMin });
+                if (slots.length >= 10) return slots;
+              }
+            }
+          }
+          return slots;
+        }
+
+        function renderSlots(slots) {
+          state.selectedSlot = null;
+          slotGrid.innerHTML = '';
+          for (var i = 0; i < slots.length; i++) {
+            var sl = slots[i];
+            var startMs = new Date(sl.dateISO + 'T' + pad2(Math.floor(sl.startMin / 60)) + ':' + pad2(sl.startMin % 60) + ':00').getTime();
+            var endMs = startMs + Number(sl.durationMin) * 60_000;
+            var isDisabled = overlapsBusy(startMs, endMs);
+
+            var el = document.createElement('div');
+            el.className = 'slot';
+            el.setAttribute('role', 'button');
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+            el.innerHTML = '<div class="slotTime">' + formatTime(sl.startMin) + '</div><div class="slotMeta">' + sl.dateISO + '</div>';
+
+            el.addEventListener('click', function (evt) {
+              if (isDisabled) return;
+              var all = slotGrid.querySelectorAll('.slot');
+              for (var k = 0; k < all.length; k++) all[k].classList.remove('selected');
+              el.classList.add('selected');
+              state.selectedSlot = sl;
+              scheduleBtn.disabled = false;
+              scheduleMsg.style.display = 'none';
+              scheduleMsg.textContent = '';
+            });
+
+            el.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                el.click();
+              }
+            });
+
+            slotGrid.appendChild(el);
+          }
+
+          if (!slots.length) {
+            var empty = document.createElement('div');
+            empty.className = 'muted';
+            empty.style.gridColumn = '1/-1';
+            empty.textContent = 'No available slots in this demo window.';
+            slotGrid.appendChild(empty);
+            scheduleBtn.disabled = true;
+          }
+        }
+
+        function captureIntakeAndGenerate() {
+          var jt = getJobType();
+          if (!jt) return;
+
+          var captured = {};
+          // Capture once: store captured values used for missing-field gating.
+          for (var i = 0; i < jt.requiredFields.length; i++) {
+            var fid = jt.requiredFields[i];
+            captured[fid] = getValueFromInputs(fid);
+          }
+          state.capturedValues = captured;
+          state.missing = computeMissing(jt, captured);
+          state.ready = state.missing.length === 0;
+          state.selectedSlot = null;
+          state.overrideGranted = false;
+          state.approvalNote = '';
+          requestOverrideBtn.disabled = true;
+          overrideSummary.style.display = 'none';
+          overrideSummary.textContent = '';
+          requestOverrideBtn.textContent = 'Submit override + unlock';
+
+          readinessPill.textContent = state.ready ? 'ready' : 'needs info';
+          readinessPill.className = 'pill ' + (state.ready ? 'good' : 'warn');
+          missingPill.textContent = state.ready ? '0 missing' : ('missing ' + state.missing.length);
+          missingPill.className = 'pill ' + (state.ready ? 'good' : 'warn');
+
+          if (state.missing.length > 0) {
+            missingBox.style.display = 'block';
+            missingBox.textContent = 'Blocked by missing intake fields: ' + state.missing.map(humanizeField).join(', ') + '.';
+            setScheduleLocked(true, 'Scheduling stays blocked until missing fields are filled or a manager override is submitted.');
+          } else {
+            missingBox.style.display = 'none';
+            missingBox.textContent = '';
+            setScheduleLocked(false, 'Checklist complete.');
+          }
+
+          renderChecklist();
+          renderMapping();
+          scheduleMsg.style.display = 'none';
+          scheduleMsg.textContent = '';
+          findSlotsBtn.disabled = !((state.ready || state.overrideGranted));
+          scheduleBtn.disabled = true;
+        }
+
+        function findSlots() {
+          if (!(state.ready || state.overrideGranted)) {
+            setScheduleLocked(true, 'Scheduling is blocked until all required checklist fields are complete.');
+            return;
+          }
+          var winIdx = Number(installWindowSel.value || 0);
+          var earliestIdx = Math.max(0, winIdx);
+          var latestIdx = Math.min(seedDates.length - 1, winIdx + 3);
+          var durationMin = business.scheduling.slotMinutes || 60;
+          var stepMin = business.scheduling.slotStepMinutes || 30;
+          var slots = computeSlots(earliestIdx, latestIdx, durationMin, stepMin);
+          renderSlots(slots);
+          scheduleMsg.style.display = 'none';
+          scheduleMsg.textContent = '';
+        }
+
+        function scheduleSimulated() {
+          if (!state.selectedSlot) {
+            scheduleMsg.style.display = 'block';
+            scheduleMsg.textContent = 'Pick a slot first.';
+            return;
+          }
+          if (!(state.ready || state.overrideGranted)) {
+            scheduleMsg.style.display = 'block';
+            scheduleMsg.textContent = 'Scheduling is still blocked.';
+            return;
+          }
+
+          var jt = getJobType();
+          scheduleMsg.style.display = 'block';
+          scheduleMsg.textContent =
+            '✓ Scheduled (simulated): ' +
+            jt.calendlyEventLabel +
+            ' on ' + state.selectedSlot.dateISO +
+            ' at ' + formatTime(state.selectedSlot.startMin) +
+            '. In production, this is where the system would unlock/trigger your Calendly event.';
+
+          scheduleBtn.disabled = true;
+          findSlotsBtn.disabled = true;
+          setScheduleLocked(false, '');
+        }
+
+        function roleChanged() {
+          var isMgr = roleSel.value === 'manager';
+          managerPill.textContent = isMgr ? 'manager' : 'customer';
+          managerPill.className = 'pill ' + (isMgr ? 'warn' : 'neutral');
+          overrideBox.style.display = isMgr ? 'block' : 'none';
+          requestOverrideBtn.disabled = true;
+          approvalNoteIn.value = '';
+          state.overrideGranted = false;
+          state.approvalNote = '';
+          overrideSummary.style.display = 'none';
+          overrideSummary.textContent = '';
+
+          // Only unlock based on the captured checklist.
+          if (state.ready) {
+            setScheduleLocked(false, 'Checklist complete.');
+          } else {
+            setScheduleLocked(true, 'Scheduling is blocked until all required checklist fields are complete.');
+          }
+
+          scheduleMsg.style.display = 'none';
+          scheduleMsg.textContent = '';
+          scheduleBtn.disabled = true;
+        }
+
+        function onApprovalNoteInput() {
+          var note = String(approvalNoteIn.value || '').trim();
+          requestOverrideBtn.disabled = !note;
+        }
+
+        function requestOverrideUnlock() {
+          var note = String(approvalNoteIn.value || '').trim();
+          if (!note) return;
+          state.overrideGranted = true;
+          state.approvalNote = note;
+          overrideSummary.style.display = 'block';
+          overrideSummary.className = 'small';
+          overrideSummary.textContent =
+            'Override granted. Approval note: ' + note;
+          requestOverrideBtn.disabled = true;
+
+          setScheduleLocked(false, 'Manager override granted.');
+          renderChecklist();
+          renderMapping();
+
+          findSlotsBtn.disabled = false;
+          scheduleBtn.disabled = true;
+          scheduleMsg.style.display = 'none';
+          scheduleMsg.textContent = '';
+        }
+
+        function resetDemo() {
+          state.jobTypeId = business.jobTypes[0].id;
+          state.capturedValues = null;
+          state.missing = [];
+          state.ready = false;
+          state.overrideGranted = false;
+          state.approvalNote = '';
+          state.selectedSlot = null;
+
+          missingBox.style.display = 'none';
+          missingBox.textContent = '';
+          missingPill.textContent = '—';
+          missingPill.className = 'pill neutral';
+
+          readinessPill.textContent = 'waiting';
+          readinessPill.className = 'pill neutral';
+          checklistPill.textContent = '—';
+          checklistPill.className = 'pill neutral';
+          scheduleMsg.style.display = 'none';
+          scheduleMsg.textContent = '';
+          scheduleNote.textContent = 'Scheduling is blocked until all required checklist fields are complete.';
+
+          checklistList.innerHTML = '';
+          requiredList.innerHTML = '';
+          mappingNote.textContent = '';
+
+          overrideSummary.style.display = 'none';
+          overrideSummary.textContent = '';
+          requestOverrideBtn.disabled = true;
+          approvalNoteIn.value = '';
+
+          findSlotsBtn.disabled = true;
+          scheduleBtn.disabled = true;
+          slotGrid.innerHTML = '';
+
+          setScheduleLocked(true, 'Scheduling is blocked until all required checklist fields are complete.');
+        }
+
+        function init() {
+          jobSel.innerHTML = '';
+          for (var i = 0; i < business.jobTypes.length; i++) {
+            var jt = business.jobTypes[i];
+            var opt = document.createElement('option');
+            opt.value = jt.id;
+            opt.textContent = jt.label;
+            jobSel.appendChild(opt);
+          }
+
+          installWindowSel.innerHTML = '';
+          for (var d = 0; d < seedDates.length; d++) {
+            var o = document.createElement('option');
+            o.value = String(d);
+            o.textContent = seedDates[d];
+            installWindowSel.appendChild(o);
+          }
+          if (seedDates[1]) installWindowSel.value = '1';
+
+          state.jobTypeId = business.jobTypes[0].id;
+          roleSel.value = 'customer';
+          roleChanged();
+
+          resetDemo();
+
+          // Keep "capture once" behavior: checklist gating changes only after genBtn.
+          jobSel.addEventListener('change', function () {
+            state.jobTypeId = jobSel.value;
+            resetDemo();
+          });
+
+          installWindowSel.addEventListener('change', function () {
+            // Install window affects required install_window field, but we still require capture.
+            state.selectedSlot = null;
+            scheduleBtn.disabled = true;
+          });
+
+          genBtn.addEventListener('click', captureIntakeAndGenerate);
+          resetBtn.addEventListener('click', resetDemo);
+          findSlotsBtn.addEventListener('click', findSlots);
+          scheduleBtn.addEventListener('click', scheduleSimulated);
+
+          roleSel.addEventListener('change', roleChanged);
+          approvalNoteIn.addEventListener('input', onApprovalNoteInput);
+          requestOverrideBtn.addEventListener('click', requestOverrideUnlock);
+
+          // Initial locked state.
+          roleChanged();
+        }
+
+        // Buttons after init wiring.
+        var genBtn = $('genBtn');
+        var resetBtn = $('resetBtn');
+
+        init();
+      })();
+    </script>
+  </body>
+</html><div id="gary-deploy-marker" style="display:none">HVAC-FIX2-1786375643578</div>
