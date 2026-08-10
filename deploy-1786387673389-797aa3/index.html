@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tax Doc Trace Agent — Live Demo</title>
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --ink:#2C2620;
+    --muted:#6F6556;
+    --card:#FFFFFF;
+    --line:rgba(44,38,32,.10);
+    --accent:#B85C38;
+    --sage:#7BAF8E;
+    --warn:#C77D39;
+    --bad:#B55252;
+    --good:#2F7D49;
+    --shadow: 0 14px 40px rgba(44,38,32,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 500px at 10% 5%, rgba(184,92,56,.10), transparent 60%),
+      radial-gradient(700px 420px at 85% 10%, rgba(123,175,142,.14), transparent 55%),
+      linear-gradient(180deg, rgba(250,246,239,1) 0%, rgba(250,246,239,.92) 100%);
+    color:var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    line-height:1.25;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 40px}
+  .topbar{
+    display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .brand{
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .mark{
+    width:44px;height:44px;border-radius:14px;
+    background:
+      radial-gradient(14px 14px at 30% 30%, rgba(250,246,239,.8), transparent 60%),
+      linear-gradient(145deg, rgba(184,92,56,1) 0%, rgba(184,92,56,.78) 60%, rgba(184,92,56,.20) 100%);
+    box-shadow: 0 10px 30px rgba(184,92,56,.25);
+    position:relative;
+    overflow:hidden;
+  }
+  .mark:after{
+    content:"";
+    position:absolute;inset:-30% -30% auto auto;
+    width:70px;height:70px;
+    background: radial-gradient(circle at 30% 30%, rgba(250,246,239,.9), transparent 55%);
+    transform: rotate(22deg);
+    opacity:.65;
+  }
+  h1{margin:0;font-size:18px;letter-spacing:-.01em}
+  .sub{margin-top:6px;color:var(--muted);font-size:13px;max-width:640px}
+
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 12px;border-radius:999px;
+    background:rgba(255,255,255,.75);
+    border:1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(44,38,32,.05);
+    font-size:12.5px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(184,92,56,.12)}
+  .dot.sage{background:var(--sage);box-shadow:0 0 0 4px rgba(123,175,142,.18)}
+
+  .grid{
+    display:grid;grid-template-columns: 320px 1fr;gap:14px;
+  }
+  @media (max-width: 980px){
+    .grid{grid-template-columns:1fr}
+  }
+
+  .card{
+    background:rgba(255,255,255,.86);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .card .hd{
+    padding:14px 14px 12px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .card .hd .title{
+    font-weight:760;letter-spacing:-.01em;
+  }
+  .card .bd{padding:14px}
+
+  .clientList{padding:10px}
+  .client{
+    width:100%;text-align:left;
+    display:flex;gap:10px;align-items:flex-start;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid transparent;
+    background:transparent;
+    cursor:pointer;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    margin-bottom:8px;
+  }
+  .client:hover{background:rgba(250,246,239,.72);border-color:rgba(44,38,32,.10);transform: translateY(-1px)}
+  .client.active{background:rgba(184,92,56,.08);border-color:rgba(184,92,56,.25)}
+  .avatar{
+    width:36px;height:36px;border-radius:12px;
+    background:
+      radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.9), transparent 55%),
+      linear-gradient(145deg, rgba(123,175,142,.95), rgba(123,175,142,.30));
+    display:flex;align-items:center;justify-content:center;
+    color:rgba(44,38,32,.85);
+    font-weight:900;
+    flex:0 0 auto;
+  }
+  .client .meta{flex:1}
+  .client .name{font-weight:780;letter-spacing:-.01em}
+  .client .small{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .badge{
+    font-size:12px;color:var(--muted);
+    border:1px solid var(--line);
+    padding:7px 10px;border-radius:999px;
+    background:rgba(255,255,255,.65);
+  }
+
+  .layoutRight{display:flex;flex-direction:column;gap:14px}
+  .split{
+    display:grid;grid-template-columns: 1fr 290px;gap:14px;
+  }
+  @media (max-width: 980px){
+    .split{grid-template-columns:1fr}
+  }
+
+  .kpiRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media (max-width: 540px){.kpiRow{grid-template-columns:1fr}}
+  .kpi{
+    background:rgba(255,255,255,.70);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px 12px;
+  }
+  .kpi .lab{color:var(--muted);font-size:12.5px}
+  .kpi .val{font-size:18px;font-weight:900;margin-top:6px;letter-spacing:-.02em}
+  .kpi .val.good{color:var(--good)}
+  .kpi .val.bad{color:var(--bad)}
+  .kpi .val.warn{color:var(--warn)}
+
+  .checks{display:flex;flex-direction:column;gap:10px}
+  .sectionLabel{font-weight:820;margin:2px 0 10px;letter-spacing:-.01em}
+
+  .item{
+    display:grid;grid-template-columns: 1fr 140px;gap:10px;align-items:center;
+    padding:12px 12px;
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.72);
+  }
+  @media (max-width: 540px){.item{grid-template-columns:1fr}}
+
+  .item .left{display:flex;flex-direction:column;gap:4px}
+  .item .name{font-weight:820;letter-spacing:-.01em}
+  .item .hint{color:var(--muted);font-size:12.5px}
+
+  .toggleRow{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+  @media (max-width: 540px){.toggleRow{justify-content:flex-start}}
+
+  .switch{
+    --w:44px;--h:26px;
+    width:var(--w);height:var(--h);
+    background:rgba(44,38,32,.12);
+    border-radius:999px;
+    position:relative;
+    cursor:pointer;
+    transition: background .15s ease;
+    flex:0 0 auto;
+  }
+  .switch.on{background: rgba(123,175,142,.35)}
+  .knob{
+    position:absolute;top:3px;left:3px;
+    width:20px;height:20px;border-radius:50%;
+    background:white;box-shadow: 0 10px 20px rgba(44,38,32,.15);
+    transition: transform .15s ease;
+  }
+  .switch.on .knob{transform: translateX(18px)}
+
+  .date{
+    width:100%;max-width:116px;
+    padding:9px 10px;border-radius:12px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.8);
+    color:var(--ink);
+    font-weight:650;
+    font-size:12.5px;
+  }
+
+  .emailBox{
+    background:rgba(255,255,255,.72);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px;
+  }
+  .emailBox .label{font-weight:820;margin-bottom:8px}
+  textarea{
+    width:100%;min-height:118px;resize:vertical;
+    border-radius:14px;
+    border:1px solid var(--line);
+    padding:10px 11px;
+    font-size:13px;
+    background:rgba(250,246,239,.7);
+    outline:none;
+  }
+  textarea:focus{border-color: rgba(184,92,56,.35);box-shadow: 0 0 0 4px rgba(184,92,56,.12)}
+  .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  button{
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.80);
+    color:var(--ink);
+    padding:10px 12px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:800;
+    letter-spacing:-.01em;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  button:hover{transform: translateY(-1px);border-color: rgba(184,92,56,.30);background:rgba(184,92,56,.06)}
+  button.primary{
+    background: linear-gradient(145deg, rgba(184,92,56,1) 0%, rgba(184,92,56,.85) 55%, rgba(184,92,56,.55) 100%);
+    color:white;
+    border-color: rgba(184,92,56,.45);
+    box-shadow: 0 14px 30px rgba(184,92,56,.18);
+  }
+  button.primary:hover{background: linear-gradient(145deg, rgba(184,92,56,1) 0%, rgba(184,92,56,.92) 55%, rgba(184,92,56,.62) 100%)}
+
+  .log{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px dashed rgba(44,38,32,.18);
+    background: rgba(250,246,239,.65);
+    color: var(--muted);
+    font-size:12.5px;
+    min-height:40px;
+  }
+
+  .queue{
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .queueItem{
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.72);
+    padding:12px;
+  }
+  .queueTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .queueItem .who{font-weight:900;letter-spacing:-.01em}
+  .queueItem .when{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .tag{
+    font-size:12px;font-weight:900;
+    padding:7px 10px;border-radius:999px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.75);
+  }
+  .tag.bad{border-color: rgba(181,82,82,.25);background: rgba(181,82,82,.08);color: rgba(181,82,82,.95)}
+  .tag.warn{border-color: rgba(199,125,57,.25);background: rgba(199,125,57,.08);color: rgba(199,125,57,.98)}
+  .tag.good{border-color: rgba(47,125,73,.22);background: rgba(47,125,73,.08);color: rgba(47,125,73,.98)}
+
+  .muted{color:var(--muted)}
+  .small{font-size:12.5px}
+
+  /* Motion */
+  .reveal{opacity:0;transform: translateY(6px);animation: rise .55s ease forwards}
+  .reveal.d1{animation-delay:.05s}
+  .reveal.d2{animation-delay:.10s}
+  .reveal.d3{animation-delay:.16s}
+  @keyframes rise{to{opacity:1;transform: translateY(0)}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <h1>Tax Doc Trace Agent</h1>
+          <div class="sub">Live demo — sample data. The real build wires into your systems.</div>
+        </div>
+      </div>
+      <div class="pillrow">
+        <div class="pill"><span class="dot"></span> Finds what’s missing</div>
+        <div class="pill"><span class="dot sage"></span> Builds the chase queue</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal d1">
+        <div class="hd">
+          <div class="title">Clients</div>
+          <div class="badge" id="badgeTotal">—</div>
+        </div>
+        <div class="clientList" id="clientList"></div>
+      </div>
+
+      <div class="layoutRight">
+        <div class="card reveal d2">
+          <div class="hd">
+            <div>
+              <div class="title" id="clientHeading">—</div>
+              <div class="small muted" id="clientMeta">—</div>
+            </div>
+            <div class="badge" id="clientStatus">—</div>
+          </div>
+          <div class="bd">
+            <div class="kpiRow" style="margin-bottom:12px">
+              <div class="kpi"><div class="lab">Received</div><div class="val good" id="kpiReceived">0</div></div>
+              <div class="kpi"><div class="lab">Missing</div><div class="val bad" id="kpiMissing">0</div></div>
+              <div class="kpi"><div class="lab">Overdue risk</div><div class="val warn" id="kpiRisk">0</div></div>
+            </div>
+
+            <div class="split">
+              <div>
+                <div class="sectionLabel">Document checklist</div>
+                <div class="checks" id="checks"></div>
+              </div>
+
+              <div>
+                <div class="sectionLabel">Chase queue</div>
+                <div class="queue" id="queue"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal d3">
+          <div class="hd">
+            <div class="title">Simulate an email (sample)</div>
+            <div class="badge">Updates the checklist</div>
+          </div>
+          <div class="bd">
+            <div class="emailBox">
+              <div class="label">Paste the kind of line your team gets</div>
+              <textarea id="emailInput" placeholder="Example: 'Attached W-2 and 1099-NEC. Also included receipts for home office.'"></textarea>
+              <div class="btnRow">
+                <button class="primary" id="analyzeBtn">Analyze & mark received</button>
+                <button id="resetBtn">Reset sample</button>
+              </div>
+              <div class="log" id="analysisLog">Tip: try mentioning `W-2`, `1099`, `K-1`, `Receipts`, or `ID`.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Sample data model (kept internal; UI stays clean—no JSON on screen).
+  const DOCS = [
+    { key: 'w2', label: 'W-2(s)', hint: 'Wages & withholding' },
+    { key: '1099', label: '1099(s)', hint: 'Interest/Dividends/Contract income' },
+    { key: 'k1', label: 'K-1(s)', hint: 'Partnership/S-Corp schedules' },
+    { key: 'receipts', label: 'Receipts', hint: 'Deduction support' },
+    { key: 'id', label: 'Government ID', hint: 'Verification document' },
+    { key: 'prior_year', label: 'Prior-year return', hint: 'Context for carryovers' }
+  ];
+
+  const STAFF = [
+    { id:'s1', name:'Maya (AP)' },
+    { id:'s2', name:'Jordan (Tax)' },
+    { id:'s3', name:'Sam (Review)' }
+  ];
+
+  const nowISO = new Date();
+  function fmtDate(d){
+    const dt = new Date(d);
+    const yyyy = dt.getFullYear();
+    const mm = String(dt.getMonth()+1).padStart(2,'0');
+    const dd = String(dt.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function addDays(days){
+    const d = new Date();
+    d.setDate(d.getDate()+days);
+    return fmtDate(d);
+  }
+
+  const initialState = {
+    clients: [
+      {
+        id:'c1', name:'Avery Thompson', email:'avery@example.com', staffId:'s2',
+        dueBy: addDays(3), // near term
+        received: { w2:true, 1099:false, k1:false, receipts:true, id:false, prior_year:true },
+        receivedDates: { w2: addDays(-7), receipts:addDays(-3), prior_year:addDays(-20) }
+      },
+      {
+        id:'c2', name:'Blue Ridge Holdings', email:'books@example.com', staffId:'s1',
+        dueBy: addDays(10),
+        received: { w2:false, 1099:true, k1:true, receipts:false, id:false, prior_year:false },
+        receivedDates: { 1099:addDays(-6), k1:addDays(-9) }
+      },
+      {
+        id:'c3', name:'Camila Reyes', email:'camila@example.com', staffId:'s3',
+        dueBy: addDays(-1), // already overdue
+        received: { w2:true, 1099:false, k1:false, receipts:false, id:true, prior_year:false },
+        receivedDates: { w2:addDays(-12), id:addDays(-2) }
+      }
+    ]
+  };
+
+  let state = JSON.parse(JSON.stringify(initialState));
+
+  const el = {
+    clientList: document.getElementById('clientList'),
+    checks: document.getElementById('checks'),
+    queue: document.getElementById('queue'),
+    clientHeading: document.getElementById('clientHeading'),
+    clientMeta: document.getElementById('clientMeta'),
+    clientStatus: document.getElementById('clientStatus'),
+    badgeTotal: document.getElementById('badgeTotal'),
+    kpiReceived: document.getElementById('kpiReceived'),
+    kpiMissing: document.getElementById('kpiMissing'),
+    kpiRisk: document.getElementById('kpiRisk'),
+    emailInput: document.getElementById('emailInput'),
+    analyzeBtn: document.getElementById('analyzeBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    analysisLog: document.getElementById('analysisLog')
+  };
+
+  function staffName(staffId){
+    const s = STAFF.find(x => x.id === staffId);
+    return s ? s.name : 'Unassigned';
+  }
+
+  function scoreRisk(client){
+    // Simple sample heuristic: overdue due date boosts risk.
+    const due = new Date(client.dueBy);
+    const days = Math.floor((due - new Date())/86400000);
+    const missingCount = DOCS.filter(d => !client.received[d.key]).length;
+    let base = 0;
+    if (days < 0) base += 2;
+    else if (days <= 2) base += 1;
+    // risk increases with missing docs.
+    return Math.min(6, base + Math.floor(missingCount/2));
+  }
+
+  function render(){
+    el.badgeTotal.textContent = `${state.clients.length} active`;
+
+    const activeId = state.activeClientId;
+    const active = state.clients.find(c => c.id === activeId) || state.clients[0];
+    if (!state.activeClientId) state.activeClientId = active.id;
+
+    // Left list
+    el.clientList.innerHTML = '';
+    state.clients.forEach((c) => {
+      const btn = document.createElement('button');
+      btn.className = 'client' + (c.id === state.activeClientId ? ' active' : '');
+      btn.type = 'button';
+      const initial = c.name.split(' ').map(x => x[0]).slice(0,2).join('').toUpperCase();
+      const missing = DOCS.filter(d => !c.received[d.key]).length;
+
+      btn.innerHTML = `
+        <div class="avatar" aria-hidden="true">${initial}</div>
+        <div class="meta">
+          <div class="name">${c.name}</div>
+          <div class="small">Due by ${c.dueBy}</div>
+          <div class="small" style="margin-top:6px"><b>${missing}</b> missing docs</div>
+        </div>
+        <div class="badge">${missing === 0 ? 'Ready' : 'Needs'}</div>
+      `;
+      btn.addEventListener('click', () => {
+        state.activeClientId = c.id;
+        render();
+      });
+      el.clientList.appendChild(btn);
+    });
+
+    // Right content
+    const receivedCount = DOCS.filter(d => active.received[d.key]).length;
+    const missingDocs = DOCS.filter(d => !active.received[d.key]);
+    const risk = scoreRisk(active);
+    el.clientHeading.textContent = active.name;
+    el.clientMeta.textContent = `Owner: ${staffName(active.staffId)} • Due by ${active.dueBy}`;
+
+    el.kpiReceived.textContent = String(receivedCount);
+    el.kpiMissing.textContent = String(missingDocs.length);
+    el.kpiRisk.textContent = String(risk);
+
+    const statusTag = missingDocs.length === 0 ?
+      `<span class="tag good">Complete</span>` :
+      (risk >= 3 ? `<span class="tag bad">Chase now</span>` : `<span class="tag warn">In progress</span>`);
+    el.clientStatus.innerHTML = statusTag;
+
+    // Checklist
+    el.checks.innerHTML = '';
+    DOCS.forEach((d) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const isOn = !!active.received[d.key];
+      const rDate = active.receivedDates[d.key] || '';
+
+      item.innerHTML = `
+        <div class="left">
+          <div class="name">${d.label}</div>
+          <div class="hint">${d.hint}</div>
+        </div>
+        <div class="toggleRow">
+          <div class="switch ${isOn ? 'on' : ''}" role="switch" aria-checked="${isOn ? 'true' : 'false'}" data-key="${d.key}">
+            <div class="knob"></div>
+          </div>
+          <input class="date" type="date" value="${rDate}" ${isOn ? '' : 'disabled'} data-datekey="${d.key}" />
+        </div>
+      `;
+
+      // Toggle behavior
+      const sw = item.querySelector('.switch');
+      const dateInput = item.querySelector('input');
+      sw.addEventListener('click', () => {
+        const key = sw.getAttribute('data-key');
+        const next = !active.received[key];
+        active.received[key] = next;
+        if (next) {
+          // If turning on and no date exists, default to today.
+          if (!active.receivedDates[key]) active.receivedDates[key] = fmtDate(new Date());
+        } else {
+          delete active.receivedDates[key];
+        }
+        render();
+      });
+
+      dateInput.addEventListener('change', () => {
+        const key = dateInput.getAttribute('data-datekey');
+        if (!active.received[key]) return;
+        const v = dateInput.value;
+        if (v) active.receivedDates[key] = v;
+        render();
+      });
+
+      el.checks.appendChild(item);
+    });
+
+    // Chase queue (for this client)
+    el.queue.innerHTML = '';
+    const missing = DOCS.filter(d => !active.received[d.key]);
+    if (missing.length === 0) {
+      const q = document.createElement('div');
+      q.className = 'queueItem';
+      q.innerHTML = `
+        <div class="queueTop">
+          <div>
+            <div class="who">No missing docs</div>
+            <div class="when">Nothing to chase for this client right now.</div>
+          </div>
+          <div class="tag good">All set</div>
+        </div>
+      `;
+      el.queue.appendChild(q);
+      return;
+    }
+
+    const riskTag = risk >= 3 ? 'bad' : 'warn';
+    const q = document.createElement('div');
+    q.className = 'queueItem';
+
+    const list = missing.slice(0,4).map(d => d.label).join(', ') + (missing.length > 4 ? '…' : '');
+
+    // "Due" in sample UI: use simple relative text.
+    const due = new Date(active.dueBy);
+    const days = Math.floor((due - new Date())/86400000);
+    let whenText = days < 0 ? `Overdue by ${Math.abs(days)} day(s)` : (days === 0 ? 'Due today' : `Due in ${days} day(s)`);
+
+    q.innerHTML = `
+      <div class="queueTop">
+        <div>
+          <div class="who">Send chase to: ${staffName(active.staffId)}</div>
+          <div class="when">${whenText}. Missing: ${list}</div>
+        </div>
+        <div class="tag ${riskTag}">${risk >= 3 ? 'Urgent' : 'Next up'}</div>
+      </div>
+      <div class="small muted" style="margin-top:10px">
+        Draft language: “We’re ready to finalize your return—could you send ${missing.map(x=>x.label).join(', ')}?”
+      </div>
+    `;
+    el.queue.appendChild(q);
+  }
+
+  function extractDocKeys(text){
+    const t = (text || '').toLowerCase();
+    const picks = new Set();
+
+    // Keyword-ish heuristics for the demo.
+    if (/(w\s*-?\s*2|w2|w-2)/i.test(text)) picks.add('w2');
+    if (/(1099|1099\b)/i.test(text)) picks.add('1099');
+    if (/(k\s*-?\s*1|k1)/i.test(text)) picks.add('k1');
+    if (/(receipt|receipts|statement|expense|mileage)/i.test(text)) picks.add('receipts');
+    if (/(id|passport|license|driver\'?s)/i.test(text)) picks.add('id');
+    if (/(prior(\s|-)?year|last year|previous return)/i.test(text)) picks.add('prior_year');
+
+    return Array.from(picks);
+  }
+
+  function analyzeEmail(){
+    const active = state.clients.find(c => c.id === state.activeClientId);
+    if (!active) return;
+    const text = el.emailInput.value.trim();
+    if (!text) {
+      el.analysisLog.textContent = 'Paste an email line first (sample).';
+      return;
+    }
+
+    const keys = extractDocKeys(text);
+    if (keys.length === 0) {
+      el.analysisLog.textContent = 'Didn’t find document keywords. Try mentioning W-2, 1099, K-1, receipts, ID, or prior-year return.';
+      return;
+    }
+
+    // Mark the extracted items as received.
+    const today = fmtDate(new Date());
+    let newlyMarked = 0;
+    keys.forEach((k) => {
+      if (!active.received[k]) {
+        newlyMarked++;
+        active.received[k] = true;
+        active.receivedDates[k] = today;
+      }
+    });
+
+    el.analysisLog.textContent = `Marked ${keys.length} document type(s) as received${newlyMarked ? ` (${newlyMarked} new).` : '.'} Checklist updated.`;
+    render();
+  }
+
+  function resetSample(){
+    state = JSON.parse(JSON.stringify(initialState));
+    state.activeClientId = state.clients[0].id;
+    el.emailInput.value = '';
+    el.analysisLog.textContent = 'Tip: try mentioning `W-2`, `1099`, `K-1`, `Receipts`, or `ID`.';
+    render();
+  }
+
+  el.analyzeBtn.addEventListener('click', analyzeEmail);
+  el.resetBtn.addEventListener('click', resetSample);
+
+  // Boot
+  state.activeClientId = state.clients[0].id;
+  render();
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-acctdocdemo_ep2_1786387615-0</div>
