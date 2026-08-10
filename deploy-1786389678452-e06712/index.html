@@ -1,0 +1,677 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TrialClose Agent - Live Demo (Sample Data)</title>
+    <style>
+      :root{
+        --bg:#FAF6EF;
+        --ink:#2C2620;
+        --muted:#6B645B;
+        --card:#FFFFFF;
+        --accent:#B85C38;
+        --sage:#7BAF8E;
+        --line:rgba(44,38,32,.14);
+        --shadow: 0 18px 50px rgba(44,38,32,.10);
+        --shadow2: 0 10px 26px rgba(44,38,32,.10);
+        --radius:18px;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        background:
+          radial-gradient(1200px 600px at 15% 0%, rgba(184,92,56,.10), transparent 55%),
+          radial-gradient(900px 500px at 85% 10%, rgba(123,175,142,.16), transparent 50%),
+          var(--bg);
+        color:var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      }
+      .wrap{max-width:1120px;margin:0 auto;padding:22px}
+      .hero{
+        border:1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow2);
+        background: linear-gradient(180deg, rgba(184,92,56,.10), rgba(184,92,56,.03));
+        padding:16px 16px 14px;
+      }
+      .badge{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 10px;border-radius:999px;
+        border:1px solid rgba(184,92,56,.25);
+        background: rgba(184,92,56,.08);
+        font-weight:800;letter-spacing:.2px;margin-bottom:10px;
+      }
+      .dot{width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(184,92,56,.15)}
+      h1{
+        margin:0 0 6px;
+        font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+        font-size: 22px;
+      }
+      .sub{margin:0;color:var(--muted);line-height:1.35;font-size:13.5px}
+
+      .grid{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:14px;
+        margin-top:14px;
+        align-items:start;
+      }
+      @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+
+      .card{
+        background: rgba(255,255,255,.86);
+        backdrop-filter: blur(8px);
+        border:1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow2);
+      }
+      .card .hd{
+        padding:14px 14px 10px;border-bottom:1px solid rgba(44,38,32,.08);
+        display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      }
+      .card .hd h2{
+        margin:0;font-size:14px;letter-spacing:.25px;text-transform:uppercase;
+        color:rgba(44,38,32,.78);
+      }
+      .card .bd{padding:12px 14px 14px}
+
+      .pill{
+        padding:6px 10px;border-radius:999px;border:1px solid rgba(44,38,32,.16);
+        color: rgba(44,38,32,.78); background: rgba(255,255,255,.7);
+        font-size:12.5px;font-weight:800;
+      }
+      .pill.good{border-color: rgba(123,175,142,.40);background: rgba(123,175,142,.14)}
+      .pill.warn{border-color: rgba(184,92,56,.36);background: rgba(184,92,56,.14)}
+
+      button{
+        font-family:inherit;
+        border:1px solid rgba(44,38,32,.18);
+        background: rgba(255,255,255,.78);
+        color: var(--ink);
+        padding:9px 11px;border-radius:12px;
+        font-weight:800;font-size:13px;cursor:pointer;
+      }
+      button:hover{transform: translateY(-1px);box-shadow: 0 8px 20px rgba(44,38,32,.10)}
+      button:active{transform: translateY(0)}
+      .btnAccent{
+        border-color: rgba(184,92,56,.40);
+        background: rgba(184,92,56,.14);
+      }
+      .btnSage{
+        border-color: rgba(123,175,142,.48);
+        background: rgba(123,175,142,.18);
+      }
+      .btnDanger{
+        border-color: rgba(184,92,56,.55);
+        background: rgba(184,92,56,.10);
+      }
+
+      .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+      .smallRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+      .select{
+        border:1px solid rgba(44,38,32,.18);
+        background: rgba(255,255,255,.78);
+        border-radius:12px;
+        padding:9px 11px;font-weight:850;font-size:13px;
+      }
+
+      .leadList{display:flex;flex-direction:column;gap:10px}
+      .leadCard{
+        border:1px solid rgba(44,38,32,.14);
+        border-radius: 16px;
+        background: rgba(255,255,255,.78);
+        padding:12px;
+        cursor:pointer;
+        position:relative;
+        overflow:hidden;
+      }
+      .leadCard.sel{border-color: rgba(184,92,56,.45);box-shadow: 0 0 0 3px rgba(184,92,56,.12) inset}
+      .leadTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+      .leadName{font-weight:950;font-size:15px;font-family: ui-serif, Georgia, "Times New Roman", Times, serif}
+      .leadSub{color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.2}
+      .tag{
+        padding:6px 10px;border-radius:999px;border:1px solid rgba(44,38,32,.16);
+        font-size:12.5px;font-weight:900;background: rgba(255,255,255,.7);white-space:nowrap
+      }
+      .tag.call{border-color: rgba(184,92,56,.35);background: rgba(184,92,56,.12)}
+      .tag.good{border-color: rgba(123,175,142,.45);background: rgba(123,175,142,.18)}
+      .tag.warn{border-color: rgba(184,92,56,.55);background: rgba(184,92,56,.10)}
+
+      .kv{margin-top:10px;display:grid;grid-template-columns: 1fr 1fr;gap:8px}
+      .kv .k{color:rgba(44,38,32,.66);font-size:12px;font-weight:800}
+      .kv .v{font-size:12.8px;font-weight:950}
+
+      .agentMsg{
+        border:1px dashed rgba(184,92,56,.35);
+        background: rgba(184,92,56,.08);
+        border-radius: 16px;
+        padding:12px;
+        margin-bottom:12px;
+      }
+      .agentMsg .t{font-weight:980;margin:0 0 6px;font-family: ui-serif, Georgia, "Times New Roman", Times, serif}
+      .agentMsg .p{margin:0;color:rgba(44,38,32,.74);line-height:1.35;font-size:13.2px}
+
+      .slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+      .slot{
+        padding:8px 10px;border-radius: 12px;border:1px solid rgba(44,38,32,.18);
+        background: rgba(255,255,255,.75);font-weight:950;font-size:13px;cursor:pointer;
+        user-select:none;
+      }
+      .slot.sel{border-color: rgba(123,175,142,.55);background: rgba(123,175,142,.20)}
+
+      .log{
+        display:flex;flex-direction:column;gap:9px;max-height: 290px;overflow:auto;padding-right:6px;
+      }
+      .logItem{
+        border:1px solid rgba(44,38,32,.12);
+        background: rgba(255,255,255,.72);
+        border-radius: 16px;
+        padding:10px 11px;
+      }
+      .logItem .line1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+      .logItem .kind{
+        font-weight:950;font-size:12.5px;text-transform:uppercase;letter-spacing:.2px;
+        color: rgba(44,38,32,.70)
+      }
+      .logItem .ts{color:var(--muted);font-size:12px;font-weight:850;white-space:nowrap}
+      .logItem .txt{margin-top:6px;color:rgba(44,38,32,.78);font-size:13px;line-height:1.35}
+      .hint{color:var(--muted);font-size:12.5px;line-height:1.35;font-weight:800}
+      .kbd{
+        display:inline-flex;align-items:center;justify-content:center;
+        min-width:24px;height:24px;padding:0 7px;border-radius:8px;
+        border:1px solid rgba(44,38,32,.18);background: rgba(255,255,255,.7);
+        font-weight:950;font-size:12px;color:rgba(44,38,32,.82);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="hero">
+        <div class="badge"><span class="dot"></span><span>TrialClose Agent</span></div>
+        <h1>Gym trial intake → “Run TrialClose” → staff books the first session</h1>
+        <p class="sub">Live demo — sample data. The real build wires into your systems. Use the controls to simulate the missing call/booking step.</p>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <div class="hd">
+            <h2>Trial intake</h2>
+            <div class="row">
+              <div class="pill">Queued calls: <span id="queuedCount">0</span></div>
+              <div class="pill good">Booked: <span id="bookedCount">0</span></div>
+              <div class="pill warn">Needs follow-up: <span id="followCount">0</span></div>
+            </div>
+          </div>
+          <div class="bd">
+            <div class="smallRow" style="justify-content:space-between;align-items:flex-end">
+              <div>
+                <div class="hint" style="margin-bottom:6px">Simulate a new trial signup</div>
+                <button id="signupBtn" class="btnAccent">Simulate trial signup</button>
+              </div>
+              <div style="text-align:right">
+                <div class="hint" style="margin-bottom:6px">Simulated time</div>
+                <div class="hint" style="font-weight:950;color:rgba(44,38,32,.92)"><span id="nowLabel">—</span></div>
+              </div>
+            </div>
+
+            <div class="smallRow" style="margin-top:10px">
+              <span class="hint">Advance:</span>
+              <select id="advanceSelect" class="select" aria-label="Advance time">
+                <option value="2h" selected>2 hours</option>
+                <option value="6h">6 hours</option>
+                <option value="1d">1 day</option>
+              </select>
+              <button id="advanceBtn" class="btnSage">Advance</button>
+            </div>
+
+            <div class="leadList" id="leadList" aria-live="polite" style="margin-top:14px"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="hd">
+            <h2>TrialClose step</h2>
+            <div class="row">
+              <div class="pill">Selected: <span id="selName">—</span></div>
+            </div>
+          </div>
+          <div class="bd">
+            <div class="agentMsg" aria-live="polite">
+              <p class="t" id="agentHeadline">Pick a trial member</p>
+              <p class="p" id="agentCopy">The TrialClose Agent schedules the next call task and forces the chase to surface “Ready to book”.</p>
+            </div>
+
+            <div id="actionArea"></div>
+
+            <div style="margin-top:12px">
+              <div class="hint" style="margin-bottom:8px">Chase checklist (activity log)</div>
+              <div class="log" id="log"></div>
+              <div class="hint" style="margin-top:10px">Tip: click <span class="kbd">Run TrialClose</span> after you advance time.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        const fmt = {
+          time: (ms) => new Date(ms).toLocaleString([], {weekday:'short',hour:'2-digit',minute:'2-digit'}),
+          short: (ms) => new Date(ms).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+          rel: (ms, now) => {
+            const diff = ms - now;
+            const sign = diff < 0 ? -1 : 1;
+            const abs = Math.abs(diff);
+            const mins = Math.round(abs / 60000);
+            if (mins < 60) return (sign < 0 ? 'due ' : 'in ') + mins + 'm';
+            const hrs = Math.round(abs / 3600000);
+            if (hrs < 24) return (sign < 0 ? 'due ' : 'in ') + hrs + 'h';
+            const days = Math.round(abs / 86400000);
+            return (sign < 0 ? 'due ' : 'in ') + days + 'd';
+          }
+        };
+
+        const callDelayMs = 2 * 3600000;       // demo: schedule first call in "realistic" time
+        const followNoAnswerMs = 6 * 3600000;  // demo: chase after missed call
+        const followVoicemailMs = 6 * 3600000;
+
+        const names = ['Maya Chen','Jordan Rivera','Sam Patel','Avery Brooks','Taylor Nguyen'];
+
+        const startNow = Date.now();
+        let now = startNow;
+
+        const leads = [
+          mkLead(1, names[0], '(555) 013-2241', 'maya@example.com', ['10:00 AM','11:30 AM','4:15 PM'], now - 35 * 60000),
+          mkLead(2, names[1], '(555) 019-7742', 'jordan@example.com', ['9:45 AM','2:10 PM','6:00 PM'], now - 3 * 3600000)
+        ];
+
+        const state = {
+          selectedId: leads[0].id,
+          log: [],
+          lastAgentRunAt: null
+        };
+
+        function mkLead(num, name, phone, email, availability, createdAt){
+          return {
+            id: 't-' + String(num).padStart(3,'0'),
+            name, phone, email,
+            createdAt,
+            availability,
+            status: 'new',            // new -> call_scheduled -> call_due -> needs_followup OR ready_to_book -> booked
+            attempts: 0,
+            nextFollowUpAt: null,
+            lastContactAt: null,
+            lastCallResult: null,
+            bookedSlot: null
+          };
+        }
+
+        function selectedLead(){
+          return leads.find(l => l.id === state.selectedId) || leads[0];
+        }
+
+        function pushLog(kind, txt){
+          state.log.unshift({ id:'log-' + Math.random().toString(16).slice(2), kind, txt, ts: now });
+          if (state.log.length > 26) state.log.length = 26;
+        }
+
+        function tagFor(lead){
+          if (lead.status === 'call_scheduled') return {txt:'Call scheduled', cls:'call'};
+          if (lead.status === 'call_due') return {txt:'Call due', cls:'call'};
+          if (lead.status === 'ready_to_book') return {txt:'Ready to book', cls:'good'};
+          if (lead.status === 'needs_followup') return {txt:'Needs follow-up', cls:'warn'};
+          if (lead.status === 'booked') return {txt:'Booked', cls:'good'};
+          if (lead.status === 'bad_contact') return {txt:'Flagged', cls:'warn'};
+          return {txt:'New trial', cls:'call'};
+        }
+
+        function computeCounts(){
+          const queued = leads.filter(l => l.status === 'call_scheduled' || l.status === 'call_due').length;
+          const booked = leads.filter(l => l.status === 'booked').length;
+          const follow = leads.filter(l => l.status === 'needs_followup').length;
+          document.getElementById('queuedCount').textContent = queued;
+          document.getElementById('bookedCount').textContent = booked;
+          document.getElementById('followCount').textContent = follow;
+        }
+
+        function renderLeads(){
+          const list = document.getElementById('leadList');
+          list.innerHTML = '';
+
+          const items = [...leads].filter(Boolean);
+          items.sort((a,b) => {
+            const rank = (l) => l.status === 'call_due' ? 5 : l.status === 'ready_to_book' ? 4 : l.status === 'needs_followup' ? 3 : l.status === 'call_scheduled' ? 2 : l.status === 'new' ? 1 : 0;
+            const d = rank(b) - rank(a);
+            if (d !== 0) return d;
+            const na = a.nextFollowUpAt ? a.nextFollowUpAt : a.createdAt;
+            const nb = b.nextFollowUpAt ? b.nextFollowUpAt : b.createdAt;
+            return na - nb;
+          });
+
+          items.forEach(lead => {
+            const tag = tagFor(lead);
+            const due = lead.nextFollowUpAt ? fmt.rel(lead.nextFollowUpAt, now) : '—';
+            const last = lead.lastContactAt ? fmt.short(lead.lastContactAt) : '—';
+            const attempts = lead.attempts;
+            const booked = lead.status === 'booked' ? (lead.bookedSlot || '—') : '';
+            const statusLine = lead.status === 'booked' ? 'Done' : tag.txt;
+
+            const el = document.createElement('div');
+            el.className = 'leadCard' + (lead.id === state.selectedId ? ' sel' : '');
+            el.tabIndex = 0;
+            el.setAttribute('role','button');
+            el.setAttribute('aria-label','Select lead ' + lead.name);
+            el.onclick = () => { state.selectedId = lead.id; renderLeads(); updateAgentPanel(); };
+            el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { state.selectedId = lead.id; renderLeads(); updateAgentPanel(); } };
+            el.innerHTML = [
+              '<div class="leadTop">',
+              '<div>',
+              '<div class="leadName">'+ lead.name +'</div>',
+              '<div class="leadSub">'+ lead.phone +' • '+ (lead.email||'') +'</div>',
+              '</div>',
+              '<div class="tag '+ tag.cls +'">'+ statusLine +'</div>',
+              '</div>',
+              '<div class="kv">',
+              '<div><div class="k">Attempts</div><div class="v">'+ attempts +'</div></div>',
+              '<div><div class="k">Due</div><div class="v">'+ due +'</div></div>',
+              '<div><div class="k">Last contact</div><div class="v">'+ last +'</div></div>',
+              '<div><div class="k">First session</div><div class="v">'+ (booked || '—') +'</div></div>',
+              '</div>'
+            ].join('');
+            list.appendChild(el);
+          });
+        }
+
+        function actionButtonsHtml(lead){
+          const safeNext = lead.nextFollowUpAt ? fmt.rel(lead.nextFollowUpAt, now) : '—';
+
+          if (lead.status === 'new' || lead.status === 'call_scheduled'){
+            return [
+              '<div class="agentMsg" style="border-style:solid;border-color:rgba(44,38,32,.14);background:rgba(255,255,255,.55);margin-bottom:12px">',
+              '<p class="t">'+ (lead.status === 'new' ? 'Trial received' : 'Call task scheduled') +'</p>',
+              '<p class="p">Next step: press <b>Run TrialClose</b> to ensure the call task is queued, then advance time until it says <b>Call due</b>.</p>',
+              '</div>'
+            ].join('');
+          }
+
+          if (lead.status === 'call_due'){
+            return [
+              '<div class="agentMsg" style="border-style:solid;border-color:rgba(184,92,56,.28);background:rgba(184,92,56,.10);margin-bottom:12px">',
+              '<p class="t">Staff needs to call now</p>',
+              '<p class="p">Mark the outcome. The agent will immediately schedule the next chase step or surface booking.</p>',
+              '</div>',
+              '<div class="row">',
+              '<button id="call_no_answer" class="btnDanger">No answer</button>',
+              '<button id="call_voicemail" class="btnAccent">Voicemail left</button>',
+              '<button id="call_connected" class="btnSage">Connected</button>',
+              '</div>'
+            ].join('');
+          }
+
+          if (lead.status === 'needs_followup'){
+            return [
+              '<div class="agentMsg" style="border-style:solid;border-color:rgba(184,92,56,.22);background:rgba(184,92,56,.08);margin-bottom:12px">',
+              '<p class="t">Chase step scheduled</p>',
+              '<p class="p">Next follow-up is '+ safeNext +'. Advance time, then click <b>Run TrialClose</b> to surface the next <b>Call due</b>.</p>',
+              '</div>'
+            ].join('');
+          }
+
+          if (lead.status === 'ready_to_book'){
+            const slot1 = lead.availability[0];
+            return [
+              '<div class="agentMsg" style="border-style:solid;border-color:rgba(123,175,142,.40);background:rgba(123,175,142,.14);margin-bottom:12px">',
+              '<p class="t">Ready to book</p>',
+              '<p class="p">Staff can book the first session now. This is the exact moment the “did someone call?” gap should disappear.</p>',
+              '</div>',
+              '<div class="row" style="margin-bottom:10px">',
+              '<button id="staff_book_auto" class="btnSage">Staff booked first session (auto)</button>',
+              '</div>',
+              '<div class="hint" style="margin-bottom:8px">Or pick from the trial’s preferred times:</div>',
+              '<div class="slots" id="slots">'+ lead.availability.map(s => '<div class="slot" data-slot="'+ encodeURIComponent(s) +'">'+ s +'</div>').join('') +'</div>',
+              '<div class="row" style="margin-top:12px">',
+              '<button id="staff_book_slot" class="btnAccent">Staff booked first session (selected)</button>',
+              '</div>'
+            ].join('');
+          }
+
+          if (lead.status === 'booked'){
+            return [
+              '<div class="agentMsg" style="border-style:solid;border-color:rgba(123,175,142,.45);background:rgba(123,175,142,.18);margin-bottom:12px">',
+              '<p class="t">Closed: first session booked</p>',
+              '<p class="p">Slot: '+ (lead.bookedSlot||'—') +'. This lead stops chasing and stays Done.</p>',
+              '</div>'
+            ].join('');
+          }
+
+          return [
+            '<div class="agentMsg" style="border-style:solid;border-color:rgba(44,38,32,.14);background:rgba(255,255,255,.55);margin-bottom:12px">',
+            '<p class="t">Waiting</p>',
+            '<p class="p">Status: '+ lead.status +'.</p>',
+            '</div>'
+          ].join('');
+        }
+
+        function updateAgentPanel(){
+          const lead = selectedLead();
+          document.getElementById('selName').textContent = lead.name;
+
+          let headline = 'Pick a trial member';
+          let copy = 'The TrialClose Agent schedules the next call task and forces the chase to surface “Ready to book”.';
+
+          if (lead.status === 'new'){
+            headline = 'Trial intake queued';
+            copy = 'The agent will schedule the first call attempt so new trials don’t fall through the cracks.';
+          } else if (lead.status === 'call_scheduled'){
+            headline = 'Call task scheduled';
+            copy = 'Advance time until the lead shows “Call due”, then simulate the staff call outcome.';
+          } else if (lead.status === 'call_due'){
+            headline = 'Call due (staff action)';
+            copy = 'Mark the outcome. Either the chase continues or the lead becomes “Ready to book”.';
+          } else if (lead.status === 'needs_followup'){
+            headline = 'Follow-up scheduled';
+            copy = 'Advance time and click <b>Run TrialClose</b> to surface the next “Call due”.';
+          } else if (lead.status === 'ready_to_book'){
+            headline = 'Connected → booking window';
+            copy = 'Staff books the first session now. That’s where the reliable booking happens.';
+          } else if (lead.status === 'booked'){
+            headline = 'Done: booked';
+            copy = 'The pipeline closes for this lead. The log records the outcome.';
+          }
+
+          document.getElementById('agentHeadline').textContent = headline;
+          document.getElementById('agentCopy').innerHTML = copy;
+          document.getElementById('actionArea').innerHTML = actionButtonsHtml(lead);
+
+          const btnNo = document.getElementById('call_no_answer');
+          const btnVm = document.getElementById('call_voicemail');
+          const btnConn = document.getElementById('call_connected');
+          if (btnNo) btnNo.onclick = () => completeCallAttempt('no_answer');
+          if (btnVm) btnVm.onclick = () => completeCallAttempt('voicemail_left');
+          if (btnConn) btnConn.onclick = () => completeCallAttempt('contacted');
+
+          const bookAuto = document.getElementById('staff_book_auto');
+          if (bookAuto) bookAuto.onclick = () => bookFirstSession(lead.availability[0] || null);
+
+          const bookSel = document.getElementById('staff_book_slot');
+          if (bookSel){
+            let chosen = lead.availability[0] || null;
+            const slotEls = Array.from(document.querySelectorAll('#slots .slot'));
+            slotEls.forEach((el, idx) => {
+              if (idx === 0) el.classList.add('sel');
+              el.onclick = () => {
+                slotEls.forEach(x => x.classList.remove('sel'));
+                el.classList.add('sel');
+                chosen = decodeURIComponent(el.getAttribute('data-slot') || '');
+              };
+            });
+            bookSel.onclick = () => bookFirstSession(chosen);
+          }
+        }
+
+        function scheduleInitialCalls(){
+          // For demo: any "new" trial gets a first call task queued at now + callDelayMs
+          let changed = 0;
+          leads.forEach(lead => {
+            if (lead.status !== 'new') return;
+            lead.status = 'call_scheduled';
+            lead.attempts = Math.max(0, lead.attempts);
+            lead.nextFollowUpAt = now + callDelayMs;
+            changed++;
+            pushLog('Agent', 'TrialClose queued first call for '+ lead.name +' at '+ fmt.short(lead.nextFollowUpAt) +'.');
+          });
+          return changed;
+        }
+
+        function promoteDueCalls(){
+          // Turn "scheduled" into "due" when simulated time passes
+          let changed = 0;
+          leads.forEach(lead => {
+            if (lead.status !== 'call_scheduled') return;
+            if (!lead.nextFollowUpAt) return;
+            if (lead.nextFollowUpAt > now) return;
+            lead.status = 'call_due';
+            changed++;
+            pushLog('Agent', 'Call due now for '+ lead.name +'. Staff can simulate the call outcome.');
+          });
+          return changed;
+        }
+
+        function runTrialCloseStep(){
+          const didSchedule = scheduleInitialCalls();
+          const didPromote = promoteDueCalls();
+          state.lastAgentRunAt = now;
+          if (didSchedule === 0 && didPromote === 0){
+            pushLog('Agent', 'Run TrialClose: nothing new queued. Advance time or pick a lead that is already due.');
+          } else {
+            pushLog('Agent', 'Run TrialClose: updated pipeline (queued calls + surfaced due calls).');
+          }
+          renderLeads();
+          computeCounts();
+          updateAgentPanel();
+        }
+
+        function completeCallAttempt(result){
+          const lead = selectedLead();
+          if (lead.status !== 'call_due') return;
+
+          lead.lastContactAt = now;
+          lead.attempts += 1;
+
+          if (result === 'no_answer'){
+            lead.lastCallResult = 'No answer';
+            lead.status = 'needs_followup';
+            lead.nextFollowUpAt = now + followNoAnswerMs;
+            pushLog('Staff', 'Call outcome for '+ lead.name +': no answer. Next follow-up at '+ fmt.short(lead.nextFollowUpAt) +'.');
+          } else if (result === 'voicemail_left'){
+            lead.lastCallResult = 'Voicemail left';
+            lead.status = 'needs_followup';
+            lead.nextFollowUpAt = now + followVoicemailMs;
+            pushLog('Staff', 'Call outcome for '+ lead.name +': voicemail left. Next follow-up at '+ fmt.short(lead.nextFollowUpAt) +'.');
+          } else if (result === 'contacted'){
+            lead.lastCallResult = 'Connected';
+            lead.status = 'ready_to_book';
+            lead.nextFollowUpAt = null;
+            pushLog('Staff', 'Call outcome for '+ lead.name +': connected. Agent surfaced “Ready to book”.');
+          }
+
+          renderLeads();
+          computeCounts();
+          updateAgentPanel();
+          renderLog();
+        }
+
+        function bookFirstSession(slot){
+          const lead = selectedLead();
+          if (lead.status !== 'ready_to_book') return;
+          if (!slot) { pushLog('Agent', 'Pick a slot before booking.'); renderLog(); return; }
+
+          lead.bookedSlot = slot;
+          lead.status = 'booked';
+          lead.nextFollowUpAt = null;
+          pushLog('Staff', 'First session booked for '+ lead.name +': '+ slot +'. Pipeline closed.');
+
+          renderLeads();
+          computeCounts();
+          updateAgentPanel();
+          renderLog();
+        }
+
+        function renderLog(){
+          const logEl = document.getElementById('log');
+          logEl.innerHTML = '';
+          state.log.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'logItem';
+            el.innerHTML = [
+              '<div class="line1">',
+              '<div class="kind">'+ item.kind +'</div>',
+              '<div class="ts">'+ fmt.short(item.ts) +'</div>',
+              '</div>',
+              '<div class="txt">'+ item.txt +'</div>'
+            ].join('');
+            logEl.appendChild(el);
+          });
+        }
+
+        // UI wiring
+        document.getElementById('signupBtn').onclick = () => {
+          const nextNum = Math.max(...leads.map(l => parseInt(l.id.slice(2),10))) + 1;
+          const pickName = names[Math.floor(Math.random()*names.length)];
+          const idx = names.indexOf(pickName);
+          const availabilityPool = [
+            ['8:15 AM','1:20 PM','5:40 PM'],
+            ['7:05 AM','12:00 PM','6:35 PM'],
+            ['9:00 AM','3:10 PM','4:25 PM'],
+            ['10:25 AM','2:50 PM','6:10 PM'],
+            ['9:40 AM','1:30 PM','5:05 PM']
+          ];
+          const pickAvail = availabilityPool[idx >= 0 ? idx : 0];
+          const phone = '(555) 01' + String(90 + nextNum).padStart(2,'0') + '-'+ String(1000 + nextNum).slice(-4);
+          const email = pickName.toLowerCase().replace(/\\s+/g,'') + '@example.com';
+          const lead = mkLead(nextNum, pickName, phone, email, pickAvail, now - 2*60000);
+          leads.unshift(lead);
+          state.selectedId = lead.id;
+          pushLog('Intake', 'Trial signup received for '+ lead.name +'.');
+          renderLeads();
+          computeCounts();
+          updateAgentPanel();
+          renderLog();
+        };
+
+        document.getElementById('advanceBtn').onclick = () => {
+          const sel = document.getElementById('advanceSelect').value;
+          let delta = 0;
+          if (sel === '2h') delta = 2 * 3600000;
+          if (sel === '6h') delta = 6 * 3600000;
+          if (sel === '1d') delta = 24 * 3600000;
+          now += delta;
+          document.getElementById('nowLabel').textContent = fmt.time(now);
+          // No automatic agent run here; you must click Run TrialClose to surface due calls.
+          renderLeads();
+          computeCounts();
+          updateAgentPanel();
+          renderLog();
+        };
+
+        // Agent control is embedded as a sticky action: top of right panel.
+        const actionArea = document.getElementById('actionArea');
+        const runBtn = document.createElement('button');
+        runBtn.id = 'runBtn';
+        runBtn.className = 'btnAccent';
+        runBtn.textContent = 'Run TrialClose step';
+        runBtn.onclick = runTrialCloseStep;
+        actionArea.prepend(runBtn);
+
+        // Initial render
+        document.getElementById('nowLabel').textContent = fmt.time(now);
+        pushLog('Agent', 'Demo loaded. Run TrialClose to queue the first call attempts for new trials.');
+        renderLog();
+        renderLeads();
+        computeCounts();
+        updateAgentPanel();
+      })();
+    </script>
+  </body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-gym-trialclose-retry-4-0</div>
