@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width,initial-scale=1' />
+  <title>TrialClose</title>
+  <style>
+    :root{
+      --bg:#FAF6EF;
+      --ink:#2C2620;
+      --muted:#6B6258;
+      --card:rgba(255,255,255,.78);
+      --card2:rgba(255,255,255,.58);
+      --accent:#B85C38;
+      --sage:#7BAF8E;
+      --line:rgba(44,38,32,.14);
+      --shadow: 0 18px 50px rgba(44,38,32,.12);
+      --shadow2: 0 10px 30px rgba(44,38,32,.10);
+      --radius:18px;
+      --radius2:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 15% 0%, rgba(184,92,56,.14), transparent 55%),
+        radial-gradient(900px 500px at 90% 20%, rgba(123,175,142,.20), transparent 50%),
+        radial-gradient(800px 500px at 30% 110%, rgba(184,92,56,.10), transparent 55%),
+        linear-gradient(180deg, #FBF7F0 0%, var(--bg) 60%);
+    }
+
+    .wrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding:26px 18px 44px;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      gap:18px;
+      justify-content:space-between;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .mark{
+      width:44px;height:44px;
+      border-radius:14px;
+      background:
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.85), transparent 60%),
+        linear-gradient(145deg, rgba(184,92,56,.95), rgba(123,175,142,.80));
+      box-shadow: 0 14px 30px rgba(184,92,56,.18);
+      border:1px solid rgba(44,38,32,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .mark:after{
+      content:'';
+      position:absolute;
+      inset:-18px -12px auto auto;
+      width:60px;height:60px;
+      transform:rotate(25deg);
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.1;
+      letter-spacing:-.02em;
+      font-family:var(--serif);
+      font-weight:800;
+    }
+    .subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13.5px;
+      max-width:620px;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.55);
+      border-radius:999px;
+      box-shadow: 0 10px 22px rgba(44,38,32,.06);
+      white-space:nowrap;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--accent);
+      box-shadow: 0 0 0 4px rgba(184,92,56,.18);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+
+    .cardHeader{
+      padding:16px 16px 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.45));
+      border-bottom:1px solid rgba(44,38,32,.10);
+    }
+    .cardTitle{
+      display:flex;align-items:center;gap:10px;justify-content:space-between;
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:-.01em;
+    }
+    .tag{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(44,38,32,.14);
+      color:rgba(44,38,32,.82);
+      background:rgba(255,255,255,.55);
+    }
+
+    .cardBody{padding:16px}
+
+    .steps{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0 0 10px;
+    }
+    .step{
+      flex:1;
+      min-width:170px;
+      background:rgba(255,255,255,.46);
+      border:1px solid rgba(44,38,32,.10);
+      border-radius:14px;
+      padding:10px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .badge{
+      width:30px;height:30px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--mono);
+      font-size:12px;
+      border:1px solid rgba(44,38,32,.14);
+      background:rgba(255,255,255,.6);
+      color:rgba(44,38,32,.86);
+      flex:0 0 auto;
+    }
+    .step .label{font-weight:800;font-size:13px;line-height:1.2;margin:0}
+    .step .desc{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.2}
+    .step.active{border-color:rgba(184,92,56,.35);}
+    .step.done{border-color:rgba(123,175,142,.45);}
+    .step.done .badge{background:rgba(123,175,142,.18); border-color:rgba(123,175,142,.50)}
+    .step.active .badge{background:rgba(184,92,56,.15); border-color:rgba(184,92,56,.45)}
+
+    label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 6px}
+    input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid rgba(44,38,32,.14);
+      background:rgba(255,255,255,.7);
+      outline:none;
+      color:var(--ink);
+      font-size:14px;
+    }
+    input::placeholder{color:rgba(44,38,32,.45)}
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 520px){
+      .row{grid-template-columns:1fr}
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:850;
+      letter-spacing:-.01em;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, opacity .12s ease;
+      font-size:14px;
+    }
+    button:active{transform:translateY(1px)}
+
+    .primary{
+      background:linear-gradient(145deg, rgba(184,92,56,.98), rgba(184,92,56,.76));
+      color:white;
+      box-shadow: 0 16px 40px rgba(184,92,56,.18);
+    }
+    .secondary{
+      background:rgba(255,255,255,.7);
+      border:1px solid rgba(44,38,32,.14);
+      color:rgba(44,38,32,.92);
+    }
+    .ghost{
+      background:transparent;
+      border:1px dashed rgba(44,38,32,.22);
+      color:rgba(44,38,32,.85);
+    }
+    button[disabled]{opacity:.55; cursor:not-allowed}
+
+    .statusCol{
+      padding:12px 16px 16px;
+    }
+
+    .leadCard{
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.55);
+      padding:14px;
+      box-shadow: 0 10px 22px rgba(44,38,32,.06);
+    }
+
+    .leadTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .leadTop h3{margin:0;font-size:14.5px;letter-spacing:-.01em}
+    .small{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:4px}
+    .kv{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 920px){.kv{grid-template-columns:1fr 1fr}}
+    @media (max-width: 520px){.kv{grid-template-columns:1fr}}
+    .kv .item{
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.6);
+      border-radius:14px;
+      padding:10px 10px;
+      min-height:56px;
+    }
+    .k{font-size:12px;color:var(--muted);margin:0}
+    .v{font-family:var(--mono);font-size:12.5px;margin:6px 0 0; color:rgba(44,38,32,.92); overflow:hidden; text-overflow:ellipsis;}
+
+    .timeline{
+      margin-top:14px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.42);
+    }
+    .timelineTitle{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px;
+    }
+    .timelineTitle h4{margin:0;font-size:13.5px}
+    .chip{
+      font-family:var(--mono);
+      font-size:11.5px;
+      padding:5px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.65);
+      border:1px solid rgba(44,38,32,.12);
+      color:rgba(44,38,32,.82);
+    }
+    .events{display:flex;flex-direction:column;gap:10px}
+    .event{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.56);
+      opacity:.95;
+    }
+    .event .t{
+      width:10px;height:10px;border-radius:50%;
+      background:rgba(44,38,32,.26);
+      margin-top:4px;
+      flex:0 0 auto;
+    }
+    .event.done .t{background:var(--sage); box-shadow: 0 0 0 4px rgba(123,175,142,.18)}
+    .event.stop .t{background:var(--accent); box-shadow: 0 0 0 4px rgba(184,92,56,.18)}
+    .event .meta{flex:1}
+    .event .meta .name{font-weight:850;font-size:13px;margin:0}
+    .event .meta .info{margin:4px 0 0; color:var(--muted); font-size:12.5px; line-height:1.35}
+
+    .split{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .queue{
+      margin-top:12px;
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.42);
+      padding:12px;
+    }
+    .queue h4{margin:0 0 10px; font-size:13.5px}
+    .queueList{display:flex;flex-direction:column;gap:10px}
+    .task{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(44,38,32,.10);
+      background:rgba(255,255,255,.58);
+    }
+    .task .left{min-width:0}
+    .task .title{font-weight:850;font-size:13px;margin:0}
+    .task .note{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.35}
+    .statusPill{
+      flex:0 0 auto;
+      font-family:var(--mono);
+      font-size:11.5px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid rgba(44,38,32,.12);
+      background:rgba(255,255,255,.65);
+      color:rgba(44,38,32,.82);
+      white-space:nowrap;
+    }
+    .statusPill.good{border-color:rgba(123,175,142,.45); background:rgba(123,175,142,.16); color:rgba(25,90,60,.95)}
+    .statusPill.stop{border-color:rgba(184,92,56,.45); background:rgba(184,92,56,.14); color:rgba(120,43,16,.95)}
+
+    .callout{
+      margin-top:12px;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.10);
+      background:
+        radial-gradient(600px 220px at 0% 0%, rgba(184,92,56,.14), transparent 55%),
+        rgba(255,255,255,.46);
+    }
+    .callout .big{
+      margin:0;
+      font-weight:900;
+      letter-spacing:-.01em;
+      font-size:14px;
+    }
+    .callout .sub{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.35}
+
+    .footerNote{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.4;
+    }
+
+    .shake{animation: shake .35s ease-in-out}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+
+    .fadeIn{animation: fadeIn .35s ease both}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:translateY(0)}}
+
+    .srOnly{
+      position:absolute;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='top'>
+      <div class='brand'>
+        <div class='mark' aria-hidden='true'></div>
+        <div>
+          <h1>TrialClose</h1>
+          <p class='subtitle'>Live demo — sample data. The real build wires into your systems.</p>
+        </div>
+      </div>
+      <div class='pill'><span class='dot' aria-hidden='true'></span>Gym lead intake → staff booked → follow-up stops</div>
+    </div>
+
+    <div class='grid'>
+      <section class='card'>
+        <div class='cardHeader'>
+          <div class='cardTitle'>
+            <h2>1) Trial Intake</h2>
+            <span class='tag'>Sample lead</span>
+          </div>
+        </div>
+        <div class='cardBody'>
+          <div class='steps' id='steps'>
+            <div class='step active' data-step='intake'>
+              <div class='badge'>1</div>
+              <div>
+                <p class='label'>Intake</p>
+                <p class='desc'>Capture trial details.</p>
+              </div>
+            </div>
+            <div class='step' data-step='close'>
+              <div class='badge'>2</div>
+              <div>
+                <p class='label'>TrialClose</p>
+                <p class='desc'>Assign staff + book.</p>
+              </div>
+            </div>
+            <div class='step' data-step='stop'>
+              <div class='badge'>3</div>
+              <div>
+                <p class='label'>Follow-up</p>
+                <p class='desc'>Reminders stop once booked.</p>
+              </div>
+            </div>
+          </div>
+
+          <form id='intakeForm'>
+            <div class='row'>
+              <div>
+                <label for='leadName'>Lead name</label>
+                <input id='leadName' name='leadName' placeholder='e.g., Jordan P.' autocomplete='off' value='Jordan P.' />
+              </div>
+              <div>
+                <label for='contactMethod'>Preferred contact</label>
+                <select id='contactMethod' name='contactMethod'>
+                  <option value='text' selected>Text</option>
+                  <option value='email'>Email</option>
+                  <option value='phone'>Phone call</option>
+                </select>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div>
+                <label for='trialWhen'>Trial date/time</label>
+                <input id='trialWhen' name='trialWhen' placeholder='e.g., Tue 6:00 PM' autocomplete='off' value='Tue 6:00 PM' />
+              </div>
+              <div>
+                <label for='goal'>Primary goal</label>
+                <select id='goal' name='goal'>
+                  <option value='strength' selected>Strength</option>
+                  <option value='fat_loss'>Fat loss</option>
+                  <option value='mobility'>Mobility</option>
+                  <option value='rehab'>Rehab</option>
+                </select>
+              </div>
+            </div>
+
+            <label for='notes'>Anything staff should know?</label>
+            <input id='notes' name='notes' placeholder='e.g., first time ever; prefers mornings' autocomplete='off' value='First time ever; prefers a quick tour first.' />
+
+            <div class='actions'>
+              <button class='primary' type='submit' id='runBtn'>Run TrialClose</button>
+              <button class='secondary' type='button' id='resetBtn'>Reset</button>
+              <button class='ghost' type='button' id='sampleBtn'>Use a different sample</button>
+            </div>
+
+            <div class='footerNote'>Tip: try changing the trial time. The demo will “book staff” and then cancel any follow-up reminders for the same lead.</div>
+          </form>
+        </div>
+      </section>
+
+      <aside class='card'>
+        <div class='cardHeader'>
+          <div class='cardTitle'>
+            <h2>2) TrialClose Result</h2>
+            <span class='tag' id='runStateTag'>Awaiting run</span>
+          </div>
+        </div>
+        <div class='statusCol'>
+          <div class='leadCard'>
+            <div class='leadTop'>
+              <h3 id='leadTitle'>Lead intake ready</h3>
+              <span class='chip' id='leadId'>LEAD-—</span>
+            </div>
+            <div class='small'>What the agent does: once a staff booking is confirmed, follow-up reminders are stopped so you don’t double-contact the member.</div>
+
+            <div class='kv'>
+              <div class='item'>
+                <p class='k'>Trial time</p>
+                <p class='v' id='kvTrial'>—</p>
+              </div>
+              <div class='item'>
+                <p class='k'>Preferred contact</p>
+                <p class='v' id='kvContact'>—</p>
+              </div>
+              <div class='item'>
+                <p class='k'>Goal</p>
+                <p class='v' id='kvGoal'>—</p>
+              </div>
+              <div class='item'>
+                <p class='k'>Notes</p>
+                <p class='v' id='kvNotes'>—</p>
+              </div>
+            </div>
+
+            <div class='timeline' id='timeline'>
+              <div class='timelineTitle'>
+                <h4>Agent actions (sample)</h4>
+                <span class='chip' id='timelineChip'>Idle</span>
+              </div>
+              <div class='events' id='events'>
+                <div class='event'>
+                  <div class='t' aria-hidden='true'></div>
+                  <div class='meta'>
+                    <p class='name'>Intake received</p>
+                    <p class='info'>Fill the intake form, then click <b>Run TrialClose</b>.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class='queue' id='queueBox'>
+              <h4>Follow-up queue</h4>
+              <div class='queueList' id='queue'>
+                <div class='task'>
+                  <div class='left'>
+                    <p class='title'>No follow-ups scheduled</p>
+                    <p class='note'>Run TrialClose to see cancellation behavior.</p>
+                  </div>
+                  <span class='statusPill'>—</span>
+                </div>
+              </div>
+            </div>
+
+            <div class='callout fadeIn' id='callout' style='display:none;'>
+              <p class='big'>Follow-up stopped</p>
+              <p class='sub' id='stopText'>Once the staff booking is confirmed, the system cancels reminders that would’ve otherwise fired.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  const staff = [
+    { name: 'Alex (PT)', skills: ['strength','rehab'], slots: ['Tue 6:00 PM','Wed 7:00 PM'] },
+    { name: 'Sam (Coach)', skills: ['fat_loss','strength'], slots: ['Tue 6:00 PM','Thu 5:30 PM'] },
+    { name: 'Priya (Coach)', skills: ['mobility','fat_loss'], slots: ['Tue 6:00 PM','Fri 6:30 PM'] }
+  ];
+
+  const followUps = [
+    { key:'call', title:'Call to confirm trial', note:'If not booked, book confirmation call in 2 hours.' },
+    { key:'text', title:'Text reminder', note:'If not booked, send reminder morning-of.' },
+    { key:'email', title:'Email check-in', note:'If not booked, send “see you soon” after trial.' }
+  ];
+
+  const goalMap = {
+    strength: 'Strength',
+    fat_loss: 'Fat loss',
+    mobility: 'Mobility',
+    rehab: 'Rehab'
+  };
+
+  const byId = (id) => document.getElementById(id);
+
+  const steps = {
+    intake: byId('steps').querySelector('[data-step="intake"]'),
+    close: byId('steps').querySelector('[data-step="close"]'),
+    stop:  byId('steps').querySelector('[data-step="stop"]')
+  };
+
+  let sampleMode = 0;
+
+  function setStep(which){
+    // Reset classes
+    Object.values(steps).forEach(el => {
+      el.classList.remove('active','done');
+    });
+    // Set styles: active to current, done to prior
+    steps.intake.classList.add(which==='intake' ? 'active' : (which!=='intake' ? 'done' : ''));
+    if(which==='close'){
+      steps.close.classList.add('active');
+    }else if(which!=='intake'){
+      steps.close.classList.add('done');
+    }
+    if(which==='stop'){
+      steps.stop.classList.add('active');
+    }else if(which==='close'){
+      steps.stop.classList.remove('active');
+    }else{
+      steps.stop.classList.add('');
+    }
+
+    // Fix: make “done” for previous steps
+    if(which==='close'){
+      steps.intake.classList.add('done');
+      steps.close.classList.add('active');
+    }
+    if(which==='stop'){
+      steps.intake.classList.add('done');
+      steps.close.classList.add('done');
+      steps.stop.classList.add('active');
+    }
+    if(which==='intake'){
+      steps.intake.classList.add('active');
+    }
+  }
+
+  function uid(){
+    const n = Math.floor(Math.random()*9000)+1000;
+    return 'LEAD-' + n;
+  }
+
+  function pickStaff(trialWhen, goal){
+    // Prefer staff who can take the requested slot.
+    const candidates = staff.filter(s => s.slots.includes(trialWhen));
+    if(candidates.length===0){
+      // fallback: any staff
+      return staff[0];
+    }
+    // Prefer matching goal skills
+    const skilled = candidates.filter(s => s.skills.includes(goal));
+    return (skilled[0] || candidates[0]);
+  }
+
+  function renderTimeline(events){
+    const eventsEl = byId('events');
+    eventsEl.innerHTML = '';
+    events.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'event' + (e.state ? ' ' + e.state : '');
+      div.innerHTML = `
+        <div class='t' aria-hidden='true'></div>
+        <div class='meta'>
+          <p class='name'>${e.title}</p>
+          <p class='info'>${e.info}</p>
+        </div>
+      `;
+      eventsEl.appendChild(div);
+    });
+  }
+
+  function renderQueue(mode){
+    // mode: 'idle' | 'prebook' | 'stopped'
+    const q = byId('queue');
+    q.innerHTML = '';
+
+    if(mode==='idle'){
+      q.innerHTML = `
+        <div class='task'>
+          <div class='left'>
+            <p class='title'>No follow-ups scheduled</p>
+            <p class='note'>Run TrialClose to see cancellation behavior.</p>
+          </div>
+          <span class='statusPill'>—</span>
+        </div>
+      `;
+      return;
+    }
+
+    if(mode==='prebook'){
+      followUps.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'task';
+        div.innerHTML = `
+          <div class='left'>
+            <p class='title'>${f.title}</p>
+            <p class='note'>${f.note}</p>
+          </div>
+          <span class='statusPill'>SCHEDULED</span>
+        `;
+        q.appendChild(div);
+      });
+      return;
+    }
+
+    if(mode==='stopped'){
+      // Show same tasks but marked stopped/cancelled.
+      followUps.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'task';
+        div.innerHTML = `
+          <div class='left'>
+            <p class='title'>${f.title}</p>
+            <p class='note'>Cancelled because staff booking is confirmed.</p>
+          </div>
+          <span class='statusPill stop'>STOPPED</span>
+        `;
+        q.appendChild(div);
+      });
+      return;
+    }
+  }
+
+  function setFields(lead){
+    byId('leadTitle').textContent = lead.name + ' — Trial intake';
+    byId('leadId').textContent = lead.id;
+    byId('kvTrial').textContent = lead.trialWhen;
+    byId('kvContact').textContent = lead.contactMethod;
+    byId('kvGoal').textContent = goalMap[lead.goal] || lead.goal;
+    byId('kvNotes').textContent = lead.notes;
+  }
+
+  function runTrialClose(lead){
+    // Simulate: create follow-ups, then “staff booked” and cancel follow-ups.
+    byId('runBtn').disabled = true;
+    byId('resetBtn').disabled = true;
+    byId('sampleBtn').disabled = true;
+
+    setStep('close');
+    byId('runStateTag').textContent = 'Running TrialClose…';
+    byId('timelineChip').textContent = 'Processing';
+    byId('callout').style.display = 'none';
+
+    // Pre-book state
+    renderTimeline([
+      {
+        title: 'Intake received',
+        info: `Lead captured: <b>${lead.name}</b>. Preparing trial-close workflow.`,
+        state: ''
+      },
+      {
+        title: 'Draft follow-up reminders',
+        info: 'Because the trial is not yet confirmed, reminders are provisionally queued.',
+        state: ''
+      }
+    ]);
+    renderQueue('prebook');
+
+    // Decide “staff booked” deterministically by slot.
+    const bookedStaff = pickStaff(lead.trialWhen, lead.goal);
+
+    // Add small staged delays for visibility (still offline; no external calls).
+    const t1 = setTimeout(() => {
+      setStep('close');
+      renderTimeline([
+        {
+          title: 'Intake received',
+          info: `Lead captured: <b>${lead.name}</b>.`,
+          state: 'done'
+        },
+        {
+          title: 'Draft follow-up reminders',
+          info: 'Queued for the “not booked yet” scenario.',
+          state: 'done'
+        },
+        {
+          title: 'TrialClose assigns staff',
+          info: `Staff booked: <b>${bookedStaff.name}</b> for <b>${lead.trialWhen}</b>.`,
+          state: 'done'
+        }
+      ]);
+    }, 520);
+
+    const t2 = setTimeout(() => {
+      setStep('stop');
+      byId('timelineChip').textContent = 'Follow-up stopped';
+      byId('runStateTag').textContent = 'Trial booked';
+
+      renderTimeline([
+        {
+          title: 'Intake received',
+          info: `Lead captured: <b>${lead.name}</b>.`,
+          state: 'done'
+        },
+        {
+          title: 'TrialClose assigns staff',
+          info: `Staff booked: <b>${bookedStaff.name}</b> for <b>${lead.trialWhen}</b>.`,
+          state: 'done'
+        },
+        {
+          title: 'Follow-up cancellation',
+          info: 'All reminders for “trial not confirmed” are cancelled to prevent double-contact.',
+          state: 'stop'
+        }
+      ]);
+
+      renderQueue('stopped');
+      byId('callout').style.display = 'block';
+      byId('stopText').textContent = `Follow-up stopped for ${lead.name} because staff is confirmed (${bookedStaff.name}).`;
+
+      byId('runBtn').disabled = false;
+      byId('resetBtn').disabled = false;
+      byId('sampleBtn').disabled = false;
+
+      clearTimeout(t1);
+    }, 1050);
+  }
+
+  function getLeadFromForm(){
+    const name = byId('leadName').value.trim();
+    const trialWhen = byId('trialWhen').value.trim();
+    const goal = byId('goal').value;
+    const contactMethod = byId('contactMethod').value;
+    const notes = byId('notes').value.trim();
+
+    if(!name || !trialWhen || !notes){
+      byId('intakeForm').classList.add('shake');
+      setTimeout(() => byId('intakeForm').classList.remove('shake'), 420);
+      return null;
+    }
+
+    return {
+      id: uid(),
+      name,
+      trialWhen,
+      goal,
+      contactMethod,
+      notes
+    };
+  }
+
+  function reset(){
+    byId('runStateTag').textContent = 'Awaiting run';
+    byId('timelineChip').textContent = 'Idle';
+    byId('leadTitle').textContent = 'Lead intake ready';
+    byId('leadId').textContent = 'LEAD-—';
+    byId('kvTrial').textContent = '—';
+    byId('kvContact').textContent = '—';
+    byId('kvGoal').textContent = '—';
+    byId('kvNotes').textContent = '—';
+    byId('callout').style.display = 'none';
+
+    setStep('intake');
+    renderTimeline([
+      {
+        title: 'Intake received',
+        info: 'Fill the intake form, then click <b>Run TrialClose</b>.',
+        state: ''
+      }
+    ]);
+    renderQueue('idle');
+
+    byId('runBtn').disabled = false;
+    byId('resetBtn').disabled = false;
+    byId('sampleBtn').disabled = false;
+  }
+
+  function loadSample(i){
+    const samples = [
+      { name:'Jordan P.', trialWhen:'Tue 6:00 PM', goal:'strength', contactMethod:'text', notes:'First time ever; prefers a quick tour first.' },
+      { name:'Morgan S.', trialWhen:'Thu 5:30 PM', goal:'fat_loss', contactMethod:'email', notes:'Wants group vibe; has a knee that gets cranky.' },
+      { name:'Taylor K.', trialWhen:'Fri 6:30 PM', goal:'mobility', contactMethod:'phone', notes:'Stiff desk posture; wants mobility focus + basics.' }
+    ];
+    sampleMode = i;
+    const s = samples[i % samples.length];
+    byId('leadName').value = s.name;
+    byId('trialWhen').value = s.trialWhen;
+    byId('goal').value = s.goal;
+    byId('contactMethod').value = s.contactMethod;
+    byId('notes').value = s.notes;
+
+    // Update “preview” fields in the right panel without running.
+    const preview = { id:'LEAD-—', ...s };
+    setFields(preview);
+  }
+
+  document.getElementById('intakeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const lead = getLeadFromForm();
+    if(!lead) return;
+
+    setFields(lead);
+    runTrialClose(lead);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    reset();
+    // Keep the current form values; this reset is just the agent output.
+  });
+
+  document.getElementById('sampleBtn').addEventListener('click', () => {
+    loadSample(sampleMode + 1);
+    reset();
+  });
+
+  // Initial render
+  reset();
+  loadSample(0);
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-gym-run-1786389043-0</div>
