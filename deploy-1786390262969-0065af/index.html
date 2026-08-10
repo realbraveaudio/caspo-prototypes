@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TrialClose</title>
+  <style>
+    :root{
+      --bg:#FAF6EF;
+      --ink:#2C2620;
+      --accent:#B85C38;
+      --sage:#7BAF8E;
+      --muted:#6E665D;
+      --card:#FFFFFF;
+      --line:rgba(44,38,32,.10);
+      --shadow: 0 14px 40px rgba(44,38,32,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1100px 600px at 20% -10%, rgba(184,92,56,.18), transparent 60%),
+                  radial-gradient(900px 520px at 100% 0%, rgba(123,175,142,.18), transparent 55%),
+                  linear-gradient(180deg, var(--bg), #F6F0E6);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      line-height:1.35;
+      min-height:100vh;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:26px 16px 44px;
+    }
+    header{
+      display:flex;
+      gap:16px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex; gap:14px; align-items:flex-start;
+    }
+    .mark{
+      width:44px; height:44px;
+      border-radius:14px;
+      background:
+        radial-gradient(12px 12px at 28% 32%, rgba(255,255,255,.9), rgba(255,255,255,0) 60%),
+        conic-gradient(from 210deg, rgba(184,92,56,.95), rgba(123,175,142,.95), rgba(184,92,56,.95));
+      box-shadow: 0 12px 30px rgba(184,92,56,.22);
+      border:1px solid rgba(44,38,32,.10);
+    }
+    h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+      font-weight:900;
+    }
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .tagline{
+      text-align:right;
+      max-width:470px;
+      color:rgba(44,38,32,.78);
+      font-size:13px;
+      margin-top:4px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.7);
+      border:1px solid var(--line);
+      box-shadow: 0 10px 22px rgba(44,38,32,.06);
+      white-space:nowrap;
+    }
+    .dot{
+      width:9px; height:9px;
+      border-radius:999px;
+      background: var(--sage);
+      box-shadow: 0 0 0 4px rgba(123,175,142,.20);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+      .tagline{text-align:left}
+    }
+
+    .card{
+      background: rgba(255,255,255,.76);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.60));
+    }
+    .cardTitle{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .cardTitle h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.16px;
+      text-transform:uppercase;
+      font-weight:900;
+    }
+    .cardTitle p{margin:0; color:var(--muted); font-size:13px}
+
+    .cardBody{padding:16px}
+
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .spacer{height:10px}
+
+    label{
+      display:block;
+      font-size:12px;
+      color:rgba(44,38,32,.78);
+      font-weight:800;
+      margin-bottom:7px;
+      letter-spacing:.12px;
+    }
+    input, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid rgba(44,38,32,.16);
+      background: rgba(255,255,255,.92);
+      color:var(--ink);
+      outline:none;
+      font-size:14px;
+    }
+    input::placeholder{color:rgba(44,38,32,.45)}
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 520px){ .formGrid{grid-template-columns:1fr} }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:950;
+      letter-spacing:.2px;
+      font-size:14px;
+      color:var(--ink);
+      transition: transform .08s ease, filter .12s ease, background .12s ease;
+    }
+    button:active{transform: translateY(1px)}
+    .primary{
+      background: linear-gradient(180deg, rgba(184,92,56,.95), rgba(184,92,56,.80));
+      box-shadow: 0 18px 34px rgba(184,92,56,.22);
+      color:#1d140f;
+      border:1px solid rgba(44,38,32,.14);
+    }
+    .ghost{
+      background: rgba(255,255,255,.70);
+      border:1px solid rgba(44,38,32,.14);
+    }
+    .secondary{
+      background: rgba(123,175,142,.22);
+      border:1px solid rgba(123,175,142,.40);
+    }
+    .small{
+      padding:10px 12px;
+      font-size:13px;
+      border-radius:12px;
+    }
+
+    .toggle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(44,38,32,.14);
+      background: rgba(255,255,255,.70);
+    }
+    .toggle strong{font-size:13px;}
+    .toggle span{display:block; color:var(--muted); font-size:12px; margin-top:3px}
+    .switch{
+      width:46px; height:28px;
+      border-radius:999px;
+      border:1px solid rgba(44,38,32,.16);
+      background: rgba(255,255,255,.8);
+      position:relative;
+      flex:0 0 auto;
+    }
+    .switch::after{
+      content:"";
+      position:absolute;
+      top:50%; transform: translateY(-50%);
+      left:4px;
+      width:20px; height:20px;
+      border-radius:999px;
+      background: rgba(44,38,32,.18);
+      transition: left .15s ease, background .15s ease;
+    }
+    .switch.on{
+      background: rgba(123,175,142,.18);
+      border-color: rgba(123,175,142,.55);
+    }
+    .switch.on::after{left:22px; background: rgba(123,175,142,.95)}
+
+    .steps{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .step{
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.12);
+      background: rgba(255,255,255,.70);
+      position:relative;
+      overflow:hidden;
+    }
+    .step::before{
+      content:"";
+      position:absolute;
+      inset:-1px auto auto -1px;
+      width:10px;
+      background: rgba(44,38,32,.08);
+    }
+
+    .stepTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .stepLeft{display:flex; gap:10px; align-items:flex-start}
+    .status{
+      width:28px; height:28px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(44,38,32,.14);
+      background: rgba(255,255,255,.8);
+      flex:0 0 auto;
+      margin-top:1px;
+      font-size:14px;
+    }
+    .status.pending{color: rgba(44,38,32,.40)}
+    .status.active{color: var(--accent); border-color: rgba(184,92,56,.35); background: rgba(184,92,56,.10)}
+    .status.done{color: rgba(44,38,32,.70); border-color: rgba(123,175,142,.48); background: rgba(123,175,142,.16)}
+
+    .step h3{
+      margin:0;
+      font-size:14px;
+      font-weight:950;
+      letter-spacing:.1px;
+    }
+    .step p{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .mini{
+      margin-top:10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .chip{
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(44,38,32,.12);
+      background: rgba(255,255,255,.85);
+      color: rgba(44,38,32,.82);
+      font-weight:850;
+      font-size:12px;
+    }
+    .chip.accent{border-color: rgba(184,92,56,.35); background: rgba(184,92,56,.10)}
+    .chip.sage{border-color: rgba(123,175,142,.45); background: rgba(123,175,142,.14)}
+
+    .log{
+      margin-top:12px;
+      border-radius:16px;
+      border:1px solid rgba(44,38,32,.12);
+      background: rgba(255,255,255,.68);
+      padding:12px;
+    }
+    .log h4{margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:.16px; font-weight:950; color: rgba(44,38,32,.75)}
+    .logBox{
+      height:190px;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .line{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:8px 0;
+      border-bottom:1px dashed rgba(44,38,32,.10);
+    }
+    .line:last-child{border-bottom:none}
+    .time{
+      width:56px;
+      font-size:12px;
+      color: rgba(44,38,32,.48);
+      font-weight:850;
+      flex:0 0 auto;
+    }
+    .msg{
+      font-size:13px;
+      color: rgba(44,38,32,.85);
+      font-weight:700;
+    }
+
+    .heroNote{
+      margin-top:14px;
+      color: rgba(44,38,32,.78);
+      font-size:13px;
+      background: rgba(255,255,255,.70);
+      border:1px solid rgba(44,38,32,.12);
+      padding:12px;
+      border-radius:16px;
+    }
+
+    .fadeIn{
+      animation: fadeIn .25s ease both;
+    }
+    @keyframes fadeIn{
+      from{opacity:.0; transform: translateY(4px)}
+      to{opacity:1; transform: translateY(0)}
+    }
+
+    .skeleton{
+      background: linear-gradient(90deg, rgba(44,38,32,.06), rgba(44,38,32,.12), rgba(44,38,32,.06));
+      background-size: 200% 100%;
+      animation: shimmer 1.1s linear infinite;
+      border-radius:12px;
+      height:12px;
+    }
+    @keyframes shimmer{
+      0%{background-position: 180% 0}
+      100%{background-position: -20% 0}
+    }
+
+    .footerHint{
+      margin-top:14px;
+      color: rgba(44,38,32,.60);
+      font-size:12px;
+    }
+
+    .srOnly{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <h1>TrialClose</h1>
+          <div class="sub">Live demo — sample data. The real build wires into your systems.</div>
+        </div>
+      </div>
+      <div class="tagline">
+        <div class="pill"><span class="dot" aria-hidden="true"></span>Run trial intake, then simulate “staff booked” to close the loop.</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="cardHead">
+          <div class="cardTitle">
+            <h2>Trial Intake</h2>
+            <p>Use the sample lead (or edit it). Then click “Run Trial Intake”.</p>
+          </div>
+          <div>
+            <button id="btnReset" class="ghost small" type="button">Reset</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="formGrid">
+            <div>
+              <label for="leadName">Lead name</label>
+              <input id="leadName" value="Avery Chen" placeholder="Name" />
+            </div>
+            <div>
+              <label for="leadEmail">Email</label>
+              <input id="leadEmail" value="avery.chen@example.com" placeholder="name@company.com" />
+            </div>
+            <div>
+              <label for="leadRole">Business type</label>
+              <select id="leadRole">
+                <option selected value="Gym">Gym</option>
+                <option value="Clinic">Clinic</option>
+                <option value="Studio">Studio</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="leadChannel">Trial source</label>
+              <select id="leadChannel">
+                <option selected value="Website form">Website form</option>
+                <option value="Referral">Referral</option>
+                <option value="Ad click">Ad click</option>
+                <option value="Walk-in">Walk-in</option>
+              </select>
+            </div>
+            <div>
+              <label for="leadGoal">Primary goal</label>
+              <select id="leadGoal">
+                <option selected value="Fill trial appointments">Fill trial appointments</option>
+                <option value="Reduce no-shows">Reduce no-shows</option>
+                <option value="Improve conversion">Improve conversion</option>
+                <option value="Organize leads">Organize leads</option>
+              </select>
+            </div>
+            <div>
+              <label for="leadBudget">Estimated monthly budget</label>
+              <select id="leadBudget">
+                <option selected value="$500–$1,500">$500–$1,500</option>
+                <option value="$1,500–$3,000">$1,500–$3,000</option>
+                <option value="$3,000+">$3,000+</option>
+              </select>
+            </div>
+            <div>
+              <label for="trialWhen">Preferred start</label>
+              <input id="trialWhen" value="Next Tue" placeholder="e.g., Next Tue" />
+            </div>
+            <div>
+              <label for="trialTime">Preferred time</label>
+              <select id="trialTime">
+                <option selected value="Morning">Morning</option>
+                <option value="Midday">Midday</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="spacer"></div>
+
+          <div class="toggle" role="group" aria-label="Simulation options">
+            <div>
+              <strong>Simulate staff booked</strong>
+              <span>If on, the demo creates staff booking events after intake completes.</span>
+            </div>
+            <button id="toggleStaff" type="button" class="switch on" aria-pressed="true" aria-label="Toggle staff booked"></button>
+          </div>
+
+          <div class="actions">
+            <button id="btnRun" class="primary" type="button">Run Trial Intake</button>
+            <button id="btnSample" class="secondary" type="button">Load Another Sample Lead</button>
+          </div>
+
+          <div class="heroNote">
+            What you’ll see: the “Trial Intake” step produces a recommended trial plan, then (optionally) “staff booked” creates the concrete schedule confirmation.
+          </div>
+
+          <div class="footerHint">No external calls. Everything runs in this page using sample data only.</div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="cardHead">
+          <div class="cardTitle">
+            <h2>Close the Loop</h2>
+            <p>Progress updates from the trial intake workflow.</p>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="steps" aria-live="polite">
+            <div class="step" id="step1">
+              <div class="stepTop">
+                <div class="stepLeft">
+                  <div class="status pending" data-status>•</div>
+                  <div>
+                    <h3>1) Intake received</h3>
+                    <p id="step1Text">Waiting for you to run the workflow.</p>
+                    <div class="mini" id="step1Chips"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step" id="step2">
+              <div class="stepTop">
+                <div class="stepLeft">
+                  <div class="status pending" data-status>•</div>
+                  <div>
+                    <h3>2) Trial plan recommended</h3>
+                    <p id="step2Text">We’ll qualify the lead and decide the trial structure.</p>
+                    <div class="mini" id="step2Chips"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step" id="step3">
+              <div class="stepTop">
+                <div class="stepLeft">
+                  <div class="status pending" data-status>•</div>
+                  <div>
+                    <h3>3) Staff booked (simulated)</h3>
+                    <p id="step3Text">If enabled, the workflow will book the right staff and confirm the times.</p>
+                    <div class="mini" id="step3Chips"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="log" aria-label="Workflow log">
+            <h4>Live demo log</h4>
+            <div class="logBox" id="logBox"></div>
+          </div>
+
+          <div class="actions" style="margin-top:12px">
+            <button id="btnRunAgain" class="ghost small" type="button" style="display:none">Run Again</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const $ = (id) => document.getElementById(id);
+      const logBox = $("logBox");
+      const toggleStaff = $("toggleStaff");
+      const btnRun = $("btnRun");
+      const btnSample = $("btnSample");
+      const btnReset = $("btnReset");
+      const btnRunAgain = $("btnRunAgain");
+
+      const stepState = {
+        step1: { status: 'pending' },
+        step2: { status: 'pending' },
+        step3: { status: 'pending' },
+      };
+
+      const sampleLeads = [
+        {
+          leadName: "Morgan Rivera",
+          leadEmail: "morgan.rivera@example.com",
+          leadRole: "Gym",
+          leadChannel: "Ad click",
+          leadGoal: "Reduce no-shows",
+          leadBudget: "$1,500–$3,000",
+          trialWhen: "This Sat",
+          trialTime: "Evening"
+        },
+        {
+          leadName: "Sam Patel",
+          leadEmail: "sam.patel@example.com",
+          leadRole: "Studio",
+          leadChannel: "Referral",
+          leadGoal: "Improve conversion",
+          leadBudget: "$500–$1,500",
+          trialWhen: "Next Mon",
+          trialTime: "Morning"
+        },
+        {
+          leadName: "Jordan Blake",
+          leadEmail: "jordan.blake@example.com",
+          leadRole: "Clinic",
+          leadChannel: "Website form",
+          leadGoal: "Organize leads",
+          leadBudget: "$3,000+",
+          trialWhen: "Next Thu",
+          trialTime: "Midday"
+        }
+      ];
+      let sampleIndex = 0;
+
+      const staffPool = [
+        { id: "st_amy", name: "Amy (Coach)", skills: ["trial intake", "gym programming"], load: 0 },
+        { id: "st_lee", name: "Lee (Front Desk)", skills: ["trial intake", "scheduling"], load: 0 },
+        { id: "st_pria", name: "Pria (Trainer)", skills: ["trial intake", "conversion coaching"], load: 0 },
+      ];
+
+      const availability = {
+        Morning: ["09:30", "10:15", "11:00"],
+        Midday: ["12:15", "13:00", "13:45"],
+        Evening: ["17:30", "18:15", "19:00"]
+      };
+
+      function nowTime(){
+        const d = new Date();
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function addLog(message){
+        const line = document.createElement('div');
+        line.className = 'line fadeIn';
+        const t = document.createElement('div');
+        t.className = 'time';
+        t.textContent = nowTime();
+        const m = document.createElement('div');
+        m.className = 'msg';
+        m.textContent = message;
+        line.appendChild(t);
+        line.appendChild(m);
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+
+      function setStep(stepEl, status, text){
+        const statusEl = stepEl.querySelector('[data-status]');
+        statusEl.classList.remove('pending','active','done');
+        statusEl.classList.add(status === 'active' ? 'active' : (status === 'done' ? 'done' : 'pending'));
+        statusEl.textContent = status === 'active' ? '…' : (status === 'done' ? '✓' : '•');
+        const t = stepEl.querySelector('p');
+        t.textContent = text;
+      }
+
+      function clearChips(id){ $(id).innerHTML = ''; }
+      function addChip(chipsEl, label, kind){
+        const c = document.createElement('span');
+        c.className = 'chip' + (kind ? ' ' + kind : '');
+        c.textContent = label;
+        chipsEl.appendChild(c);
+      }
+
+      function getLeadFromForm(){
+        return {
+          leadName: $("leadName").value.trim(),
+          leadEmail: $("leadEmail").value.trim(),
+          leadRole: $("leadRole").value,
+          leadChannel: $("leadChannel").value,
+          leadGoal: $("leadGoal").value,
+          leadBudget: $("leadBudget").value,
+          trialWhen: $("trialWhen").value.trim(),
+          trialTime: $("trialTime").value,
+        };
+      }
+
+      function resetUI(){
+        logBox.innerHTML = '';
+        btnRunAgain.style.display = 'none';
+
+        const stepEls = [$("step1"), $("step2"), $("step3")];
+        setStep(stepEls[0], 'pending', 'Waiting for you to run the workflow.');
+        setStep(stepEls[1], 'pending', 'We’ll qualify the lead and decide the trial structure.');
+        setStep(stepEls[2], 'pending', 'If enabled, the workflow will book the right staff and confirm the times.');
+
+        clearChips('step1Chips');
+        clearChips('step2Chips');
+        clearChips('step3Chips');
+
+        stepState.step1.status = 'pending';
+        stepState.step2.status = 'pending';
+        stepState.step3.status = 'pending';
+      }
+
+      function sleep(ms){
+        return new Promise((res)=>setTimeout(res, ms));
+      }
+
+      function recommendTrialPlan(lead){
+        // Simple deterministic logic for demo realism.
+        const goal = lead.leadGoal;
+        const timeBias = lead.trialTime;
+        const role = lead.leadRole;
+
+        let sessionCount = 3;
+        let followup = "48-hour check-in";
+        let focus = "starter assessment";
+
+        if(goal === 'Reduce no-shows'){
+          sessionCount = 4;
+          followup = "24-hour confirmation + 1-hour reminder";
+          focus = "barrier removal";
+        } else if(goal === 'Improve conversion'){
+          sessionCount = 3;
+          followup = "same-day conversion script + offer";
+          focus = "objection handling";
+        } else if(goal === 'Organize leads'){
+          sessionCount = 2;
+          followup = "lead scoring + next-best-action";
+          focus = "pipeline hygiene";
+        }
+
+        const packageName = `${role} TrialClose: ${goal}`;
+        const recommendedLeadMessage = `We’ll start with a quick intake, then schedule ${sessionCount} trial touchpoints around your preferred ${timeBias}.`;
+
+        return { sessionCount, followup, focus, packageName, recommendedLeadMessage };
+      }
+
+      function chooseStaffForBooking(lead, preferredTime){
+        // Pick best staff by current load; tie-break with skill match.
+        const staff = staffPool.map(s => ({...s}));
+        const wantsSkill = (lead.leadGoal === 'Improve conversion') ? 'conversion coaching' : 'trial intake';
+
+        staff.forEach(s => {
+          const skillBoost = s.skills.includes(wantsSkill) ? -0.4 : 0;
+          s._score = s.load + skillBoost;
+        });
+        staff.sort((a,b)=>a._score-b._score);
+        return staff[0];
+      }
+
+      async function runWorkflow(){
+        // Reset per run.
+        resetUI();
+
+        const lead = getLeadFromForm();
+        const staffEnabled = toggleStaff.classList.contains('on');
+
+        // Basic validation (demo only).
+        if(!lead.leadName || !lead.leadEmail){
+          addLog('Please enter a lead name and email (sample data is fine).');
+          setStep($("step1"), 'active', 'Missing key intake fields.');
+          await sleep(600);
+          setStep($("step1"), 'pending', 'Waiting for you to run the workflow.');
+          return;
+        }
+
+        addLog(`Trial intake started for ${lead.leadName} (${lead.leadChannel}).`);
+
+        // Step 1
+        setStep($("step1"), 'active', 'Intake received and normalized.');
+        clearChips('step1Chips');
+        addChip($('step1Chips'), lead.leadRole, 'sage');
+        addChip($('step1Chips'), `Goal: ${lead.leadGoal}`, 'accent');
+        addChip($('step1Chips'), `Start: ${lead.trialWhen}`, '');
+        await sleep(700);
+        setStep($("step1"), 'done', 'Intake received. Lead profile captured.');
+        addLog(`Captured: goal='${lead.leadGoal}', budget='${lead.leadBudget}', preferred='${lead.trialTime}'.`);
+        stepState.step1.status = 'done';
+
+        // Step 2
+        setStep($("step2"), 'active', 'Qualifying and recommending a trial plan.');
+        clearChips('step2Chips');
+        await sleep(900);
+        const plan = recommendTrialPlan(lead);
+        addChip($('step2Chips'), plan.packageName, 'accent');
+        addChip($('step2Chips'), `${plan.sessionCount} sessions`, 'sage');
+        addChip($('step2Chips'), plan.followup, '');
+
+        setStep($("step2"), 'done', 'Trial plan recommended. Ready to schedule.');
+        addLog(`Recommended: ${plan.focus}. Follow-up: ${plan.followup}.`);
+
+        // Step 3
+        if(staffEnabled){
+          setStep($("step3"), 'active', 'Booking staff and confirming trial times (simulated).');
+          clearChips('step3Chips');
+          await sleep(1000);
+
+          // Choose slot based on preferred time.
+          const slots = availability[lead.trialTime];
+          const slotIdx = (lead.leadName.length + lead.leadBudget.length) % slots.length;
+          const slotTime = slots[slotIdx];
+          const dateLabel = lead.trialWhen;
+
+          const staffChosen = chooseStaffForBooking(lead, lead.trialTime);
+          // Update load to simulate multiple bookings.
+          staffChosen.load += 1;
+          addChip($('step3Chips'), `Booked with ${staffChosen.name}`, 'sage');
+          addChip($('step3Chips'), `${dateLabel} @ ${slotTime}`, 'accent');
+          addChip($('step3Chips'), 'Confirmation sent (demo)', '');
+
+          setStep($("step3"), 'done', 'Staff booked. Trial appointment confirmed.');
+          addLog(`Staff booked: ${staffChosen.name} on ${dateLabel} at ${slotTime}.`);
+          addLog('Close-the-loop complete: intake -> plan -> staffed schedule.');
+        } else {
+          setStep($("step3"), 'pending', 'Staff booking is disabled. Toggle it on to simulate scheduling.');
+          addLog('Staff booking skipped (toggle is off).');
+          addLog('Close-the-loop not completed yet: intake -> plan only.');
+        }
+
+        btnRunAgain.style.display = 'inline-block';
+      }
+
+      toggleStaff.addEventListener('click', ()=>{
+        const on = toggleStaff.classList.toggle('on');
+        toggleStaff.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+
+      btnRun.addEventListener('click', runWorkflow);
+      btnRunAgain.addEventListener('click', runWorkflow);
+
+      btnReset.addEventListener('click', resetUI);
+
+      btnSample.addEventListener('click', ()=>{
+        sampleIndex = (sampleIndex + 1) % sampleLeads.length;
+        const lead = sampleLeads[sampleIndex];
+        $("leadName").value = lead.leadName;
+        $("leadEmail").value = lead.leadEmail;
+        $("leadRole").value = lead.leadRole;
+        $("leadChannel").value = lead.leadChannel;
+        $("leadGoal").value = lead.leadGoal;
+        $("leadBudget").value = lead.leadBudget;
+        $("trialWhen").value = lead.trialWhen;
+        $("trialTime").value = lead.trialTime;
+
+        resetUI();
+        addLog(`Loaded sample lead: ${lead.leadName}. Ready to run.`);
+      });
+
+      // Initial state.
+      resetUI();
+      addLog('Page ready. Click “Run Trial Intake” to start TrialClose (sample data).');
+    })();
+  </script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-gym-trialclose-brainpath-verify-1-0</div>
