@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Client Docs Reconciliation Agent — Live Demo</title>
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --ink:#2C2620;
+    --accent:#B85C38;
+    --sage:#7BAF8E;
+    --card:#FFFFFF;
+    --muted:#6B6256;
+    --line:rgba(44,38,32,.10);
+    --shadow:0 14px 40px rgba(44,38,32,.10);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background: radial-gradient(1200px 600px at 20% -10%, rgba(184,92,56,.14), transparent 55%),
+                radial-gradient(900px 500px at 85% 0%, rgba(123,175,142,.16), transparent 52%),
+                var(--bg);
+    color:var(--ink);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:28px 16px 44px;}
+  .top{
+    display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .mark{
+    width:44px; height:44px; border-radius:14px;
+    background: linear-gradient(135deg, rgba(184,92,56,.18), rgba(123,175,142,.20));
+    border:1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(44,38,32,.08);
+    position:relative;
+  }
+  .mark:before{
+    content:"";
+    position:absolute; inset:10px;
+    border-radius:12px;
+    border:2px solid rgba(184,92,56,.55);
+    transform: rotate(-7deg);
+  }
+  h1{margin:0; font-size:22px; letter-spacing:-.02em}
+  .sub{margin:6px 0 0; color:var(--muted); font-size:13.5px; line-height:1.35}
+
+  .pillrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.72);
+    border:1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(44,38,32,.04);
+    font-size:13px;
+    color:var(--muted);
+  }
+  .dot{width:10px; height:10px; border-radius:999px; background:var(--accent)}
+  .dot.sage{background:var(--sage)}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap:16px;
+    margin-top:18px;
+  }
+  @media (max-width: 920px){ .grid{grid-template-columns: 1fr;}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .cardHd{
+    padding:14px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid var(--line);
+    background: linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,.6));
+  }
+  .cardHd .title{font-weight:780; letter-spacing:-.01em}
+  .cardHd .hint{font-size:12.5px; color:var(--muted)}
+
+  .btnRow{display:flex; gap:10px; flex-wrap:wrap; padding:14px 16px; align-items:center}
+  button{
+    border:1px solid rgba(44,38,32,.14);
+    background: rgba(255,255,255,.92);
+    color:var(--ink);
+    border-radius:14px;
+    padding:10px 12px;
+    font-weight:700;
+    cursor:pointer;
+    transition: transform .08s ease, background .12s ease, border-color .12s ease;
+  }
+  button:hover{transform: translateY(-1px)}
+  button.primary{
+    background: linear-gradient(135deg, rgba(184,92,56,.20), rgba(184,92,56,.08));
+    border-color: rgba(184,92,56,.28);
+  }
+  button.sage{
+    background: linear-gradient(135deg, rgba(123,175,142,.22), rgba(123,175,142,.08));
+    border-color: rgba(123,175,142,.30);
+  }
+  button:disabled{opacity:.55; cursor:not-allowed; transform:none}
+  .smallnote{font-size:12.5px; color:var(--muted); margin-left:auto; padding-right:6px}
+
+  .inbox{
+    padding:8px 8px 12px;
+  }
+  .msg{
+    display:flex; gap:12px;
+    padding:12px 12px;
+    border-radius:16px;
+    border:1px solid rgba(44,38,32,.10);
+    background: rgba(250,246,239,.7);
+    margin:10px 10px 0;
+  }
+  .avatar{
+    width:36px; height:36px; border-radius:14px;
+    background: linear-gradient(135deg, rgba(184,92,56,.22), rgba(123,175,142,.18));
+    border:1px solid rgba(44,38,32,.12);
+    flex:0 0 auto;
+    position:relative;
+  }
+  .avatar:after{
+    content:"";
+    position:absolute; left:10px; top:10px;
+    width:14px; height:14px; border-radius:10px;
+    border:2px solid rgba(184,92,56,.65);
+    transform: rotate(10deg);
+    opacity:.9;
+  }
+  .msg h3{margin:0; font-size:13.5px}
+  .meta{margin-top:4px; font-size:12.5px; color:var(--muted)}
+  .body{margin-top:8px; font-size:13px; line-height:1.35; color:rgba(44,38,32,.95)}
+
+  .rightCol{display:flex; flex-direction:column; gap:16px;}
+
+  .kpiRow{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; padding:14px 16px;}
+  @media (max-width: 520px){ .kpiRow{grid-template-columns: 1fr;}}
+  .kpi{
+    border:1px solid rgba(44,38,32,.10);
+    background: rgba(250,246,239,.7);
+    border-radius:16px;
+    padding:12px 12px;
+  }
+  .kpi .label{font-size:12.5px; color:var(--muted)}
+  .kpi .value{margin-top:6px; font-size:18px; font-weight:900; letter-spacing:-.02em}
+
+  .clients{padding:12px 12px 16px;}
+  .client{
+    border:1px solid rgba(44,38,32,.10);
+    border-radius:18px;
+    padding:12px 12px;
+    background: rgba(255,255,255,.68);
+    margin-bottom:10px;
+  }
+  .clientTop{display:flex; gap:10px; align-items:flex-start; justify-content:space-between}
+  .clientName{font-weight:900; letter-spacing:-.01em}
+  .statusTag{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:7px 10px;
+    border-radius:999px;
+    border:1px solid rgba(44,38,32,.10);
+    font-size:12.5px;
+    color:var(--muted);
+    background: rgba(250,246,239,.8);
+    flex:0 0 auto;
+  }
+  .statusTag.ok{border-color: rgba(123,175,142,.40)}
+  .statusTag.ok .sDot{background:var(--sage)}
+  .statusTag.bad{border-color: rgba(184,92,56,.35)}
+  .statusTag.bad .sDot{background:var(--accent)}
+  .sDot{width:9px; height:9px; border-radius:999px; background:var(--accent)}
+
+  .cols2{display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px}
+  @media (max-width: 520px){ .cols2{grid-template-columns: 1fr;}}
+  .box{border:1px solid rgba(44,38,32,.10); border-radius:16px; padding:10px 10px; background: rgba(250,246,239,.65)}
+  .box .boxHd{font-weight:850; font-size:12.5px; color:var(--muted); margin-bottom:8px}
+
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    font-size:12.5px;
+    border-radius:999px;
+    padding:7px 10px;
+    border:1px solid rgba(44,38,32,.10);
+    background: rgba(255,255,255,.8);
+    color: rgba(44,38,32,.88);
+  }
+  .chip.ok{border-color: rgba(123,175,142,.45); background: rgba(123,175,142,.12)}
+  .chip.miss{border-color: rgba(184,92,56,.35); background: rgba(184,92,56,.10)}
+
+  .follow{
+    padding:14px 16px 18px;
+  }
+  textarea{
+    width:100%; min-height:140px;
+    border:1px solid rgba(44,38,32,.14);
+    border-radius:16px;
+    padding:12px 12px;
+    background: rgba(255,255,255,.85);
+    font-size:13.5px;
+    line-height:1.4;
+    color:var(--ink);
+    resize:vertical;
+  }
+  .followHd{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px}
+  .followHd .left{max-width:70%}
+  .followTitle{font-weight:950; letter-spacing:-.01em}
+  .followSub{margin-top:5px; font-size:12.5px; color:var(--muted); line-height:1.35}
+
+  .footerTip{font-size:12.5px; color:var(--muted); padding:10px 16px 0}
+
+  /* Accessible focus */
+  button:focus-visible, textarea:focus-visible{outline: 3px solid rgba(184,92,56,.35); outline-offset: 2px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <h1>Client Docs Reconciliation Agent</h1>
+          <p class="sub">Live demo — sample data. The real build wires into your systems.</p>
+          <div class="pillrow" role="list" aria-label="What this demo shows">
+            <div class="pill" role="listitem"><span class="dot"></span>Reads intake emails</div>
+            <div class="pill" role="listitem"><span class="dot sage"></span>Updates “Received vs Still need”</div>
+            <div class="pill" role="listitem"><span class="dot"></span>Drafts follow-ups for gaps</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end; min-width:240px">
+        <div class="smallnote">Built to replace the messy spreadsheet reconciliation step.</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="cardHd">
+          <div>
+            <div class="title">Incoming emails (sample)</div>
+            <div class="hint">Click the button to let the agent reconcile docs.</div>
+          </div>
+          <div class="hint" id="agentState">Ready</div>
+        </div>
+
+        <div class="btnRow">
+          <button id="runBtn" class="primary" type="button">Process last emails</button>
+          <button id="resetBtn" type="button">Reset</button>
+          <div class="smallnote" id="summaryLine">Status is based on the sample intake below.</div>
+        </div>
+
+        <div class="inbox" id="inbox"></div>
+      </div>
+
+      <div class="rightCol">
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="title">Reconciliation dashboard</div>
+              <div class="hint">Missing items become obvious immediately.</div>
+            </div>
+            <div class="hint" id="updatedAt">—</div>
+          </div>
+
+          <div class="kpiRow" aria-label="Key metrics">
+            <div class="kpi">
+              <div class="label">Clients complete</div>
+              <div class="value" id="kpiDone">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Clients need follow-up</div>
+              <div class="value" id="kpiNeed">0</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Total missing docs</div>
+              <div class="value" id="kpiMissing">0</div>
+            </div>
+          </div>
+
+          <div class="clients" id="clients"></div>
+
+          <div class="footerTip">Tip: pick a client with gaps to generate a draft follow-up message.</div>
+        </div>
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="title">Follow-up draft</div>
+              <div class="hint">Generated from the missing list (sample).</div>
+            </div>
+            <div class="hint">Copy + send in your system</div>
+          </div>
+
+          <div class="follow">
+            <div class="followHd">
+              <div class="left">
+                <div class="followTitle" id="followClient">Choose a client</div>
+                <div class="followSub" id="followSub">The agent will draft a clean message listing only what’s still needed.</div>
+              </div>
+              <button id="copyBtn" type="button" class="sage" disabled>Copy</button>
+            </div>
+            <textarea id="followText" placeholder="Click a client that has missing documents to generate a draft." disabled></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // -------- Sample data (what a real build would extract from inbox + your trackers) --------
+  const docCatalog = {
+    w2: 'W-2',
+    w2g: 'W-2G (winnings)',
+    '1099': '1099 (dividends/interest)',
+    '1098': '1098 (mortgage interest)',
+    id: 'Photo ID',
+    'prior_year': 'Prior-year return',
+    receipts: 'Charitable receipts / deductions',
+    mileage: 'Mileage log (if applicable)'
+  };
+
+  const clientsSeed = [
+    {
+      id: 'c1',
+      name: 'Maya Johnson',
+      email: 'maya.johnson@example.com',
+      checklist: ['w2','1099','id','prior_year','receipts'],
+    },
+    {
+      id: 'c2',
+      name: 'River & Co.',
+      email: 'taxes@riverco.example.com',
+      checklist: ['w2','1099','1098','receipts','mileage'],
+    },
+    {
+      id: 'c3',
+      name: 'Sam Patel',
+      email: 'sam.patel@example.com',
+      checklist: ['w2','1099','id','mileage'],
+    },
+    {
+      id: 'c4',
+      name: 'Evelyn Brooks',
+      email: 'evelyn.brooks@example.com',
+      checklist: ['w2','1098','id','receipts'],
+    }
+  ];
+
+  // Agent “extraction” is simulated by keyword matches in this demo.
+  const sampleMessages = [
+    {
+      clientId: 'c1',
+      from: 'Maya Johnson',
+      when: 'Aug 2',
+      subject: 'Documents for your review',
+      text: 'Attached my W-2 and 1099. I also included my photo ID and the prior year return. I still need to gather the charitable receipts.'
+    },
+    {
+      clientId: 'c2',
+      from: 'River & Co.',
+      when: 'Aug 2',
+      subject: 'Tax packet',
+      text: 'Here’s the 1099 and mortgage interest (1098). We do not have mileage tracked yet—waiting on that. Receipts are in the folder.'
+    },
+    {
+      clientId: 'c3',
+      from: 'Sam Patel',
+      when: 'Aug 3',
+      subject: 'Submitting info',
+      text: 'W-2 and photo ID are attached. I’m sending the 1099 tomorrow. Mileage log will follow later this week.'
+    },
+    {
+      clientId: 'c4',
+      from: 'Evelyn Brooks',
+      when: 'Aug 3',
+      subject: 'Quick update',
+      text: 'Attached W-2, 1098, and my receipts. Photo ID is coming by mail (next day or two).'
+    }
+  ];
+
+  // -------- Demo logic --------
+  const keywordToDoc = [
+    { keys: ['w-2', 'w2'], doc: 'w2' },
+    { keys: ['w-2g', 'w2g'], doc: 'w2g' },
+    { keys: ['1099'], doc: '1099' },
+    { keys: ['1098'], doc: '1098' },
+    { keys: ['photo id', 'id', 'driver license'], doc: 'id' },
+    { keys: ['prior year', 'prior-year', 'last year return', 'return from last year'], doc: 'prior_year' },
+    { keys: ['charitable', 'receipts', 'donation', 'deductions'], doc: 'receipts' },
+    { keys: ['mileage', 'miles'], doc: 'mileage' }
+  ];
+
+  const negatives = ['still need', 'need to gather', 'waiting on', 'will follow', 'not yet', 'coming', 'later this week', 'tomorrow', 'by mail'];
+
+  function titleCase(s){
+    return (s||'').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function nowStamp(){
+    const d = new Date();
+    return d.toLocaleString(undefined, {year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+  }
+
+  function deepCopy(obj){
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  let state;
+
+  function initState(){
+    state = clientsSeed.map(c => ({
+      ...c,
+      received: new Set(),
+      missing: new Set(c.checklist)
+    }));
+    document.getElementById('updatedAt').textContent = '—';
+    document.getElementById('followClient').textContent = 'Choose a client';
+    document.getElementById('followSub').textContent = 'The agent will draft a clean message listing only what’s still needed.';
+    const ta = document.getElementById('followText');
+    ta.value = '';
+    ta.disabled = true;
+    document.getElementById('copyBtn').disabled = true;
+
+    renderInbox();
+    renderDashboard();
+  }
+
+  function renderInbox(){
+    const box = document.getElementById('inbox');
+    box.innerHTML = '';
+    sampleMessages.forEach(m => {
+      const el = document.createElement('div');
+      el.className = 'msg';
+      el.innerHTML = `
+        <div class="avatar" aria-hidden="true"></div>
+        <div style="flex:1; min-width:0">
+          <h3>${escapeHtml(m.subject)}</h3>
+          <div class="meta">From <strong>${escapeHtml(m.from)}</strong> · ${escapeHtml(m.when)}</div>
+          <div class="body">${escapeHtml(m.text)}</div>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }
+
+  function renderDashboard(){
+    const kDone = document.getElementById('kpiDone');
+    const kNeed = document.getElementById('kpiNeed');
+    const kMissing = document.getElementById('kpiMissing');
+
+    let doneCount = 0;
+    let needCount = 0;
+    let missingTotal = 0;
+
+    state.forEach(c => {
+      const m = c.missing.size;
+      missingTotal += m;
+      if(m === 0) doneCount++;
+      else needCount++;
+    });
+
+    kDone.textContent = String(doneCount);
+    kNeed.textContent = String(needCount);
+    kMissing.textContent = String(missingTotal);
+    document.getElementById('clients').innerHTML = '';
+
+    state.forEach(c => {
+      const isOk = c.missing.size === 0;
+      const statusClass = isOk ? 'ok' : 'bad';
+      const statusText = isOk ? 'Complete' : 'Missing items';
+
+      const el = document.createElement('div');
+      el.className = 'client';
+      el.innerHTML = `
+        <div class="clientTop">
+          <div>
+            <div class="clientName">${escapeHtml(c.name)}</div>
+            <div class="meta">${escapeHtml(c.email)}</div>
+          </div>
+          <div class="statusTag ${statusClass}">
+            <span class="sDot" aria-hidden="true"></span>
+            ${statusText}
+          </div>
+        </div>
+
+        <div class="cols2">
+          <div class="box">
+            <div class="boxHd">Received</div>
+            <div class="chips" id="recv-${escapeAttr(c.id)}"></div>
+          </div>
+          <div class="box">
+            <div class="boxHd">Still need</div>
+            <div class="chips" id="miss-${escapeAttr(c.id)}"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; margin-top:10px;">
+          <div class="meta" style="margin:0">Click to generate a follow-up for missing docs.</div>
+          <button type="button" class="${isOk ? 'sage' : 'primary'}" id="btn-${escapeAttr(c.id)}" ${isOk ? '' : ''}>${isOk ? 'Review' : 'Draft follow-up'}</button>
+        </div>
+      `;
+      document.getElementById('clients').appendChild(el);
+
+      // Render chips
+      const recv = el.querySelector(`#recv-${CSS.escape(c.id)}`);
+      const miss = el.querySelector(`#miss-${CSS.escape(c.id)}`);
+      const receivedList = Array.from(c.received).sort();
+      const missingList = Array.from(c.missing).sort();
+
+      if(receivedList.length === 0){
+        recv.innerHTML = `<span class="chip" style="color:var(--muted)">None logged yet</span>`;
+      } else {
+        recv.innerHTML = receivedList.map(d => chipHtml(d, 'ok')).join('');
+      }
+      miss.innerHTML = missingList.map(d => chipHtml(d, 'miss')).join('');
+
+      const btn = document.getElementById(`btn-${escapeAttr(c.id)}`);
+      btn.addEventListener('click', () => {
+        const missingDocs = Array.from(c.missing).sort();
+        buildFollowUp(c, missingDocs);
+      });
+    });
+
+    document.getElementById('agentState').textContent = 'Updated';
+  }
+
+  function chipHtml(docKey, kind){
+    const label = docKey in docCatalog ? docCatalog[docKey] : titleCase(docKey.replaceAll('_',' '));
+    return `<span class="chip ${kind === 'ok' ? 'ok' : 'miss'}">${escapeHtml(label)}</span>`;
+  }
+
+  function buildFollowUp(client, missingDocs){
+    const ta = document.getElementById('followText');
+    const copyBtn = document.getElementById('copyBtn');
+    document.getElementById('followClient').textContent = client.name;
+
+    const lines = [];
+    if(missingDocs.length === 0){
+      document.getElementById('followSub').textContent = 'Good news: the checklist is fully satisfied based on the sample emails.';
+      ta.value = `Hi ${client.name.split(' ')[0]},\n\nBased on what we received so far, your tax document checklist looks complete.\n\nNo further documents are needed right now.\n\nThanks,\nYour tax team`;
+    } else {
+      document.getElementById('followSub').textContent = 'The agent drafted a message listing only the documents still needed.';
+      const humanDocs = missingDocs.map(k => (docCatalog[k] || titleCase(k.replaceAll('_',' '))));
+      lines.push(`Hi ${client.name.split(' ')[0]},`);
+      lines.push('');
+      lines.push('Quick checklist update — we’re still missing:');
+      lines.push(humanDocs.map(d => `- ${d}`).join('\n'));
+      lines.push('');
+      lines.push('If you already sent any of these, feel free to reply and we’ll reconcile it immediately.');
+      lines.push('');
+      lines.push('Thanks,');
+      lines.push('Your tax team');
+      ta.value = lines.join('\n');
+    }
+
+    ta.disabled = false;
+    copyBtn.disabled = false;
+
+    copyBtn.onclick = async () => {
+      try{
+        await navigator.clipboard.writeText(ta.value);
+        copyBtn.textContent = 'Copied';
+        setTimeout(()=>copyBtn.textContent = 'Copy', 900);
+      }catch{
+        copyBtn.textContent = 'Select & copy';
+        setTimeout(()=>copyBtn.textContent = 'Copy', 1400);
+      }
+    };
+  }
+
+  function reconcileFromMessages(){
+    // Reset received/missing based on checklist.
+    clientsSeed.forEach(cSeed => {
+      const c = state.find(x => x.id === cSeed.id);
+      c.received = new Set();
+      c.missing = new Set(cSeed.checklist);
+    });
+
+    // Apply simulated extraction.
+    sampleMessages.forEach(m => {
+      const client = state.find(c => c.id === m.clientId);
+      if(!client) return;
+
+      const textLower = m.text.toLowerCase();
+      const isNegativeContext = negatives.some(neg => textLower.includes(neg));
+
+      // For each doc, if we see positive language, mark received; if negative language implies still missing, leave missing.
+      keywordToDoc.forEach(entry => {
+        const hit = entry.keys.some(k => textLower.includes(k));
+        if(!hit) return;
+
+        if(isNegativeContext){
+          // If the message talks about “still need”, we don't mark received even if keywords appear.
+          // (In the real build, we’d do sentence-level extraction.)
+          return;
+        }
+
+        if(client.missing.has(entry.doc)){
+          client.missing.delete(entry.doc);
+        }
+        client.received.add(entry.doc);
+      });
+    });
+
+    // Special: messages can contain both received and missing; our simple demo heuristic will treat any negative as withholding.
+    // To keep the demo feeling realistic, do a second pass for explicit “attached” without the word “still”.
+    sampleMessages.forEach(m => {
+      const client = state.find(c => c.id === m.clientId);
+      if(!client) return;
+      const t = m.text.toLowerCase();
+      const hasAttached = t.includes('attached') || t.includes('here’s') || t.includes('here are') || t.includes('sent');
+      const mentionsStill = t.includes('still') || t.includes('need to') || t.includes('missing');
+      if(!hasAttached || mentionsStill) return;
+
+      keywordToDoc.forEach(entry => {
+        const hit = entry.keys.some(k => t.includes(k));
+        if(!hit) return;
+        client.missing.delete(entry.doc);
+        client.received.add(entry.doc);
+      });
+    });
+  }
+
+  function run(){
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('resetBtn').disabled = true;
+    document.getElementById('agentState').textContent = 'Reconciling…';
+    document.getElementById('summaryLine').textContent = 'Processing sample intake and updating the checklist.';
+
+    setTimeout(() => {
+      reconcileFromMessages();
+      renderDashboard();
+      document.getElementById('updatedAt').textContent = nowStamp();
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('resetBtn').disabled = false;
+      document.getElementById('summaryLine').textContent = 'Done — review any gaps on the right.';
+    }, 650);
+  }
+
+  function reset(){
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('resetBtn').disabled = false;
+    document.getElementById('agentState').textContent = 'Ready';
+    document.getElementById('summaryLine').textContent = 'Status is based on the sample intake below.';
+    initState();
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function escapeAttr(s){
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, '_');
+  }
+
+  document.getElementById('runBtn').addEventListener('click', run);
+  document.getElementById('resetBtn').addEventListener('click', reset);
+
+  initState();
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-debug-1786388631-0</div>
