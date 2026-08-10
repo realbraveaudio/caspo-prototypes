@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quiet Lead Follow-Up Agent — Live Demo</title>
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --ink:#2C2620;
+    --muted:#6C6257;
+    --card:#FFFFFF;
+    --line:rgba(44,38,32,0.10);
+    --shadow: 0 18px 50px rgba(44,38,32,0.10);
+    --accent:#B85C38;
+    --sage:#7BAF8E;
+    --warn:#C97A2B;
+    --danger:#B84A4A;
+    --radius:18px;
+    --radius2:14px;
+    --focus: 0 0 0 4px rgba(184,92,56,0.22);
+    --font: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    --display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 500px at 10% 0%, rgba(123,175,142,0.22), transparent 55%),
+      radial-gradient(700px 420px at 90% 10%, rgba(184,92,56,0.20), transparent 55%),
+      linear-gradient(180deg, rgba(250,246,239,1), rgba(250,246,239,1));
+    color:var(--ink);
+    font-family:var(--font);
+  }
+  a{color:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:26px 18px 46px}
+
+  .top{
+    display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+  }
+  .hero{
+    flex:1;min-width:320px;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:9px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.55);
+    box-shadow: 0 10px 28px rgba(44,38,32,0.06);
+    backdrop-filter: blur(8px);
+  }
+  .dot{
+    width:10px;height:10px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 5px rgba(184,92,56,0.18);
+  }
+  .badge span{font-weight:650;letter-spacing:0.2px;font-size:13px;color:var(--muted)}
+
+  h1{
+    font-family:var(--display);
+    font-size:40px;line-height:1.05;margin:14px 0 10px;
+    letter-spacing:-0.6px;
+  }
+  .sub{color:var(--muted);font-size:15.5px;max-width:62ch;line-height:1.45;margin:0}
+
+  .right{
+    display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;justify-content:flex-end;
+  }
+  .pill{
+    background:rgba(255,255,255,0.62);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:10px 12px;
+    display:flex;flex-direction:column;gap:3px;
+    min-width:160px;
+    box-shadow: 0 12px 32px rgba(44,38,32,0.07);
+    backdrop-filter: blur(8px);
+  }
+  .pill b{font-size:14px}
+  .pill small{color:var(--muted);font-size:12.5px}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap:14px;
+    margin-top:18px;
+  }
+  @media (max-width: 920px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    background:rgba(255,255,255,0.68);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+  }
+  .cardHead{
+    padding:16px 16px 12px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  }
+  .cardHead h2{
+    margin:0;
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--muted);
+  }
+  .cardHead .hint{color:var(--muted);font-size:12.5px;line-height:1.3}
+
+  .cardBody{padding:14px 16px 16px}
+
+  .row{display:flex;gap:10px;align-items:center}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{
+    appearance:none;border:none;cursor:pointer;
+    background:rgba(255,255,255,0.75);
+    border:1px solid var(--line);
+    padding:10px 12px;border-radius:12px;
+    color:var(--ink);
+    font-weight:650;
+    box-shadow: 0 10px 26px rgba(44,38,32,0.06);
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    user-select:none;
+  }
+  .btn:hover{transform: translateY(-1px);border-color: rgba(184,92,56,0.35)}
+  .btn:focus{outline:none;box-shadow: var(--focus)}
+  .btnPrimary{
+    background: linear-gradient(180deg, rgba(184,92,56,0.98), rgba(155,71,41,0.98));
+    color:#fff;border-color: rgba(184,92,56,0.6);
+  }
+  .btnPrimary:hover{border-color: rgba(184,92,56,0.7)}
+  .btnGhost{background:rgba(255,255,255,0.45)}
+
+  .select{
+    display:flex;flex-direction:column;gap:6px;
+    min-width:180px;
+  }
+  .select label{font-size:12.5px;color:var(--muted);font-weight:650}
+  select{
+    width:100%;padding:10px 10px;border-radius:12px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.78);
+    font-weight:650;
+  }
+  select:focus{outline:none;box-shadow: var(--focus)}
+
+  .leadList{display:flex;flex-direction:column;gap:10px}
+
+  .lead{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:10px;
+    padding:12px;
+    border-radius:var(--radius2);
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.72);
+    transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+  }
+  .lead:hover{transform: translateY(-1px);border-color: rgba(184,92,56,0.32)}
+  .lead.selected{border-color: rgba(184,92,56,0.55); background: rgba(255,255,255,0.86)}
+
+  .leadTop{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+  .leadName{
+    display:flex;flex-direction:column;gap:3px
+  }
+  .leadName b{font-size:15px}
+  .leadName small{color:var(--muted);font-size:12.5px}
+
+  .meta{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+  }
+  .chip{
+    font-size:12px;
+    padding:7px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.65);
+    color: var(--muted);
+    font-weight:700;
+    letter-spacing:0.02em;
+    white-space:nowrap;
+  }
+  .chip.warn{color: #6a4b19; border-color: rgba(201,122,43,0.35); background: rgba(201,122,43,0.12)}
+  .chip.sage{color: #24513b; border-color: rgba(123,175,142,0.40); background: rgba(123,175,142,0.14)}
+  .chip.accent{color: #6b2f18; border-color: rgba(184,92,56,0.45); background: rgba(184,92,56,0.12)}
+
+  .leadActions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:center}
+  .mini{
+    font-size:12.5px;
+    padding:9px 10px;
+    border-radius:12px;
+  }
+
+  .split{
+    display:grid;grid-template-columns:1fr;gap:12px;
+  }
+
+  .draft{
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .field{
+    padding:12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.72);
+  }
+  .field label{display:block;color:var(--muted);font-size:12.5px;font-weight:750;margin-bottom:6px}
+  textarea{
+    width:100%;min-height:120px;
+    resize: vertical;
+    border:none;outline:none;
+    background:transparent;
+    color:var(--ink);
+    font-weight:600;
+    line-height:1.4;
+    font-family:inherit;
+    font-size:14.5px;
+  }
+  input[type="text"]{
+    width:100%;padding:10px 10px;border-radius:12px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.78);
+    font-weight:650;
+  }
+  input[type="text"]:focus{outline:none;box-shadow: var(--focus)}
+
+  .composer{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between
+  }
+  .smallNote{color:var(--muted);font-size:12.5px;line-height:1.35}
+
+  .log{
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .event{
+    padding:11px 12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.72);
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .stamp{
+    width:34px;height:34px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.7);
+    flex:0 0 auto;
+    font-weight:900;
+  }
+  .stamp.sage{border-color: rgba(123,175,142,0.45); background: rgba(123,175,142,0.15)}
+  .stamp.accent{border-color: rgba(184,92,56,0.45); background: rgba(184,92,56,0.14)}
+  .stamp.warn{border-color: rgba(201,122,43,0.45); background: rgba(201,122,43,0.12)}
+
+  .event b{font-size:13.5px}
+  .event p{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.35}
+
+  .footer{
+    margin-top:14px;
+    color:var(--muted);
+    font-size:12.5px;
+    line-height:1.4;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight:800;
+    font-size:12px;
+    padding:3px 7px;border-radius:10px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,0.65);
+  }
+
+  .fadeIn{
+    animation: fadeIn 420ms ease both;
+  }
+  @keyframes fadeIn{from{opacity:0;transform: translateY(4px)}to{opacity:1;transform: translateY(0)}}
+
+  .progress{
+    height:10px; background: rgba(44,38,32,0.08);
+    border-radius:999px; overflow:hidden;
+    border:1px solid rgba(44,38,32,0.10);
+  }
+  .bar{
+    height:100%; width:40%; background: linear-gradient(90deg, rgba(123,175,142,1), rgba(184,92,56,1));
+    border-radius:999px;
+    transition: width 260ms ease;
+  }
+
+  .srOnly{
+    position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="hero">
+        <div class="badge"><div class="dot"></div><span>Live demo — sample data. The real build wires into your systems.</span></div>
+        <h1>Quiet Lead Follow-Up Agent</h1>
+        <p class="sub">It finds leads who haven’t replied, drafts the next nudge in your voice, and schedules the follow-up rhythm—so your inbox stops being a full-time job.</p>
+      </div>
+      <div class="right">
+        <div class="pill"><b id="statQuiet">0 quiet</b><small>ready for a nudge</small></div>
+        <div class="pill"><b id="statDraft">0 drafts</b><small>generated in this demo</small></div>
+        <div class="pill"><b id="statBooked">0 booked</b><small>simulated wins</small></div>
+      </div>
+    </div>
+
+    <div class="grid fadeIn">
+      <div class="card">
+        <div class="cardHead">
+          <div>
+            <h2>Inbox triage</h2>
+            <div class="hint">Select a lead to generate a follow-up. Send it (simulated) and watch the timeline update.</div>
+          </div>
+          <div class="controls">
+            <div class="select">
+              <label for="cadence">Cadence</label>
+              <select id="cadence">
+                <option value="gentle">Gentle (3/7/14 days) </option>
+                <option value="standard" selected>Standard (2/5/10 days)</option>
+                <option value="tenacious">Tenacious (1/3/7 days)</option>
+              </select>
+            </div>
+            <button class="btn btnGhost" id="reScanBtn" title="Re-evaluate who is quiet">Re-check</button>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div class="leadList" id="leadList" aria-live="polite"></div>
+          <div class="footer">
+            Tip: use <span class="kbd">1</span>, <span class="kbd">2</span>, <span class="kbd">3</span> to jump between top leads.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <div>
+            <h2>Follow-up composer</h2>
+            <div class="hint">Drafts are generated from the lead’s last touch and your tone settings (all sample data).</div>
+          </div>
+          <button class="btn btnPrimary" id="genBtn" style="height:44px">Generate draft</button>
+        </div>
+
+        <div class="cardBody">
+          <div class="split">
+            <div class="draft">
+              <div class="composer">
+                <div>
+                  <div class="smallNote" id="leadContext">Select a lead to start.</div>
+                </div>
+                <div style="min-width:160px">
+                  <div class="smallNote">Follow-up readiness</div>
+                  <div class="progress" aria-hidden="true"><div class="bar" id="readyBar"></div></div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" value="" />
+              </div>
+
+              <div class="field">
+                <label for="message">Message</label>
+                <textarea id="message" placeholder="Click Generate draft to produce a follow-up."></textarea>
+              </div>
+
+              <div class="controls" style="justify-content:space-between">
+                <div class="row" style="gap:8px;flex-wrap:wrap">
+                  <button class="btn mini" id="shortenBtn" title="Make it more direct">Tighten</button>
+                  <button class="btn mini" id="addCTA" title="Add a clear next step">Add next step</button>
+                </div>
+                <button class="btn btnPrimary mini" id="sendBtn" style="height:44px">Send (simulated)</button>
+              </div>
+            </div>
+
+            <div class="log" aria-live="polite" aria-relevant="additions">
+              <div class="smallNote">Timeline</div>
+              <div id="eventList"></div>
+            </div>
+          </div>
+
+          <div class="footer">Live demo only: no real inbox is touched. Wiring into your systems happens in the paid build.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const cadenceMap = {
+    gentle: [3,7,14],
+    standard: [2,5,10],
+    tenacious: [1,3,7]
+  };
+
+  const sampleLeads = [
+    {
+      id: "l1",
+      name: "Avery",
+      company: "Northwind Kitchens",
+      email: "avery@northwindkitchens.com",
+      source: "Website demo",
+      lastTouchDaysAgo: 6,
+      stage: "New",
+      lastMessage: "Thanks for the details—can you share pricing and next steps?",
+      timeline: [
+        { t: -14, kind: "inbound", title: "Inbound request", note: "Asked about a quick pricing overview." },
+        { t: -6, kind: "sent", title: "We replied", note: "Sent pricing range + a booking link (sample)." },
+      ]
+    },
+    {
+      id: "l2",
+      name: "Jordan",
+      company: "Helio Logistics",
+      email: "jordan@heliologistics.com",
+      source: "Web form",
+      lastTouchDaysAgo: 3,
+      stage: "Needs follow-up",
+      lastMessage: "Sounds good—loop me in when the proposal is ready.",
+      timeline: [
+        { t: -9, kind: "inbound", title: "Requested proposal", note: "Asked for a tailored quote." },
+        { t: -3, kind: "sent", title: "We requested info", note: "Asked for 2 quick details (sample)." },
+      ]
+    },
+    {
+      id: "l3",
+      name: "Priya",
+      company: "Sunset Dental",
+      email: "priya@sunsetdental.com",
+      source: "Inbound email",
+      lastTouchDaysAgo: 11,
+      stage: "At risk",
+      lastMessage: "We’ll review next week."
+      ,timeline: [
+        { t: -20, kind: "inbound", title: "Introduced need", note: "Wanted automation for lead follow-ups." },
+        { t: -11, kind: "sent", title: "We followed up", note: "Shared a 2-step plan (sample)." },
+      ]
+    },
+    {
+      id: "l4",
+      name: "Sam",
+      company: "Blue Harbor CPA",
+      email: "sam@blueharborcpa.com",
+      source: "Referral",
+      lastTouchDaysAgo: 1,
+      stage: "Fresh",
+      lastMessage: "Can we talk Thursday?",
+      timeline: [
+        { t: -2, kind: "inbound", title: "Replied", note: "Asked to schedule." },
+      ]
+    },
+  ];
+
+  let state = {
+    leads: JSON.parse(JSON.stringify(sampleLeads)),
+    selectedId: null,
+    cadence: 'standard',
+    draftedCount: 0,
+    bookedCount: 0,
+    log: []
+  };
+
+  const $ = (id)=>document.getElementById(id);
+
+  const leadList = $('leadList');
+  const eventList = $('eventList');
+
+  const statQuiet = $('statQuiet');
+  const statDraft = $('statDraft');
+  const statBooked = $('statBooked');
+
+  const leadContext = $('leadContext');
+  const readyBar = $('readyBar');
+
+  function formatDaysAgo(days){
+    if(days <= 0) return 'today';
+    if(days === 1) return '1 day ago';
+    return days + ' days ago';
+  }
+
+  function readinessFor(lead){
+    // Determine how deep into cadence we are based on last touch.
+    const steps = cadenceMap[state.cadence];
+    // The earliest step whose threshold is <= lastTouchDaysAgo means it's ready.
+    // We'll also show how "overdue" it is as progress.
+    // Example: if step[0]=2 and lastTouch=6 => ready at step 1 (threshold 5) and overdue by 1.
+    let readyAtIndex = -1;
+    for(let i=0;i<steps.length;i++){
+      if(lead.lastTouchDaysAgo >= steps[i]) readyAtIndex = i;
+    }
+    if(readyAtIndex === -1) return { ready:false, score: Math.min(35, (lead.lastTouchDaysAgo/steps[0])*30 ) };
+
+    const threshold = steps[readyAtIndex];
+    const overdue = lead.lastTouchDaysAgo - threshold;
+    const base = 60 + readyAtIndex*12;
+    const score = Math.max(55, Math.min(100, base + overdue*3));
+    return { ready:true, score };
+  }
+
+  function chipFor(lead, readyObj){
+    if(lead.stage === 'Fresh' && !readyObj.ready) return 'sage';
+    if(readyObj.ready){
+      if(lead.stage === 'At risk') return 'warn';
+      if(lead.stage === 'Needs follow-up') return 'accent';
+      return 'accent';
+    }
+    return '';
+  }
+
+  function stageLabel(lead, readyObj){
+    if(readyObj.ready){
+      const steps = cadenceMap[state.cadence];
+      const idx = steps.findIndex(s=> lead.lastTouchDaysAgo >= s);
+      const stepNum = idx+1;
+      return `Quiet · step ${stepNum}`;
+    }
+    return 'Not quiet yet';
+  }
+
+  function urgencyLabel(lead, readyObj){
+    if(!readyObj.ready) return '—';
+    if(lead.stage === 'At risk') return 'Urgent';
+    if(lead.lastTouchDaysAgo >= cadenceMap[state.cadence][1]) return 'High';
+    return 'Medium';
+  }
+
+  function leadSort(a,b){
+    // Sort by readiness, then by days ago.
+    const ra = readinessFor(a);
+    const rb = readinessFor(b);
+    if(ra.ready !== rb.ready) return ra.ready ? -1 : 1;
+    if(ra.score !== rb.score) return rb.score - ra.score;
+    return b.lastTouchDaysAgo - a.lastTouchDaysAgo;
+  }
+
+  function renderLeads(){
+    const sorted = state.leads.slice().sort(leadSort);
+    leadList.innerHTML = '';
+
+    const quietCount = sorted.filter(l => readinessFor(l).ready).length;
+    statQuiet.textContent = quietCount + ' quiet';
+
+    sorted.slice(0,4).forEach((lead, idx)=>{
+      const readyObj = readinessFor(lead);
+      const isSel = lead.id === state.selectedId;
+      const chipClass = chipFor(lead, readyObj);
+      const chipClass2 = lead.stage === 'At risk' ? 'warn' : (lead.stage === 'Needs follow-up' ? 'accent' : 'sage');
+
+      const el = document.createElement('div');
+      el.className = 'lead' + (isSel ? ' selected' : '');
+      el.setAttribute('role','button');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('data-id', lead.id);
+
+      el.innerHTML = `
+        <div>
+          <div class="leadTop">
+            <div class="leadName">
+              <b>${lead.name} · ${lead.company}</b>
+              <small>${lead.source} · last touch ${formatDaysAgo(lead.lastTouchDaysAgo)}</small>
+            </div>
+            <div class="meta">
+              <div class="chip ${readyObj.ready ? chipClass2 : ''}">${stageLabel(lead, readyObj)}</div>
+              <div class="chip ${readyObj.ready ? 'warn' : ''}">${urgencyLabel(lead, readyObj)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="leadActions">
+          <button class="btn mini ${isSel ? 'btnPrimary' : ''}" data-action="select">${isSel ? 'Selected' : 'Select'}</button>
+          <div class="smallNote">Last note: “${escapeHtml(lead.lastMessage)}”</div>
+        </div>
+      `;
+
+      el.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button');
+        if(!btn) return;
+        state.selectedId = lead.id;
+        state.log = []; // reset timeline view for new selection
+        renderLeads();
+        renderComposer();
+        renderEventsForSelected(true);
+      });
+
+      el.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          state.selectedId = lead.id;
+          state.log = [];
+          renderLeads();
+          renderComposer();
+          renderEventsForSelected(true);
+        }
+      });
+
+      leadList.appendChild(el);
+    });
+
+    // Keyboard jumps: 1-3
+    const keys = [1,2,3];
+    // We'll attach once outside render.
+  }
+
+  function escapeHtml(str){
+    return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  }
+
+  function renderComposer(){
+    const lead = state.leads.find(l=>l.id===state.selectedId);
+    if(!lead){
+      leadContext.textContent = 'Select a lead to start.';
+      readyBar.style.width = '40%';
+      $('subject').value = '';
+      $('message').value = '';
+      $('sendBtn').disabled = true;
+      $('sendBtn').style.opacity = '0.65';
+      return;
+    }
+
+    const readyObj = readinessFor(lead);
+    readyBar.style.width = readyObj.score + '%';
+
+    const steps = cadenceMap[state.cadence];
+    const stepIdx = steps.findIndex(s=> lead.lastTouchDaysAgo >= s);
+    const stepNum = stepIdx === -1 ? '—' : String(stepIdx+1);
+
+    leadContext.textContent = `Quiet status: ${readyObj.ready ? 'Ready now' : 'Hold a bit'} · cadence step: ${stepNum}`;
+
+    $('sendBtn').disabled = true;
+    $('sendBtn').style.opacity = '0.65';
+    $('subject').value = '';
+    $('message').value = '';
+  }
+
+  function generateDraft(){
+    const lead = state.leads.find(l=>l.id===state.selectedId);
+    if(!lead) return;
+
+    const readyObj = readinessFor(lead);
+    if(!readyObj.ready){
+      leadContext.textContent = 'Not ready yet—this demo will still draft, but in the real build we’d wait for the cadence threshold.';
+    }
+
+    const tone = (lead.stage === 'At risk') ? 'direct' : 'warm';
+
+    const firstLine = tone === 'direct'
+      ? `Quick check, ${lead.name}—are we still looking at this?`
+      : `Hey ${lead.name}—hope your week’s going okay.`;
+
+    const secondLine = `I noticed we last touched base ${formatDaysAgo(lead.lastTouchDaysAgo)} ago.`;
+
+    const bridge = `If timing changed, no worries—just tell me and I’ll adjust.`;
+
+    const ctaVariants = [
+      `Want me to send a 2-minute recap with the exact next step?`,
+      `Should I book 15 minutes this week, or is it better to pause?`,
+      `If you share the preferred day/time, I’ll get something on the calendar.`
+    ];
+
+    const cta = (readyObj.ready && lead.lastTouchDaysAgo >= cadenceMap[state.cadence][1])
+      ? ctaVariants[1]
+      : ctaVariants[0];
+
+    const subject = (tone === 'direct')
+      ? `Re: Next step for ${lead.company}`
+      : `Following up — ${lead.company}`;
+
+    const message = [
+      firstLine,
+      secondLine,
+      `You mentioned: “${lead.lastMessage}”`,
+      bridge,
+      cta,
+      `— Daniel`
+    ].join('\n\n');
+
+    $('subject').value = subject;
+    $('message').value = message;
+    $('sendBtn').disabled = false;
+    $('sendBtn').style.opacity = '1';
+
+    state.draftedCount += 1;
+    statDraft.textContent = state.draftedCount + ' drafts';
+
+    // Update timeline draft preview event
+    state.log.push({
+      t: Date.now(),
+      kind: 'draft',
+      title: 'Draft generated',
+      note: `Prepared a ${tone === 'direct' ? 'direct' : 'warm'} follow-up for ${lead.name}.`
+    });
+    renderEventsForSelected(false);
+  }
+
+  function tightenDraft(){
+    const msg = $('message').value.trim();
+    if(!msg) return;
+
+    // Make a simple tighter version: remove one paragraph and shorten CTA.
+    const parts = msg.split(/\n\n/);
+    if(parts.length >= 6){
+      // remove the paragraph about last message sometimes
+      // Keep: firstLine, timing, (maybe) short note, bridge, CTA, sign
+      const newParts = [parts[0], parts[1], parts[3], parts[4], parts[5]].filter(Boolean);
+      $('message').value = newParts.join('\n\n');
+    }
+
+    // Slight subject tightening
+    const subj = $('subject').value.trim();
+    if(subj){
+      $('subject').value = subj.replace(/^Re:\s*/,'Re: ');
+    }
+  }
+
+  function addNextStep(){
+    let msg = $('message').value.trim();
+    if(!msg) return;
+    const marker = '— Daniel';
+    const idx = msg.lastIndexOf(marker);
+    if(idx === -1) return;
+
+    const before = msg.slice(0, idx).trim();
+    const sign = msg.slice(idx);
+
+    // Replace the last CTA paragraph with a more explicit one.
+    const paras = before.split(/\n\n/);
+    const last = paras[paras.length-1] || '';
+
+    const newCTA = `If you’d like, reply with a day/time window and I’ll lock it in.`;
+
+    // If last already looks like CTA, replace it; else append.
+    const looksCTA = /(book|calendar|day\/time|reply|next step|15 minutes|this week)/i.test(last);
+    if(looksCTA){
+      paras[paras.length-1] = newCTA;
+    } else {
+      paras.push(newCTA);
+    }
+
+    $('message').value = paras.join('\n\n') + '\n\n' + sign;
+  }
+
+  function renderEventsForSelected(reset){
+    const lead = state.leads.find(l=>l.id===state.selectedId);
+    if(!lead){
+      eventList.innerHTML = '';
+      return;
+    }
+
+    // Build a view: timeline (sample) + any in-demo log items.
+    const base = lead.timeline.slice().sort((a,b)=>a.t-b.t);
+    const mapped = base.map(e=>({
+      t: e.t,
+      kind: e.kind,
+      title: e.title,
+      note: e.note
+    }));
+
+    // In demo, state.log holds new items (draft/sent/booked).
+    const combined = mapped.concat(state.log);
+    // Show newest last
+    combined.sort((a,b)=>a.t-b.t);
+
+    eventList.innerHTML = '';
+
+    combined.slice(-6).forEach(ev=>{
+      const el = document.createElement('div');
+      el.className = 'event';
+
+      let stampClass = 'accent';
+      let stampText = '•';
+      if(ev.kind === 'inbound'){ stampClass='sage'; stampText='IN'; }
+      else if(ev.kind === 'sent'){ stampClass='accent'; stampText='TX'; }
+      else if(ev.kind === 'booked'){ stampClass='sage'; stampText='OK'; }
+      else if(ev.kind === 'draft'){ stampClass='warn'; stampText='DR'; }
+      else { stampClass='accent'; stampText='EV'; }
+
+      el.innerHTML = `
+        <div class="stamp ${stampClass}">${stampText}</div>
+        <div>
+          <b>${escapeHtml(ev.title)}</b>
+          <p>${escapeHtml(ev.note)}</p>
+        </div>
+      `;
+      eventList.appendChild(el);
+    });
+
+    if(reset){
+      // keep composer message blank on selection
+    }
+  }
+
+  function simulateSend(){
+    const lead = state.leads.find(l=>l.id===state.selectedId);
+    if(!lead) return;
+
+    const subj = $('subject').value.trim();
+    const msg = $('message').value.trim();
+    if(!subj || !msg) return;
+
+    // Simulate outcomes: higher chance to book if at risk/older.
+    const readyObj = readinessFor(lead);
+    const age = lead.lastTouchDaysAgo;
+    let pBooked = 0.18;
+    if(lead.stage === 'At risk') pBooked = 0.45;
+    if(age >= cadenceMap[state.cadence][1]) pBooked += 0.12;
+    if(readyObj.ready) pBooked += 0.10;
+
+    const r = Math.random();
+
+    // Update lead state in demo
+    const now = Date.now();
+    state.log.push({
+      t: now,
+      kind: 'sent',
+      title: 'Follow-up sent (simulated)',
+      note: `Subject: “${subj}”`
+    });
+
+    // Update last touch
+    lead.lastTouchDaysAgo = 0;
+
+    // Advance stage
+    if(r < pBooked){
+      lead.stage = 'Booked';
+      state.bookedCount += 1;
+      statBooked.textContent = state.bookedCount + ' booked';
+      state.log.push({
+        t: now + 1,
+        kind: 'booked',
+        title: 'Response received',
+        note: `They replied and a meeting got scheduled (sample).`
+      });
+
+      // After booking, mark as not quiet and keep draft locked
+      $('sendBtn').disabled = true;
+      $('sendBtn').style.opacity = '0.65';
+      leadContext.textContent = 'Booked — no further follow-ups needed in this demo.';
+      readyBar.style.width = '100%';
+      renderEventsForSelected(false);
+      renderLeads();
+      return;
+    }
+
+    // Not booked: schedule next quiet step by setting lastTouchDaysAgo to just after today
+    lead.stage = 'Needs follow-up';
+    state.log.push({
+      t: now + 1,
+      kind: 'draft',
+      title: 'Next nudge scheduled (simulated)',
+      note: `We’ll check again on the next cadence threshold for ${lead.name}.`
+    });
+
+    renderEventsForSelected(false);
+    renderLeads();
+
+    // Clear composer to mimic “sent” and force regeneration for next cycle.
+    $('subject').value = '';
+    $('message').value = '';
+    $('sendBtn').disabled = true;
+    $('sendBtn').style.opacity = '0.65';
+    leadContext.textContent = `Sent. This lead will re-appear as quiet later in the cadence (demo).`;
+    readyBar.style.width = '30%';
+  }
+
+  function recheck(){
+    // Re-evaluate quiet leads by re-sorting and re-rendering.
+    renderLeads();
+    renderComposer();
+    renderEventsForSelected(true);
+  }
+
+  // Events
+  $('genBtn').addEventListener('click', ()=>{
+    generateDraft();
+  });
+  $('sendBtn').addEventListener('click', ()=>{
+    simulateSend();
+  });
+  $('shortenBtn').addEventListener('click', ()=>{ tightenDraft(); });
+  $('addCTA').addEventListener('click', ()=>{ addNextStep(); });
+  $('reScanBtn').addEventListener('click', ()=>{ recheck(); });
+
+  $('cadence').addEventListener('change', (e)=>{
+    state.cadence = e.target.value;
+    state.log = [];
+    $('subject').value = '';
+    $('message').value = '';
+    $('sendBtn').disabled = true;
+    $('sendBtn').style.opacity = '0.65';
+    renderLeads();
+    renderComposer();
+    renderEventsForSelected(true);
+  });
+
+  // Default selection
+  function init(){
+    // Select the top quiet lead if any, else first.
+    const sorted = state.leads.slice().sort(leadSort);
+    const quiet = sorted.find(l=>readinessFor(l).ready);
+    state.selectedId = (quiet || sorted[0]).id;
+    state.log = [];
+    // Keyboard 1-3 jump
+    document.addEventListener('keydown', (e)=>{
+      if(document.activeElement && ['TEXTAREA','INPUT','SELECT'].includes(document.activeElement.tagName)) return;
+      const n = Number(e.key);
+      if(![1,2,3].includes(n)) return;
+      const sorted2 = state.leads.slice().sort(leadSort);
+      const pick = sorted2[n-1];
+      if(!pick) return;
+      state.selectedId = pick.id;
+      state.log = [];
+      renderLeads();
+      renderComposer();
+      renderEventsForSelected(true);
+    });
+
+    renderLeads();
+    renderComposer();
+    renderEventsForSelected(true);
+
+    // Seed draft count stats and progress bar baseline
+    statDraft.textContent = '0 drafts';
+    statBooked.textContent = '0 booked';
+    state.draftedCount = 0;
+    state.bookedCount = 0;
+
+    $('subject').value = '';
+    $('message').value = '';
+    $('sendBtn').disabled = true;
+    $('sendBtn').style.opacity = '0.65';
+  }
+
+  init();
+})();
+</script>
+</body>
+</html><div id="gary-deploy-marker" style="display:none">DEPLOY-gym-flow-verify-1786395286912-0</div>
